@@ -1,0 +1,164 @@
+<?xml version='1.0' encoding='utf-8'?>
+<interface version="1.1">
+  <object class="tk.Frame" id="frame3">
+    <property name="background">#80ff00</property>
+    <layout manager="grid">
+      <property name="column">0</property>
+      <property name="propagate">True</property>
+      <property name="row">0</property>
+    </layout>
+    <child>
+      <object class="tk.Menubutton" id="menubutton7">
+        <property name="text" translatable="yes">menubutton7</property>
+        <layout manager="grid">
+          <property name="column">0</property>
+          <property name="propagate">True</property>
+          <property name="row">0</property>
+        </layout>
+      </object>
+    </child>
+    <child>
+      <object class="tk.Menubutton" id="menubutton8">
+        <property name="text" translatable="yes">menubutton8</property>
+        <layout manager="grid">
+          <property name="column">1</property>
+          <property name="propagate">True</property>
+          <property name="row">0</property>
+        </layout>
+      </object>
+    </child>
+    <child>
+      <object class="tk.Menubutton" id="menubutton9">
+        <property name="text" translatable="yes">menubutton9</property>
+        <layout manager="grid">
+          <property name="column">2</property>
+          <property name="propagate">True</property>
+          <property name="row">0</property>
+        </layout>
+      </object>
+    </child>
+    <child>
+      <object class="tk.Menubutton" id="menubutton10">
+        <property name="text" translatable="yes">menubutton10</property>
+        <layout manager="grid">
+          <property name="column">3</property>
+          <property name="propagate">True</property>
+          <property name="row">0</property>
+        </layout>
+      </object>
+    </child>
+    <child>
+      <object class="tk.Frame" id="frame4">
+        <property name="background">#8080ff</property>
+        <property name="height">600</property>
+        <property name="width">600</property>
+        <layout manager="grid">
+          <property name="column">0</property>
+          <property name="columnspan">4</property>
+          <property name="propagate">True</property>
+          <property name="row">1</property>
+        </layout>
+        <child>
+          <object class="ttk.Notebook" id="notebook12">
+            <property name="height">400</property>
+            <property name="width">400</property>
+            <layout manager="pack">
+              <property name="propagate">True</property>
+              <property name="side">top</property>
+            </layout>
+            <child>
+              <object class="ttk.Notebook.Tab" id="tab11">
+                <property name="text" translatable="yes">tab11</property>
+                <child>
+                  <object class="tk.Frame" id="frame5">
+                    <property name="background">#ff8000</property>
+                    <layout manager="grid">
+                      <property name="column">0</property>
+                      <property name="propagate">True</property>
+                      <property name="row">0</property>
+                    </layout>
+                    <child>
+                      <object class="tk.LabelFrame" id="labelframe4">
+                        <property name="background">#00ffff</property>
+                        <property name="height">200</property>
+                        <property name="takefocus">false</property>
+                        <property name="text" translatable="yes">labelframe4</property>
+                        <property name="width">200</property>
+                        <layout manager="grid">
+                          <property name="column">0</property>
+                          <property name="propagate">True</property>
+                          <property name="row">0</property>
+                        </layout>
+                        <child>
+                          <object class="pygubu.builder.widgets.calendarframe" id="calendarframe6">
+                            <property name="firstweekday">6</property>
+                            <property name="month">1</property>
+                            <layout manager="grid">
+                              <property name="column">0</property>
+                              <property name="propagate">True</property>
+                              <property name="row">1</property>
+                            </layout>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="ttk.Label" id="label12">
+                            <property name="text" translatable="yes">label12</property>
+                            <layout manager="grid">
+                              <property name="column">0</property>
+                              <property name="propagate">True</property>
+                              <property name="row">0</property>
+                            </layout>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="tk.LabelFrame" id="labelframe5">
+                        <property name="background">#ff0080</property>
+                        <property name="height">200</property>
+                        <property name="text" translatable="yes">labelframe5</property>
+                        <property name="width">200</property>
+                        <layout manager="grid">
+                          <property name="column">1</property>
+                          <property name="propagate">True</property>
+                          <property name="row">0</property>
+                        </layout>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="tk.LabelFrame" id="labelframe8">
+                        <property name="background">#ffff00</property>
+                        <property name="height">200</property>
+                        <property name="text" translatable="yes">labelframe8</property>
+                        <property name="width">200</property>
+                        <layout manager="grid">
+                          <property name="column">0</property>
+                          <property name="propagate">True</property>
+                          <property name="row">1</property>
+                        </layout>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+              </object>
+            </child>
+          </object>
+        </child>
+      </object>
+    </child>
+    <child>
+      <object class="tk.PanedWindow" id="panedwindow1">
+        <property name="background">#0000a0</property>
+        <property name="height">200</property>
+        <property name="orient">horizontal</property>
+        <property name="width">200</property>
+        <layout manager="grid">
+          <property name="column">4</property>
+          <property name="propagate">True</property>
+          <property name="row">0</property>
+          <property name="rowspan">2</property>
+        </layout>
+      </object>
+    </child>
+  </object>
+</interface>
