@@ -40,7 +40,7 @@ for money in cur.execute('SELECT avg(price) FROM spendings '):
     print(money)
         
 for price in cur.execute('SELECT avg(price) FROM spendings WHERE cat = "food"'):
-    print("avr price for food:", price)
+    print("avr price for food: %.2f" % price[0],type(price[0]))
         
 conn.close()
 
