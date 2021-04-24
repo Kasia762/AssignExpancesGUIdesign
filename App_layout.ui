@@ -328,8 +328,6 @@
     <property name="width">500</property>
     <child>
       <object class="tk.Frame" id="frame7">
-        <property name="height">500</property>
-        <property name="width">500</property>
         <layout manager="pack">
           <property name="propagate">True</property>
           <property name="side">top</property>
@@ -374,18 +372,14 @@
     </child>
     <child>
       <object class="tk.Frame" id="frame9">
-        <property name="height">500</property>
-        <property name="width">500</property>
         <layout manager="pack">
           <property name="propagate">True</property>
           <property name="side">top</property>
         </layout>
         <child>
           <object class="ttk.Notebook" id="notebook14">
-            <property name="height">500</property>
             <property name="style">Toolbutton</property>
             <property name="takefocus">true</property>
-            <property name="width">700</property>
             <layout manager="pack">
               <property name="propagate">True</property>
               <property name="side">top</property>
