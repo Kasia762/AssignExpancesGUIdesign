@@ -8,15 +8,15 @@ import matplotlib.pyplot as plt
 #shop ='Hesburger'
 #price = 15.5
 #cat = "restaurant"
-val =[("12-03-2019","Lidl","18.34","food"),
-      ("07-03-2019","Hesburger","1.34","restaurant"),
-      ("12-04-2019","McDonald","10.65","food"),
-      ("12-03-2019","Obi","185.34","home"),
-      ("12-06-2019","Hesburger","189.65","restaurant"),
-      ("12-03-2020","Biedronka","156.32","food"),
-      ("10-05-2019","rent","1560.65","bills"),
-      ("12-03-2020","electricity","126.68","bills"),
-      ("15-09-2019","water","672.21","bills"),
+val =[("12-03-2019","18.34","food"),
+      ("07-03-2019","1.34","restaurant"),
+      ("12-04-2019","10.65","food"),
+      ("12-03-2019","1.34","home"),
+      ("12-06-2019","189.65","restaurant"),
+      ("12-03-2020","15.32","food"),
+      ("10-05-2019","160.65","bills"),
+      ("12-03-2020","12.68","bills"),
+      ("15-09-2019","672.21","bills"),
       ]
 
 conn = sqlite3.connect('spend.db')
@@ -25,11 +25,9 @@ cur = conn.cursor()
 def create_table():
     try:
         cur.execute('''CREATE TABLE spendings 
-                    (DATE VARCHAR, 
-                     SHOP VARCHAR, 
+                    (DATE VARCHAR,                
                      PRICE FLOAT, 
-                     CAT VARCHART)''')
-        print("table created")   
+                     CAT VARCHART)''') 
     except sqlite3.OperationalError:
         pass
     conn.commit()
@@ -37,12 +35,12 @@ def create_table():
 
 def insert_data():
     sql = '''INSERT INTO spendings 
-    (date, shop, price, cat) 
-    values (?,?,?,?)'''
+    (date, price, cat) 
+    values (?,?,?)'''
     cur.executemany(sql,val)
     conn.commit()
 
-#data = cur.fetchall()
+
 def select_data():
     for money in cur.execute('''SELECT avg(price) FROM spendings '''):
         print(money)
