@@ -35,18 +35,20 @@ def create_table():
 
 def insert_data():
     sql = '''INSERT INTO spendings 
-    (date, price, cat) 
+    (DATE, PRICE, CAT) 
     values (?,?,?)'''
     cur.executemany(sql,val)
     conn.commit()
 
 
 def select_data():
-    for money in cur.execute('''SELECT avg(price) FROM spendings '''):
+    for money in cur.execute('''SELECT sum(PRICE) FROM spendings '''):
         print(money)
             
-    for price in cur.execute('''SELECT avg(price) FROM spendings WHERE cat = "food"'''):
+    for price in cur.execute('''SELECT avg(PRICE) FROM spendings WHERE CAT = "food"'''):
         print("avr price for food: %.2f" % price[0],type(price[0]))
+    for foodSum in cur.execute('''SELECT sum(PRICE) FROM spendings WHERE CAT ="food"'''):
+        print("sum for food: ", foodSum)
     
     conn.commit()
   
