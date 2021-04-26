@@ -322,19 +322,20 @@
       </object>
     </child>
   </object>
-  <object class="tk.Toplevel" id="toplevel4">
+  <object class="tk.Toplevel" id="app_window">
     <property name="height">600</property>
     <property name="relief">flat</property>
+    <property name="resizable">both</property>
     <property name="width">700</property>
     <child>
-      <object class="tk.Frame" id="frame9">
+      <object class="tk.Frame" id="app_windowframe">
         <layout manager="grid">
           <property name="column">0</property>
           <property name="propagate">True</property>
           <property name="row">0</property>
         </layout>
         <child>
-          <object class="ttk.Notebook" id="notebook14">
+          <object class="ttk.Notebook" id="app_notebook">
             <property name="style">Toolbutton</property>
             <property name="takefocus">true</property>
             <layout manager="pack">
@@ -343,10 +344,10 @@
               <property name="side">top</property>
             </layout>
             <child>
-              <object class="ttk.Notebook.Tab" id="tab13">
-                <property name="text" translatable="yes">main/graph</property>
+              <object class="ttk.Notebook.Tab" id="account_tab">
+                <property name="text" translatable="yes">Account</property>
                 <child>
-                  <object class="ttk.Frame" id="frame23">
+                  <object class="ttk.Frame" id="account_frame">
                     <property name="height">200</property>
                     <property name="width">200</property>
                     <layout manager="grid">
@@ -355,68 +356,9 @@
                       <property name="row">0</property>
                     </layout>
                     <child>
-                      <object class="ttk.Labelframe" id="labelframe31">
+                      <object class="ttk.Labelframe" id="account_labelframe">
                         <property name="height">200</property>
-                        <property name="text" translatable="yes">labelframe31</property>
-                        <property name="width">200</property>
-                        <layout manager="grid">
-                          <property name="column">0</property>
-                          <property name="ipady">40</property>
-                          <property name="padx">20</property>
-                          <property name="pady">40</property>
-                          <property name="propagate">True</property>
-                          <property name="row">0</property>
-                        </layout>
-                        <child>
-                          <object class="ttk.Label" id="label11">
-                            <property name="text" translatable="yes">weather, location</property>
-                            <layout manager="pack">
-                              <property name="pady">10</property>
-                              <property name="propagate">True</property>
-                              <property name="side">top</property>
-                            </layout>
-                          </object>
-                        </child>
-                        <child>
-                          <object class="ttk.Label" id="label16">
-                            <property name="text" translatable="yes">location</property>
-                            <layout manager="pack">
-                              <property name="padx">10</property>
-                              <property name="propagate">True</property>
-                              <property name="side">top</property>
-                            </layout>
-                          </object>
-                        </child>
-                        <child>
-                          <object class="pygubu.builder.widgets.calendarframe" id="calendarframe3">
-                            <property name="firstweekday">6</property>
-                            <property name="month">1</property>
-                            <layout manager="pack">
-                              <property name="ipadx">20</property>
-                              <property name="ipady">20</property>
-                              <property name="padx">20</property>
-                              <property name="pady">20</property>
-                              <property name="propagate">True</property>
-                              <property name="side">top</property>
-                            </layout>
-                          </object>
-                        </child>
-                        <child>
-                          <object class="ttk.Label" id="label4">
-                            <property name="text" translatable="yes">label4</property>
-                            <layout manager="pack">
-                              <property name="padx">10</property>
-                              <property name="propagate">True</property>
-                              <property name="side">top</property>
-                            </layout>
-                          </object>
-                        </child>
-                      </object>
-                    </child>
-                    <child>
-                      <object class="ttk.Labelframe" id="labelframe34">
-                        <property name="height">200</property>
-                        <property name="text" translatable="yes">labelframe34</property>
+                        <property name="text" translatable="yes">Your account in summary</property>
                         <property name="width">200</property>
                         <layout manager="grid">
                           <property name="column">1</property>
@@ -427,8 +369,8 @@
                           <property name="row">0</property>
                         </layout>
                         <child>
-                          <object class="ttk.Label" id="label17">
-                            <property name="text" translatable="yes">euros in bank?/balance</property>
+                          <object class="ttk.Label" id="balance_label">
+                            <property name="text" translatable="yes">Your balance is: $$$$$</property>
                             <layout manager="pack">
                               <property name="padx">40</property>
                               <property name="pady">10</property>
@@ -438,7 +380,7 @@
                           </object>
                         </child>
                         <child>
-                          <object class="tk.Canvas" id="canvas1">
+                          <object class="tk.Canvas" id="account_canvas">
                             <layout manager="pack">
                               <property name="padx">50</property>
                               <property name="pady">10</property>
@@ -448,8 +390,8 @@
                           </object>
                         </child>
                         <child>
-                          <object class="ttk.Label" id="label18">
-                            <property name="text" translatable="yes">spendings in %? - progess bar?</property>
+                          <object class="ttk.Label" id="percentage_label">
+                            <property name="text" translatable="yes">You spend xx% of your money for this month</property>
                             <layout manager="pack">
                               <property name="pady">10</property>
                               <property name="propagate">True</property>
@@ -458,7 +400,7 @@
                           </object>
                         </child>
                         <child>
-                          <object class="ttk.Progressbar" id="progressbar1">
+                          <object class="ttk.Progressbar" id="progressbar">
                             <property name="orient">horizontal</property>
                             <layout manager="pack">
                               <property name="ipadx">100</property>
@@ -475,10 +417,10 @@
               </object>
             </child>
             <child>
-              <object class="ttk.Notebook.Tab" id="tab1">
-                <property name="text" translatable="yes">add spendings</property>
+              <object class="ttk.Notebook.Tab" id="transactions_tab">
+                <property name="text" translatable="yes">Trancations</property>
                 <child>
-                  <object class="ttk.Frame" id="frame6">
+                  <object class="ttk.Frame" id="transactions_frame">
                     <property name="height">200</property>
                     <property name="width">200</property>
                     <layout manager="pack">
@@ -486,191 +428,7 @@
                       <property name="side">top</property>
                     </layout>
                     <child>
-                      <object class="ttk.Labelframe" id="labelframe1">
-                        <property name="text" translatable="yes">calendar</property>
-                        <property name="width">200</property>
-                        <layout manager="grid">
-                          <property name="column">0</property>
-                          <property name="propagate">True</property>
-                          <property name="row">0</property>
-                          <property name="rowspan">2</property>
-                        </layout>
-                        <child>
-                          <object class="pygubu.builder.widgets.calendarframe" id="calendarframe4">
-                            <property name="firstweekday">6</property>
-                            <property name="month">1</property>
-                            <layout manager="pack">
-                              <property name="propagate">True</property>
-                              <property name="side">top</property>
-                            </layout>
-                          </object>
-                        </child>
-                      </object>
-                    </child>
-                    <child>
-                      <object class="ttk.Labelframe" id="labelframe6">
-                        <property name="height">200</property>
-                        <property name="text" translatable="yes">enter data</property>
-                        <property name="width">200</property>
-                        <layout manager="grid">
-                          <property name="column">1</property>
-                          <property name="propagate">True</property>
-                          <property name="row">0</property>
-                        </layout>
-                        <child>
-                          <object class="ttk.Label" id="label21">
-                            <property name="text" translatable="yes">label21</property>
-                            <layout manager="grid">
-                              <property name="column">0</property>
-                              <property name="propagate">True</property>
-                              <property name="row">0</property>
-                            </layout>
-                          </object>
-                        </child>
-                        <child>
-                          <object class="ttk.Combobox" id="combobox2">
-                            <layout manager="grid">
-                              <property name="column">1</property>
-                              <property name="propagate">True</property>
-                              <property name="row">0</property>
-                            </layout>
-                          </object>
-                        </child>
-                        <child>
-                          <object class="ttk.Label" id="label22">
-                            <property name="text" translatable="yes">label22</property>
-                            <layout manager="grid">
-                              <property name="column">0</property>
-                              <property name="propagate">True</property>
-                              <property name="row">1</property>
-                            </layout>
-                          </object>
-                        </child>
-                        <child>
-                          <object class="ttk.Entry" id="entry4">
-                            <property name="text" translatable="yes">entry4</property>
-                            <layout manager="grid">
-                              <property name="column">1</property>
-                              <property name="propagate">True</property>
-                              <property name="row">1</property>
-                            </layout>
-                          </object>
-                        </child>
-                        <child>
-                          <object class="ttk.Label" id="label23">
-                            <property name="text" translatable="yes">label23</property>
-                            <layout manager="grid">
-                              <property name="column">0</property>
-                              <property name="propagate">True</property>
-                              <property name="row">2</property>
-                            </layout>
-                          </object>
-                        </child>
-                        <child>
-                          <object class="ttk.Entry" id="entry5">
-                            <property name="text" translatable="yes">entry5</property>
-                            <layout manager="grid">
-                              <property name="column">1</property>
-                              <property name="propagate">True</property>
-                              <property name="row">2</property>
-                            </layout>
-                          </object>
-                        </child>
-                        <child>
-                          <object class="ttk.Label" id="label24">
-                            <property name="text" translatable="yes">label24</property>
-                            <layout manager="grid">
-                              <property name="column">0</property>
-                              <property name="propagate">True</property>
-                              <property name="row">3</property>
-                            </layout>
-                          </object>
-                        </child>
-                        <child>
-                          <object class="ttk.Entry" id="entry6">
-                            <property name="text" translatable="yes">entry6</property>
-                            <layout manager="grid">
-                              <property name="column">1</property>
-                              <property name="propagate">True</property>
-                              <property name="row">3</property>
-                            </layout>
-                          </object>
-                        </child>
-                        <child>
-                          <object class="ttk.Label" id="label25">
-                            <property name="text" translatable="yes">label25</property>
-                            <layout manager="grid">
-                              <property name="column">0</property>
-                              <property name="propagate">True</property>
-                              <property name="row">4</property>
-                            </layout>
-                          </object>
-                        </child>
-                        <child>
-                          <object class="ttk.Checkbutton" id="checkbutton1">
-                            <property name="text" translatable="yes">checkbutton1</property>
-                            <layout manager="grid">
-                              <property name="column">1</property>
-                              <property name="propagate">True</property>
-                              <property name="row">4</property>
-                            </layout>
-                          </object>
-                        </child>
-                        <child>
-                          <object class="ttk.Button" id="button5">
-                            <property name="text" translatable="yes">submit/add</property>
-                            <layout manager="grid">
-                              <property name="column">0</property>
-                              <property name="propagate">True</property>
-                              <property name="row">5</property>
-                            </layout>
-                          </object>
-                        </child>
-                        <child>
-                          <object class="ttk.Button" id="button6">
-                            <property name="text" translatable="yes">cancel</property>
-                            <layout manager="grid">
-                              <property name="column">1</property>
-                              <property name="propagate">True</property>
-                              <property name="row">5</property>
-                            </layout>
-                          </object>
-                        </child>
-                        <child>
-                          <object class="ttk.Button" id="button9">
-                            <property name="text" translatable="yes">det date</property>
-                            <layout manager="grid">
-                              <property name="column">2</property>
-                              <property name="propagate">True</property>
-                              <property name="row">2</property>
-                            </layout>
-                          </object>
-                        </child>
-                      </object>
-                    </child>
-                    <child>
-                      <object class="ttk.Labelframe" id="labelframe14">
-                        <property name="height">200</property>
-                        <property name="text" translatable="yes">lotto</property>
-                        <property name="width">200</property>
-                        <layout manager="grid">
-                          <property name="column">1</property>
-                          <property name="propagate">True</property>
-                          <property name="row">1</property>
-                        </layout>
-                        <child>
-                          <object class="ttk.Button" id="button12">
-                            <property name="text" translatable="yes">button12</property>
-                            <layout manager="pack">
-                              <property name="propagate">True</property>
-                              <property name="side">top</property>
-                            </layout>
-                          </object>
-                        </child>
-                      </object>
-                    </child>
-                    <child>
-                      <object class="ttk.Labelframe" id="labelframe7">
+                      <object class="ttk.Labelframe" id="tableTransactions_labelframe">
                         <property name="height">200</property>
                         <property name="text" translatable="yes">table view</property>
                         <property name="width">200</property>
@@ -678,10 +436,31 @@
                           <property name="column">0</property>
                           <property name="columnspan">2</property>
                           <property name="propagate">True</property>
-                          <property name="row">2</property>
+                          <property name="row">1</property>
                         </layout>
                         <child>
-                          <object class="tk.Canvas" id="canvas5">
+                          <object class="tk.Canvas" id="tableTransactions_canvas">
+                            <layout manager="pack">
+                              <property name="propagate">True</property>
+                              <property name="side">top</property>
+                            </layout>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="ttk.Labelframe" id="drTransactions_labelframe">
+                        <property name="height">200</property>
+                        <property name="text" translatable="yes">Choose date range</property>
+                        <property name="width">200</property>
+                        <layout manager="grid">
+                          <property name="column">0</property>
+                          <property name="propagate">True</property>
+                          <property name="row">0</property>
+                        </layout>
+                        <child>
+                          <object class="ttk.Label" id="placeHolder_label">
+                            <property name="text" translatable="yes">put this calendar date choser</property>
                             <layout manager="pack">
                               <property name="propagate">True</property>
                               <property name="side">top</property>
@@ -695,10 +474,10 @@
               </object>
             </child>
             <child>
-              <object class="ttk.Notebook.Tab" id="tab2">
-                <property name="text" translatable="yes">edit/table</property>
+              <object class="ttk.Notebook.Tab" id="overview_tab">
+                <property name="text" translatable="yes">Overview</property>
                 <child>
-                  <object class="ttk.Frame" id="frame8">
+                  <object class="ttk.Frame" id="overview_frame">
                     <property name="height">200</property>
                     <property name="width">200</property>
                     <layout manager="pack">
@@ -706,9 +485,9 @@
                       <property name="side">top</property>
                     </layout>
                     <child>
-                      <object class="ttk.Labelframe" id="labelframe11">
+                      <object class="ttk.Labelframe" id="drOverview_labelframe">
                         <property name="height">200</property>
-                        <property name="text" translatable="yes">labelframe11</property>
+                        <property name="text" translatable="yes">Data range</property>
                         <property name="width">200</property>
                         <layout manager="pack">
                           <property name="propagate">True</property>
@@ -753,8 +532,8 @@
                           </object>
                         </child>
                         <child>
-                          <object class="ttk.Button" id="button7">
-                            <property name="text" translatable="yes">view/load</property>
+                          <object class="ttk.Button" id="loadTable_button">
+                            <property name="text" translatable="yes">Load</property>
                             <layout manager="grid">
                               <property name="column">4</property>
                               <property name="propagate">True</property>
@@ -765,16 +544,16 @@
                       </object>
                     </child>
                     <child>
-                      <object class="ttk.Labelframe" id="labelframe12">
+                      <object class="ttk.Labelframe" id="tableOverview_labelframe">
                         <property name="height">200</property>
-                        <property name="text" translatable="yes">labelframe12</property>
+                        <property name="text" translatable="yes">Table view</property>
                         <property name="width">200</property>
                         <layout manager="pack">
                           <property name="propagate">True</property>
                           <property name="side">top</property>
                         </layout>
                         <child>
-                          <object class="tk.Canvas" id="canvas3">
+                          <object class="tk.Canvas" id="tableOverview_canvas">
                             <layout manager="grid">
                               <property name="column">0</property>
                               <property name="columnspan">2</property>
@@ -784,7 +563,7 @@
                           </object>
                         </child>
                         <child>
-                          <object class="ttk.Button" id="button10">
+                          <object class="ttk.Button" id="export_button">
                             <property name="text" translatable="yes">export to csv</property>
                             <layout manager="grid">
                               <property name="column">0</property>
@@ -794,8 +573,8 @@
                           </object>
                         </child>
                         <child>
-                          <object class="ttk.Button" id="button11">
-                            <property name="text" translatable="yes">accept changes</property>
+                          <object class="ttk.Button" id="modify_button">
+                            <property name="text" translatable="yes">modify</property>
                             <layout manager="grid">
                               <property name="column">1</property>
                               <property name="propagate">True</property>
@@ -810,109 +589,10 @@
               </object>
             </child>
             <child>
-              <object class="ttk.Notebook.Tab" id="tab3">
-                <property name="text" translatable="yes">set up</property>
+              <object class="ttk.Notebook.Tab" id="lotto_tab">
+                <property name="text" translatable="yes">here we have lotto/weather</property>
                 <child>
-                  <object class="tk.Frame" id="frame1">
-                    <property name="height">200</property>
-                    <property name="width">200</property>
-                    <layout manager="grid">
-                      <property name="column">0</property>
-                      <property name="propagate">True</property>
-                      <property name="row">0</property>
-                    </layout>
-                    <child>
-                      <object class="tk.LabelFrame" id="labelframe2">
-                        <property name="height">200</property>
-                        <property name="text" translatable="yes">labelframe2</property>
-                        <property name="width">200</property>
-                        <layout manager="pack">
-                          <property name="propagate">True</property>
-                          <property name="side">top</property>
-                        </layout>
-                        <child>
-                          <object class="tk.Label" id="label1">
-                            <property name="text" translatable="yes">label1</property>
-                            <layout manager="pack">
-                              <property name="propagate">True</property>
-                              <property name="side">top</property>
-                            </layout>
-                          </object>
-                        </child>
-                        <child>
-                          <object class="tk.Entry" id="entry7">
-                            <property name="text" translatable="yes">entry7</property>
-                            <layout manager="pack">
-                              <property name="propagate">True</property>
-                              <property name="side">top</property>
-                            </layout>
-                          </object>
-                        </child>
-                        <child>
-                          <object class="tk.Label" id="label2">
-                            <property name="text" translatable="yes">label2</property>
-                            <layout manager="pack">
-                              <property name="propagate">True</property>
-                              <property name="side">top</property>
-                            </layout>
-                          </object>
-                        </child>
-                        <child>
-                          <object class="tk.Entry" id="entry10">
-                            <property name="text" translatable="yes">entry10</property>
-                            <layout manager="pack">
-                              <property name="propagate">True</property>
-                              <property name="side">top</property>
-                            </layout>
-                          </object>
-                        </child>
-                        <child>
-                          <object class="tk.Label" id="label3">
-                            <property name="text" translatable="yes">label3</property>
-                            <layout manager="pack">
-                              <property name="propagate">True</property>
-                              <property name="side">top</property>
-                            </layout>
-                          </object>
-                        </child>
-                        <child>
-                          <object class="tk.Entry" id="entry11">
-                            <property name="text" translatable="yes">entry11</property>
-                            <layout manager="pack">
-                              <property name="propagate">True</property>
-                              <property name="side">top</property>
-                            </layout>
-                          </object>
-                        </child>
-                        <child>
-                          <object class="tk.Button" id="button1">
-                            <property name="text" translatable="yes">button1</property>
-                            <layout manager="pack">
-                              <property name="propagate">True</property>
-                              <property name="side">top</property>
-                            </layout>
-                          </object>
-                        </child>
-                        <child>
-                          <object class="tk.Button" id="button8">
-                            <property name="text" translatable="yes">button8</property>
-                            <layout manager="pack">
-                              <property name="propagate">True</property>
-                              <property name="side">top</property>
-                            </layout>
-                          </object>
-                        </child>
-                      </object>
-                    </child>
-                  </object>
-                </child>
-              </object>
-            </child>
-            <child>
-              <object class="ttk.Notebook.Tab" id="tab4">
-                <property name="text" translatable="yes">account summary</property>
-                <child>
-                  <object class="ttk.Frame" id="frame11">
+                  <object class="ttk.Frame" id="lotto_frame">
                     <property name="height">200</property>
                     <property name="width">200</property>
                     <layout manager="pack">
@@ -920,100 +600,68 @@
                       <property name="side">top</property>
                     </layout>
                     <child>
-                      <object class="ttk.Labelframe" id="labelframe13">
+                      <object class="ttk.Labelframe" id="weather_labelframe">
                         <property name="height">200</property>
-                        <property name="text" translatable="yes">labelframe13</property>
+                        <property name="text" translatable="yes">weather</property>
                         <property name="width">200</property>
                         <layout manager="pack">
                           <property name="propagate">True</property>
                           <property name="side">top</property>
                         </layout>
                         <child>
-                          <object class="ttk.Label" id="label29">
-                            <property name="text" translatable="yes">label29</property>
-                            <layout manager="grid">
-                              <property name="column">0</property>
+                          <object class="ttk.Label" id="weather_label">
+                            <property name="text" translatable="yes">weather, icon, location</property>
+                            <layout manager="pack">
                               <property name="propagate">True</property>
-                              <property name="row">0</property>
+                              <property name="side">top</property>
                             </layout>
                           </object>
                         </child>
                         <child>
-                          <object class="ttk.Combobox" id="combobox5">
-                            <layout manager="grid">
-                              <property name="column">1</property>
+                          <object class="ttk.Label" id="time_label">
+                            <property name="text" translatable="yes">time</property>
+                            <layout manager="pack">
                               <property name="propagate">True</property>
-                              <property name="row">0</property>
+                              <property name="side">top</property>
                             </layout>
                           </object>
                         </child>
                         <child>
-                          <object class="tk.Canvas" id="canvas4">
-                            <layout manager="grid">
-                              <property name="column">0</property>
-                              <property name="columnspan">2</property>
+                          <object class="pygubu.builder.widgets.calendarframe" id="calendar">
+                            <property name="firstweekday">6</property>
+                            <property name="month">1</property>
+                            <layout manager="pack">
                               <property name="propagate">True</property>
-                              <property name="row">1</property>
+                              <property name="side">top</property>
+                            </layout>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="ttk.Labelframe" id="lotto_labelframe">
+                        <property name="height">200</property>
+                        <property name="text" translatable="yes">lotto</property>
+                        <property name="width">200</property>
+                        <layout manager="pack">
+                          <property name="propagate">True</property>
+                          <property name="side">top</property>
+                        </layout>
+                        <child>
+                          <object class="ttk.Label" id="lotto_label">
+                            <property name="text" translatable="yes">disclaimer: 5 euro will be subtracted from your account</property>
+                            <layout manager="pack">
+                              <property name="propagate">True</property>
+                              <property name="side">top</property>
                             </layout>
                           </object>
                         </child>
                         <child>
-                          <object class="ttk.Label" id="label30">
-                            <property name="text" translatable="yes">label30</property>
-                            <layout manager="grid">
-                              <property name="column">0</property>
+                          <object class="ttk.Button" id="lotto_button">
+                            <property name="text" translatable="yes">i accept, click to play lotto</property>
+                            <layout manager="pack">
                               <property name="propagate">True</property>
-                              <property name="row">2</property>
-                            </layout>
-                          </object>
-                        </child>
-                        <child>
-                          <object class="ttk.Entry" id="entry12">
-                            <property name="text" translatable="yes">entry12</property>
-                            <layout manager="grid">
-                              <property name="column">0</property>
-                              <property name="propagate">True</property>
-                              <property name="row">3</property>
-                            </layout>
-                          </object>
-                        </child>
-                        <child>
-                          <object class="ttk.Label" id="label31">
-                            <property name="text" translatable="yes">label31</property>
-                            <layout manager="grid">
-                              <property name="column">0</property>
-                              <property name="propagate">True</property>
-                              <property name="row">4</property>
-                            </layout>
-                          </object>
-                        </child>
-                        <child>
-                          <object class="ttk.Entry" id="entry13">
-                            <property name="text" translatable="yes">entry13</property>
-                            <layout manager="grid">
-                              <property name="column">0</property>
-                              <property name="propagate">True</property>
-                              <property name="row">5</property>
-                            </layout>
-                          </object>
-                        </child>
-                        <child>
-                          <object class="ttk.Label" id="label32">
-                            <property name="text" translatable="yes">label32</property>
-                            <layout manager="grid">
-                              <property name="column">0</property>
-                              <property name="propagate">True</property>
-                              <property name="row">6</property>
-                            </layout>
-                          </object>
-                        </child>
-                        <child>
-                          <object class="ttk.Entry" id="entry14">
-                            <property name="text" translatable="yes">entry14</property>
-                            <layout manager="grid">
-                              <property name="column">0</property>
-                              <property name="propagate">True</property>
-                              <property name="row">7</property>
+                              <property name="side">top</property>
                             </layout>
                           </object>
                         </child>
@@ -1026,8 +674,8 @@
           </object>
         </child>
         <child>
-          <object class="ttk.Menubutton" id="menubutton2">
-            <property name="text" translatable="yes">menubutton2</property>
+          <object class="ttk.Menubutton" id="account_menubutton">
+            <property name="text" translatable="yes">myAcount</property>
             <layout manager="place">
               <property name="anchor">nw</property>
               <property name="x">500</property>
@@ -1128,27 +776,29 @@
       </object>
     </child>
   </object>
-  <object class="tk.Toplevel" id="toplevel1">
+  <object class="tk.Toplevel" id="login_window">
+    <property name="container">false</property>
+    <property name="takefocus">false</property>
     <child>
-      <object class="ttk.Notebook" id="notebook2">
-        <property name="height">300</property>
-        <property name="width">400</property>
+      <object class="ttk.Notebook" id="login_notebook">
         <layout manager="pack">
+          <property name="expand">true</property>
+          <property name="fill">both</property>
           <property name="propagate">True</property>
           <property name="side">top</property>
         </layout>
         <child>
-          <object class="ttk.Notebook.Tab" id="tab5">
+          <object class="ttk.Notebook.Tab" id="login_tab">
             <property name="state">hidden</property>
             <property name="text" translatable="yes">log in</property>
             <child>
-              <object class="ttk.Frame" id="frame7">
+              <object class="ttk.Frame" id="login_frame">
                 <layout manager="pack">
                   <property name="propagate">True</property>
                   <property name="side">top</property>
                 </layout>
                 <child>
-                  <object class="ttk.Labelframe" id="labelframe10">
+                  <object class="ttk.Labelframe" id="login_labelframe">
                     <property name="text" translatable="yes">Please log in below</property>
                     <layout manager="pack">
                       <property name="ipadx">50</property>
@@ -1157,7 +807,7 @@
                       <property name="side">top</property>
                     </layout>
                     <child>
-                      <object class="ttk.Label" id="label37">
+                      <object class="ttk.Label" id="selectUser_label">
                         <property name="text" translatable="yes">Select user</property>
                         <layout manager="pack">
                           <property name="pady">10</property>
@@ -1167,7 +817,7 @@
                       </object>
                     </child>
                     <child>
-                      <object class="ttk.Combobox" id="combobox6">
+                      <object class="ttk.Combobox" id="selectUser_combo">
                         <layout manager="pack">
                           <property name="propagate">True</property>
                           <property name="side">top</property>
@@ -1175,7 +825,7 @@
                       </object>
                     </child>
                     <child>
-                      <object class="ttk.Label" id="label38">
+                      <object class="ttk.Label" id="enterPassword_label">
                         <property name="text" translatable="yes">Enter password</property>
                         <layout manager="pack">
                           <property name="pady">10</property>
@@ -1185,7 +835,7 @@
                       </object>
                     </child>
                     <child>
-                      <object class="ttk.Entry" id="entry22">
+                      <object class="ttk.Entry" id="enterPassword_entry">
                         <property name="show">•</property>
                         <property name="text" translatable="yes">********</property>
                         <layout manager="pack">
@@ -1195,7 +845,7 @@
                       </object>
                     </child>
                     <child>
-                      <object class="ttk.Button" id="button19">
+                      <object class="ttk.Button" id="login_buttton">
                         <property name="text" translatable="yes">LOG IN</property>
                         <layout manager="pack">
                           <property name="pady">20</property>
@@ -1211,10 +861,10 @@
           </object>
         </child>
         <child>
-          <object class="ttk.Notebook.Tab" id="tab6">
+          <object class="ttk.Notebook.Tab" id="addUser_tab">
             <property name="text" translatable="yes">add user</property>
             <child>
-              <object class="ttk.Frame" id="frame10">
+              <object class="ttk.Frame" id="addUser_frame">
                 <property name="height">200</property>
                 <property name="width">200</property>
                 <layout manager="pack">
@@ -1222,92 +872,108 @@
                   <property name="side">top</property>
                 </layout>
                 <child>
-                  <object class="ttk.Labelframe" id="labelframe9">
+                  <object class="ttk.Labelframe" id="addUser_labelframe">
                     <property name="height">200</property>
                     <property name="text" translatable="yes">Please enter the details below</property>
                     <property name="width">200</property>
                     <layout manager="pack">
-                      <property name="ipadx">50</property>
-                      <property name="pady">20</property>
+                      <property name="padx">50</property>
+                      <property name="pady">50</property>
                       <property name="propagate">True</property>
                       <property name="side">top</property>
                     </layout>
                     <child>
-                      <object class="ttk.Label" id="label20">
+                      <object class="ttk.Label" id="username_label">
                         <property name="text" translatable="yes">Username</property>
-                        <layout manager="pack">
+                        <layout manager="grid">
+                          <property name="column">0</property>
+                          <property name="padx">10</property>
                           <property name="pady">5</property>
                           <property name="propagate">True</property>
-                          <property name="side">top</property>
+                          <property name="row">0</property>
                         </layout>
                       </object>
                     </child>
                     <child>
-                      <object class="ttk.Entry" id="entry19">
+                      <object class="ttk.Entry" id="username_entry">
                         <property name="text" translatable="yes">entry19</property>
-                        <layout manager="pack">
+                        <layout manager="grid">
+                          <property name="column">1</property>
+                          <property name="padx">10</property>
                           <property name="propagate">True</property>
-                          <property name="side">top</property>
+                          <property name="row">0</property>
                         </layout>
                       </object>
                     </child>
                     <child>
-                      <object class="ttk.Label" id="label27">
+                      <object class="ttk.Label" id="password_label">
                         <property name="text" translatable="yes">Password</property>
-                        <layout manager="pack">
+                        <layout manager="grid">
+                          <property name="column">0</property>
+                          <property name="padx">10</property>
                           <property name="pady">5</property>
                           <property name="propagate">True</property>
-                          <property name="side">top</property>
+                          <property name="row">1</property>
                         </layout>
                       </object>
                     </child>
                     <child>
-                      <object class="ttk.Entry" id="entry20">
+                      <object class="ttk.Entry" id="password_entry">
                         <property name="text" translatable="yes">entry20</property>
-                        <layout manager="pack">
+                        <layout manager="grid">
+                          <property name="column">1</property>
                           <property name="propagate">True</property>
-                          <property name="side">top</property>
+                          <property name="row">1</property>
                         </layout>
                       </object>
                     </child>
                     <child>
-                      <object class="ttk.Label" id="label33">
+                      <object class="ttk.Label" id="confirmPassword_label">
+                        <property name="background">#a462df</property>
                         <property name="text" translatable="yes">Confirm password</property>
-                        <layout manager="pack">
+                        <layout manager="grid">
+                          <property name="column">0</property>
+                          <property name="padx">10</property>
                           <property name="pady">5</property>
                           <property name="propagate">True</property>
-                          <property name="side">top</property>
+                          <property name="row">2</property>
                         </layout>
                       </object>
                     </child>
                     <child>
-                      <object class="ttk.Entry" id="entry21">
+                      <object class="ttk.Entry" id="confirmPassword_entry">
                         <property name="text" translatable="yes">entry21</property>
-                        <layout manager="pack">
+                        <layout manager="grid">
+                          <property name="column">1</property>
                           <property name="propagate">True</property>
-                          <property name="side">top</property>
+                          <property name="row">2</property>
                         </layout>
                       </object>
                     </child>
                     <child>
-                      <object class="ttk.Button" id="button16">
+                      <object class="ttk.Button" id="submit_button">
                         <property name="text" translatable="yes">SUBMIT</property>
-                        <layout manager="pack">
+                        <layout manager="grid">
+                          <property name="column">1</property>
+                          <property name="ipadx">10</property>
+                          <property name="ipady">5</property>
+                          <property name="padx">10</property>
                           <property name="pady">10</property>
                           <property name="propagate">True</property>
-                          <property name="side">top</property>
+                          <property name="row">3</property>
                         </layout>
                       </object>
                     </child>
                     <child>
-                      <object class="ttk.Label" id="label34">
+                      <object class="ttk.Label" id="adduserInfo_label">
                         <property name="text" translatable="yes">user added/
 passwords don't match/
 useralready exist</property>
-                        <layout manager="pack">
-                          <property name="pady">5</property>
+                        <layout manager="grid">
+                          <property name="column">0</property>
+                          <property name="columnspan">2</property>
                           <property name="propagate">True</property>
-                          <property name="side">top</property>
+                          <property name="row">4</property>
                         </layout>
                       </object>
                     </child>
