@@ -19,7 +19,7 @@ val =[("12-03-2019","Lidl","12.34","food"),
       ("15-09-2019","water","652.21","bills"),
       ]
 
-conn = sqlite3.connect('spend.db')
+conn = sqlite3.connect(':memory:')
 cur = conn.cursor()
 try:
     cur.execute('CREATE TABLE spendings (date VARCHAR, shop VARCHAR, price FLOAT, cat VARCHART)')
