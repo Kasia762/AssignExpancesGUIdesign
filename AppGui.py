@@ -57,31 +57,30 @@ class LoginWin():
         self.addUser_labelframe = ttk.Labelframe(self.addUser_frame)
         
         #labels, entries and button in add user tab
-        #TODO: change view, label to close to top
         self.username_label = ttk.Label(self.addUser_labelframe)
         self.username_label.configure(text='Username')
-        self.username_label.grid(column='0', row='0',pady='10',padx='10')
+        self.username_label.grid(column='0', row='0',pady='10',padx='50',ipady='10')
         
         self.username_entry = ttk.Entry(self.addUser_labelframe)
-        self.username_entry.grid(column='1', row='0')
+        self.username_entry.grid(column='1', row='0',padx='10')
         
         self.password_label = ttk.Label(self.addUser_labelframe)
         self.password_label.configure(text='Password')
         self.password_label.grid(column='0', row='1',pady='10',padx='10')
         
         self.password_entry = ttk.Entry(self.addUser_labelframe)
-        self.password_entry.grid(column='1', row='1')
+        self.password_entry.grid(column='1', row='1',padx='10')
         
         self.confirmPassword_label = ttk.Label(self.addUser_labelframe)
         self.confirmPassword_label.configure(text='Confirm password')
         self.confirmPassword_label.grid(column='0', row='2',pady='10',padx='10')
         
         self.confirmPassword_entry = ttk.Entry(self.addUser_labelframe)
-        self.confirmPassword_entry.grid(column='1', row='2')
+        self.confirmPassword_entry.grid(column='1', row='2',padx='10')
         
         self.submit_button = ttk.Button(self.addUser_labelframe)
         self.submit_button.configure(text='SUBMIT')
-        self.submit_button.grid(column='0', row='3',pady='10',ipadx='10',ipady='5',columnspan='2')
+        self.submit_button.grid(column='0', row='3',pady='20',ipadx='10',ipady='5',columnspan='2')
         
         self.adduserInfo_label = ttk.Label(self.addUser_labelframe)
         #TODO: add text into label: about adding new user
@@ -89,7 +88,7 @@ class LoginWin():
         self.adduserInfo_label.grid(column='0', row='4',pady='10',columnspan='2')
         
         self.addUser_labelframe.configure(height='200', text='Please enter the details below', width='200')
-        self.addUser_labelframe.pack(padx='50', pady='50', side='top')
+        self.addUser_labelframe.pack(ipadx='10',padx='50', pady='50', side='top')
         
         self.addUser_frame.configure(height='200', width='200')
         self.addUser_frame.pack(side='top')
@@ -100,15 +99,16 @@ class LoginWin():
         self.login_window.configure(takefocus=False)
 
         # Main widget
-        self.mainwindow = self.login_window
+        self.loginWindow = self.login_window
+        self.loginWindow.title("Login")
 
 
     def run(self):
-        self.mainwindow.mainloop()
+        self.loginWindow.mainloop()
 
-if __name__ == '__main__':
-    app = LoginWin()
-    app.run()
+#if __name__ == '__main__':
+login_app = LoginWin()
+login_app.run()
 
 
 
@@ -345,7 +345,7 @@ class AppLayoutApp:
     def run(self):
         self.mainwindow.mainloop()
 
-if __name__ == '__main__':
-    app = AppLayoutApp()
-    app.run()
+#if __name__ == '__main__':
+#    app = AppLayoutApp()
+#    app.run()
 
