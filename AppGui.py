@@ -240,6 +240,9 @@ class AppWin:
         # TODO - self.calendar: code for custom option 'firstweekday' not implemented.
         # TODO - self.calendar: code for custom option 'month' not implemented.
         #self.calendar.pack(side='top')
+        self.calendar = Calendar(self.weather_labelframe, selectmode='day')
+        self.calendar.pack(side='top', fill="both",expand=True)
+        
         
         self.weather_labelframe.configure(height='200', text='weather', width='200')
         self.weather_labelframe.pack(side='top')
