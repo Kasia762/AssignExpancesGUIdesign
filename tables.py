@@ -108,7 +108,7 @@ contr_list = list()
 for a in val:
     contr_list.append(  (a[  ind_date  ], a[ ind_amount ] ,
                       a[ ind_cont ] , a[ ind_cat ] ) )
-contr_list = (list(set(contr_list)))
+#contr_list = (list(set(contr_list)))
 # print(contr_list)
             
 sql= '''
@@ -159,15 +159,19 @@ print("")
 #================================================================
 #####  some sensible request to database
 
-#data = cur.fetchall()
+
 print("\n\n\n Select all transactions and also names of category from other tables")
-for row in cur.execute('''
+
+cur.execute('''
                        SELECT tr.trans_date , tr.trans_amount , ct.cat_name, cr.cont_name
                        FROM transactions AS tr 
                            NATURAL JOIN contractors AS cr
                            NATURAL JOIN categories AS ct
                        ORDER BY tr.trans_amount DESC ;
-                       '''):
+                       ''')
+                       
+data = cur.fetchall()
+for row in data:
     print(row)
 
        
