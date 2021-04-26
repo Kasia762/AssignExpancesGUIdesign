@@ -9,6 +9,8 @@ import tkinter as tk
 import tkinter.ttk as ttk
 from pygubu.widgets.calendarframe import CalendarFrame
 from tkcalendar import Calendar, DateEntry
+import time as tm
+
 
 
 class LoginWin():
@@ -101,12 +103,13 @@ class LoginWin():
 
 #if __name__ == '__main__':
 #login_app = LoginWin()
-#login_app.run()
+#applogin_app.run()
 
 
 class AppWin:
     def __init__(self, master=None):
         # build ui
+                
         self.app_window = tk.Tk() if master is None else tk.Toplevel(master)
         self.app_windowframe = tk.Frame(self.app_window)
         self.app_notebook = ttk.Notebook(self.app_windowframe)
@@ -228,14 +231,15 @@ class AppWin:
         self.weather_label.configure(text='weather, icon, location')
         self.weather_label.pack(side='top')
         
+                           
         self.time_label = ttk.Label(self.weather_labelframe)
         self.time_label.configure(text='time')
         self.time_label.pack(side='top')
         
-        self.calendar = CalendarFrame(self.weather_labelframe)
+        #self.calendar = CalendarFrame(self.weather_labelframe)
         # TODO - self.calendar: code for custom option 'firstweekday' not implemented.
         # TODO - self.calendar: code for custom option 'month' not implemented.
-        self.calendar.pack(side='top')
+        #self.calendar.pack(side='top')
         
         self.weather_labelframe.configure(height='200', text='weather', width='200')
         self.weather_labelframe.pack(side='top')
@@ -271,14 +275,20 @@ class AppWin:
 
         # Main widget
         self.mainwindow = self.app_window
-
+        self.display_time()
+        
+    def display_time(self):
+        self.current_time=tm.strftime('%H:%M:%S')
+        self.time_label['text']=self.current_time
+        self.weather_labelframe.after(1000,self.display_time)     
 
     def run(self):
-        self.mainwindow.mainloop()
+        self.mainwindow.mainloop() 
+        
 
 if __name__ == '__main__':
     app = AppWin()
     app.run()
-
+   
 
 
