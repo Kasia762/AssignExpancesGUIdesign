@@ -13,50 +13,104 @@ import tkinter.ttk as ttk
 
 
 #frame for login part
-class LoginFrame:
+import tkinter as tk
+import tkinter.ttk as ttk
+
+
+class LoginWin():
     def __init__(self, master=None):
         # build ui
-        self.loginFrame = ttk.Frame(master)
-        self.labelframe15 = ttk.Labelframe(self.loginFrame)
-        self.label35 = ttk.Label(self.labelframe15)
-        self.label35.configure(text='login')
-        self.label35.pack(pady='5', side='top')
-        self.entry17 = ttk.Entry(self.labelframe15)
-        _text_ = '''entry17'''
-        self.entry17.delete('0', 'end')
-        self.entry17.insert('0', _text_)
-        self.entry17.pack(pady='10', side='top')
-        self.label36 = ttk.Label(self.labelframe15)
-        self.label36.configure(text='password')
-        self.label36.pack(pady='5', side='top')
-        self.entry18 = ttk.Entry(self.labelframe15)
-        _text_ = '''entry18'''
-        self.entry18.delete('0', 'end')
-        self.entry18.insert('0', _text_)
-        self.entry18.pack(anchor='n', pady='10', side='top')
-        self.button17 = ttk.Button(self.labelframe15)
-        self.button17.configure(text='log in')
-        self.button17.pack(expand='true', ipadx='5', ipady='5', pady='30', side='left')
-        self.button18 = ttk.Button(self.labelframe15)
-        self.button18.configure(text='sign in')
-        self.button18.pack(expand='true', ipadx='5', ipady='5', side='right')
-        self.labelframe15.configure(height='200', labelanchor='nw', relief='groove', text='log in')
-        self.labelframe15.grid(column='0', ipadx='50', padx='50', pady='50', row='3')
-        self.loginFrame.configure(height='500', width='500')
-        self.loginFrame.pack(side='top')
+        self.login_window = tk.Tk()
+        self.login_notebook = ttk.Notebook(self.login_window)
+        
+        #LOG IN TAB
+        self.login_frame = ttk.Frame(self.login_notebook)
+        self.login_labelframe = ttk.Labelframe(self.login_frame)
+        
+        #labels, entries and button in log in tab
+        self.selectUser_label = ttk.Label(self.login_labelframe)
+        self.selectUser_label.configure(text='Select user')
+        self.selectUser_label.pack(pady='10',side='top')
+        
+        self.selectUser_combo = ttk.Combobox(self.login_labelframe)
+        self.selectUser_combo.pack(side='top')
+        
+        self.enterPassword_label = ttk.Label(self.login_labelframe)
+        self.enterPassword_label.configure(text='Enter password')
+        self.enterPassword_label.pack(pady='10',side='top')
+        
+        self.enterPassword_entry = ttk.Entry(self.login_labelframe)
+        self.enterPassword_entry.pack(side='top')
+        
+        self.login_buttton = ttk.Button(self.login_labelframe)
+        self.login_buttton.configure(text='LOG IN')
+        self.login_buttton.pack(pady='20',ipadx='10',ipady='5',side='top')
+        
+        self.login_labelframe.configure(text='Please log in below')
+        self.login_labelframe.pack(ipadx='50', pady='50', side='top')
+        self.login_frame.pack(side='top')
+        
+        self.login_notebook.add(self.login_frame, state='hidden', text='log in')
+        
+        #ADD USER TAB
+        self.addUser_frame = ttk.Frame(self.login_notebook)
+        self.addUser_labelframe = ttk.Labelframe(self.addUser_frame)
+        
+        #labels, entries and button in add user tab
+        #TODO: change view, label to close to top
+        self.username_label = ttk.Label(self.addUser_labelframe)
+        self.username_label.configure(text='Username')
+        self.username_label.grid(column='0', row='0',pady='10',padx='10')
+        
+        self.username_entry = ttk.Entry(self.addUser_labelframe)
+        self.username_entry.grid(column='1', row='0')
+        
+        self.password_label = ttk.Label(self.addUser_labelframe)
+        self.password_label.configure(text='Password')
+        self.password_label.grid(column='0', row='1',pady='10',padx='10')
+        
+        self.password_entry = ttk.Entry(self.addUser_labelframe)
+        self.password_entry.grid(column='1', row='1')
+        
+        self.confirmPassword_label = ttk.Label(self.addUser_labelframe)
+        self.confirmPassword_label.configure(text='Confirm password')
+        self.confirmPassword_label.grid(column='0', row='2',pady='10',padx='10')
+        
+        self.confirmPassword_entry = ttk.Entry(self.addUser_labelframe)
+        self.confirmPassword_entry.grid(column='1', row='2')
+        
+        self.submit_button = ttk.Button(self.addUser_labelframe)
+        self.submit_button.configure(text='SUBMIT')
+        self.submit_button.grid(column='0', row='3',pady='10',ipadx='10',ipady='5',columnspan='2')
+        
+        self.adduserInfo_label = ttk.Label(self.addUser_labelframe)
+        #TODO: add text into label: about adding new user
+        self.adduserInfo_label.configure(text='user added')
+        self.adduserInfo_label.grid(column='0', row='4',pady='10',columnspan='2')
+        
+        self.addUser_labelframe.configure(height='200', text='Please enter the details below', width='200')
+        self.addUser_labelframe.pack(padx='50', pady='50', side='top')
+        
+        self.addUser_frame.configure(height='200', width='200')
+        self.addUser_frame.pack(side='top')
+        
+        self.login_notebook.add(self.addUser_frame, text='add user')
+        self.login_notebook.pack(expand='true', fill='both', side='top')
+        
+        self.login_window.configure(takefocus=False)
 
         # Main widget
-        self.mainwindow = self.loginFrame
+        self.mainwindow = self.login_window
 
 
     def run(self):
         self.mainwindow.mainloop()
 
 if __name__ == '__main__':
-    import tkinter as tk
-    root = tk.Tk()
-    app = LoginFrame(root)
+    app = LoginWin()
     app.run()
+
+
 
 
 
