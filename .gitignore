@@ -1,5 +1,8 @@
 *
 !.gitignore
 !GUIdesign_draft.ui
+!tables.py
+!app_data.py
 !AppGui.py
 !weather.py
+
