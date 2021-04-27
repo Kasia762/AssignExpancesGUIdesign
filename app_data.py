@@ -6,6 +6,7 @@ Created on Sat Apr 24 15:53:00 2021
 """
 
 import sqlite3
+import datetime as dt
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -47,6 +48,8 @@ class App_data:
         if not self.__tableExists(self.database, "transactions"):
             print("Creating tables in database...")
             self.__initCreateTables()
+        else:
+            print("Tables are exists. Skip")
 
         
     def __loadDB(self, db, dbfn):
@@ -59,8 +62,10 @@ class App_data:
             return False
             pass
 
-
+    
     def __saveDB(self, db, dbfn):
+    ### DO NOT DELETE, 
+    ### DO NOT MERGE into saveDataBase()
         """
         usage:
             __saveDB(self.database, self.databaseFilename)
@@ -75,6 +80,10 @@ class App_data:
             ## error to create db
             return False
             pass
+
+
+    def saveDataBase(self):
+        return self.__saveDB(self.database, self.databaseFilename)
 
 
     def __tableExists(self, db, tablename):
@@ -139,6 +148,7 @@ class App_data:
         self.database.commit()
 
 
+
     def __testPrintTable(self, db, tablename):
         if self.__tableExists(db, tablename):
             cur = db.cursor()
@@ -152,6 +162,7 @@ class App_data:
             for row in data:
                 print(row)
                 
+
                 
     def testPrintAllTables(self):
         db = self.database
@@ -172,13 +183,6 @@ class App_data:
     def getAllTransactions(self):
         ## TODO: check database connection
         cur = self.database.cursor()
-        # sql = '''
-        #     SELECT tr.trans_date , tr.trans_amount , ct.cat_name, cr.cont_name
-        #     FROM transactions AS tr 
-        #         NATURAL JOIN contractors AS cr
-        #         NATURAL JOIN categories AS ct
-        #     ORDER BY tr.trans_amount DESC ;
-        #     '''
         sql = '''
             SELECT tr.trans_date , tr.trans_amount, ct.cat_name , cr.cont_name
             FROM transactions AS tr 
@@ -194,14 +198,15 @@ class App_data:
         return data
     
     
-    ## TODO: sql query is not correct
-    ## TODO: sql query is not correct
-    ## TODO: sql query is not correct
-    ## TODO: sql query is not correct
-    ## TODO: sql query is not correct
-    ## TODO: sql query is not correct
-    ## TODO: sql query is not correct
     def getAllTransactionsPeriod(self, startDate, endDate):
+    ## TODO: sql query is not correct
+    ## TODO: sql query is not correct
+    ## TODO: sql query is not correct
+    ## TODO: sql query is not correct
+    ## TODO: sql query is not correct
+    ## TODO: sql query is not correct
+    ## TODO: sql query is not correct
+
         ## TODO: check database connection
         cur = self.database.cursor()
         sql = '''
@@ -219,14 +224,15 @@ class App_data:
         return data
 
 
-    ## TODO: sql query is not correct
-    ## TODO: sql query is not correct
-    ## TODO: sql query is not correct
-    ## TODO: sql query is not correct
-    ## TODO: sql query is not correct
-    ## TODO: sql query is not correct
-    ## TODO: sql query is not correct
     def getTransactionsPeriod(self, startDate, endDate, category, contractor):
+    ## TODO: sql query is not correct
+    ## TODO: sql query is not correct
+    ## TODO: sql query is not correct
+    ## TODO: sql query is not correct
+    ## TODO: sql query is not correct
+    ## TODO: sql query is not correct
+    ## TODO: sql query is not correct
+    
         ## TODO: check database connection
         cur = self.database.cursor()
         sql = '''
@@ -273,7 +279,22 @@ class App_data:
     
     def addTransaction(self, date, amount, category, contractor):
         ## TODO: 1. data types checking
+        # DATETIME converting:
+        #     %Y: Year (4 digits)
+        #     %m: Month
+        #     %d: Day of month
+        #     %H: Hour (24 hour)
+        #     %M: Minutes
+        #     %S: Seconds
+        #     %f: Microseconds
+
         ## TODO: 2. select category and contractor not by name, but ID
+        
+        if not ( isinstance(date, dt.date) or isinstance(date, dt.datetime) ):
+            return (False, "date is not datetime either date type parametr")
+        if not ( isinstance(amount, float) or isinstance(amount, int) ):
+            return (False, "Amount is not real either integer number")
+        
         cur = self.database.cursor()
         sql= '''
                 INSERT INTO transactions
@@ -330,7 +351,7 @@ class App_data:
             return (False, "SQL error",)
 
 #####
-##### Some stuff
+##### Some stuff for CSV import
 ##### DO NOT DELETE YET
 
 """
@@ -421,8 +442,13 @@ ind_cont = 1
 ind_amount = 2
 ind_cat = 3
 for a in val:
-    res = badb.addTransaction( a[  ind_date  ], a[ ind_amount ] ,
-                         a[ ind_cat  ] , a[ ind_cont ] )
+    res = "---"
+    ## convert string date into object
+    date =  dt.datetime.strptime( a[  ind_date  ] , '%d-%m-%Y')
+    
+    ## convert number into number
+    amount = float( a[ ind_amount ] )
+    res = badb.addTransaction( date , amount ,  a[ ind_cat  ] , a[ ind_cont ] )
     print(res)
 #------------            
 
@@ -442,3 +468,5 @@ print("\n")
 data = badb.getContractorList()
 for row in data:
     print(row)
+
+badb.saveDataBase()
