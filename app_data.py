@@ -189,11 +189,60 @@ class App_data:
             ORDER BY tr.trans_amount DESC 
             ;
             '''
-            
         cur.execute(sql)
         data = cur.fetchall()
         return data
-        
+    
+    
+    ## TODO: sql query is not correct
+    ## TODO: sql query is not correct
+    ## TODO: sql query is not correct
+    ## TODO: sql query is not correct
+    ## TODO: sql query is not correct
+    ## TODO: sql query is not correct
+    ## TODO: sql query is not correct
+    def getAllTransactionsPeriod(self, startDate, endDate):
+        ## TODO: check database connection
+        cur = self.database.cursor()
+        sql = '''
+            SELECT tr.trans_date , tr.trans_amount, ct.cat_name , cr.cont_name
+            FROM transactions AS tr 
+            LEFT OUTER JOIN categories AS ct
+                ON tr.cat_id = ct.cat_id
+            LEFT OUTER JOIN contractors AS cr
+                ON tr.cont_id = cr.cont_id
+            ORDER BY tr.trans_amount DESC 
+            ;
+            '''
+        cur.execute(sql)
+        data = cur.fetchall()
+        return data
+
+
+    ## TODO: sql query is not correct
+    ## TODO: sql query is not correct
+    ## TODO: sql query is not correct
+    ## TODO: sql query is not correct
+    ## TODO: sql query is not correct
+    ## TODO: sql query is not correct
+    ## TODO: sql query is not correct
+    def getTransactionsPeriod(self, startDate, endDate, category, contractor):
+        ## TODO: check database connection
+        cur = self.database.cursor()
+        sql = '''
+            SELECT tr.trans_date , tr.trans_amount, ct.cat_name , cr.cont_name
+            FROM transactions AS tr 
+            LEFT OUTER JOIN categories AS ct
+                ON tr.cat_id = ct.cat_id
+            LEFT OUTER JOIN contractors AS cr
+                ON tr.cont_id = cr.cont_id
+            ORDER BY tr.trans_amount DESC 
+            ;
+            '''
+        cur.execute(sql)
+        data = cur.fetchall()
+        return data
+
 
 
     def getContractorList(self):
@@ -236,15 +285,14 @@ class App_data:
                       (SELECT cont_id FROM contractors WHERE cont_name = ? )
                 )
              '''   
-    # try:
-        print( (date, amount, category, contractor,)  )
-        cur.executemany(sql, ( (date, amount, category, contractor,), ) )
-        self.database.commit()
-        ## print(type(date),  type(amount),  type(category),  type(contractor), sep='\t')
-        return (True, "OK",)
-    # except sqlite3.Error:
-        # self.database.rollback()
-        # return (False, "SQL error",)
+        try:
+            cur.executemany(sql, ( (date, amount, category, contractor,), ) )
+            self.database.commit()
+            ## print(type(date),  type(amount),  type(category),  type(contractor), sep='\t')
+            return (True, "OK",)
+        except sqlite3.Error:
+            self.database.rollback()
+            return (False, "SQL error",)
         
 
     def addContractor(self,  contractor):
