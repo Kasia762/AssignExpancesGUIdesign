@@ -182,44 +182,6 @@ class AppWin:
             pass
 
 
-    class tab_Account:
-        def __init__(self, master):
-            #################### #ACCOUNT TAB
-            self.frm_account = ttk.Frame(self.ntb_app)
-            self.lbfr_account = ttk.Labelframe(self.frm_account)
-            
-            self.lbl_balance = ttk.Label(self.lbfr_account)
-            self.lbl_balance.configure(text='Your balance is: $$$$$')
-            self.lbl_balance.pack(padx='40', pady='5', side='top')
-            
-            self.lbl_percentage = ttk.Label(self.lbfr_account)
-            self.lbl_percentage.configure(text='You spend xx% of your money for this month')
-            self.lbl_percentage.pack(pady='5', side='top')
-            
-            self.progressbar = ttk.Progressbar(self.lbfr_account)
-            self.progressbar.configure(orient='horizontal')
-            self.progressbar.pack(padx='50', pady='5', side='top',
-                                 fill=tk.X)
-            
-            self.lbfr_account.configure(height='200', text='Your account in summary', width='200')
-            self.lbfr_account.pack(side=tk.TOP,
-                                 ipady='5', ipadx='20',
-                                   padx='3', pady='3',
-                                 fill=tk.X)
-    
-            self.lbfr_accChart = ttk.Labelframe(self.frm_account)
-            self.frm_AccChart = ttk.Frame(self.lbfr_accChart)
-            self.frm_AccChart.pack(padx='5', pady='3', side='top',
-                                 fill=tk.BOTH, expand=True)
-            
-            self.lbfr_accChart.pack(padx='3', pady='3', side='top',
-                                 fill=tk.BOTH, expand=True)
-            
-            
-            self.frm_account.configure(height='200', width='200')
-            self.frm_account.pack( fill=tk.BOTH, expand=True)
-            
-            self.ntb_app.add(self.frm_account, text='Account')
             
     ## App class
     def __init__(self, master=None):
@@ -274,8 +236,9 @@ class AppWin:
         
         
         ########################## #TRANSACTION
-        self.frm_transactions = tk.Frame(self.ntb_app, background="bisque")
-        self.lbfr_drTransactions = ttk.Labelframe(self.frm_transactions)
+        self.frm_transactions = ttk.Frame(self.ntb_app)
+        self.lbfr_trControls = ttk.Frame(self.frm_transactions)
+        self.lbfr_drTransactions = ttk.Labelframe(self.lbfr_trControls)
         
         #change names!!!
         self.lbl_dfTran = ttk.Label(self.lbfr_drTransactions)
@@ -295,114 +258,156 @@ class AppWin:
         self.cal13 = tkcal.DateEntry(self.lbfr_drTransactions, date_pattern=self._cal_datefmt)
         self.cal13.grid(column='1', row='1', padx='3', pady='3',
                              sticky=tk.NSEW)
+        # TODO: grid expand for dateEntry
+        self.lbfr_drTransactions.columnconfigure( 1, weight=1)
+        
         #change names!!!
+        self.lbfr_trButtons = ttk.Labelframe(self.lbfr_trControls)
+        
+        self.btn_trAdd = ttk.Button(self.lbfr_trButtons)
+        self.btn_trAdd.configure(text='Add')        
+        self.btn_trAdd.pack(side='top')
+        self.btn_trChange = ttk.Button(self.lbfr_trButtons)
+        self.btn_trChange.configure(text='Change')        
+        self.btn_trChange.pack(side='top')
+        self.btn_trDelete = ttk.Button(self.lbfr_trButtons)
+        self.btn_trDelete.configure(text='Delete')        
+        self.btn_trDelete.pack(side='top')
+        self.btn_export = ttk.Button(self.lbfr_trButtons)
+        self.btn_export.configure(text='Export')
+        self.btn_export.pack(pady='10', side='top')
         
         self.lbfr_drTransactions.configure(height='200', text='Choose date range', width='300')
-        self.lbfr_drTransactions.pack(side=tk.TOP,
+        self.lbfr_drTransactions.pack(side=tk.LEFT,
+                             ipady='5', ipadx='20',
+                               padx='3', pady='3',
+                             fill=tk.BOTH, expand=True)
+        self.lbfr_trButtons.pack(side=tk.RIGHT,
+                             ipady='5', ipadx='20',
+                               padx='3', pady='3')
+        self.lbfr_trControls.pack(side=tk.TOP,
                              ipady='5', ipadx='20',
                                padx='3', pady='3',
                              fill=tk.X)
 
         self.lbfr_tableTransactions = ttk.Labelframe(self.frm_transactions)
+        self.tbl_trTable = ttk.Treeview(self.lbfr_tableTransactions)
+        self.tbl_trTable_cols = ['column1', 'column2', 'column3']
+        self.tbl_trTable_dcols = ['column1', 'column2', 'column3']
+        self.tbl_trTable.configure(columns=self.tbl_trTable_cols, displaycolumns=self.tbl_trTable_dcols)
+        self.tbl_trTable.column('column1', anchor='w',stretch='true',width='200',minwidth='100')
+        self.tbl_trTable.column('column2', anchor='w',stretch='true',width='100',minwidth='50')
+        self.tbl_trTable.column('column3', anchor='w',stretch='true',width='100',minwidth='50')
+        self.tbl_trTable.heading('column1', anchor='w',text='column1')
+        self.tbl_trTable.heading('column2', anchor='w',text='column2')
+        self.tbl_trTable.heading('column3', anchor='w',text='column3')
+        self.tbl_trTable['show'] = 'headings'
+        self.tbl_trTable.pack(side='top',
+                             fill=tk.BOTH, expand=True)
+        
         self.lbfr_tableTransactions.configure(height='200', text='', width='200')
-        self.lbfr_tableTransactions.pack(side=tk.TOP,
+        self.lbfr_tableTransactions.pack(side=tk.BOTTOM,
                              ipady='5', ipadx='20',
                                padx='3', pady='3',
                              fill=tk.BOTH, expand=True)
-
         
         self.frm_transactions.configure(height='200', width='200')
         self.frm_transactions.pack(side=tk.TOP, fill=tk.BOTH)
         
         self.ntb_app.add(self.frm_transactions, text='Trancations')
+
                     
                     ######################### #OVERVIEW
-                    # self.frm_overview = ttk.Frame(self.ntb_app)
-                    # self.lbfr_drOverview = ttk.Labelframe(self.frm_overview)
+                # self.frm_overview = tk.Frame(self.ntb_app, background="bisque")
+                # self.lbfr_drOverview = ttk.Labelframe(self.frm_overview)
+                
+                # self.fromDate = ttk.Label(self.lbfr_drOverview)
+                # self.fromDate.configure(text='From')
+                # self.fromDate.grid(column='0', row='0')
+                
+                # #CALENDAR - i dont like the name
+                # self.cal_from = tkcal.DateEntry(self.lbfr_drOverview, date_pattern=self._cal_datefmt)
+                # self.cal_from.grid(column='1', row='0')
+                      
+                # self.cal_to = tkcal.DateEntry(self.lbfr_drOverview, date_pattern=self._cal_datefmt)
+                # self.cal_to.grid(column='3', row='0')   
+                
+                # self.toDate = ttk.Label(self.lbfr_drOverview)
+                # self.toDate.configure(text='to')
+                # self.toDate.grid(column='2', row='0')
+                                
+                # self.btn_loadTable = ttk.Button(self.lbfr_drOverview)
+                # self.btn_loadTable.configure(text='Load')        
+                # self.btn_loadTable.grid(column='4', row='0')
+                
+                # self.lbfr_drOverview.configure(height='200', text='Data range', width='200')
+                # self.lbfr_drOverview.pack(side='top')
+                
+                # self.lbfr_tableOverview = ttk.Labelframe(self.frm_overview)
+                # self.cnv_tableOverview = tk.Canvas(self.lbfr_tableOverview)
+                # self.cnv_tableOverview.grid(column='0', columnspan='2', row='0')
+                
+                # self.btn_export = ttk.Button(self.lbfr_tableOverview)
+                # self.btn_export.configure(text='export to csv')
+                # self.btn_export.grid(column='0', row='1')
+                
+                # self.btn_modify = ttk.Button(self.lbfr_tableOverview)
+                # self.btn_modify.configure(text='modify')
+                # self.btn_modify.grid(column='1', row='1')
+                
+                # self.lbfr_tableOverview.configure(height='200', text='Table view', width='200')
+                # self.lbfr_tableOverview.pack(side='top')
+                
+                # self.frm_overview.configure(height='200', width='200')
+                # self.frm_overview.pack(side='top')
+                
+                # self.ntb_app.add(self.frm_overview, text='Overview')
+
+
                     
-                    # self.fromDate = ttk.Label(self.lbfr_drOverview)
-                    # self.fromDate.configure(text='From')
-                    # self.fromDate.grid(column='0', row='0')
-                    
-                    # #CALENDAR - i dont like the name
-                    # self.cal_from = tkcal.DateEntry(self.lbfr_drOverview, date_pattern=self._cal_datefmt)
-                    # self.cal_from.grid(column='1', row='0')
-                          
-                    # self.cal_to = tkcal.DateEntry(self.lbfr_drOverview, date_pattern=self._cal_datefmt)
-                    # self.cal_to.grid(column='3', row='0')   
-                    
-                    # self.toDate = ttk.Label(self.lbfr_drOverview)
-                    # self.toDate.configure(text='to')
-                    # self.toDate.grid(column='2', row='0')
-                                    
-                    # self.btn_loadTable = ttk.Button(self.lbfr_drOverview)
-                    # self.btn_loadTable.configure(text='Load')        
-                    # self.btn_loadTable.grid(column='4', row='0')
-                    
-                    # self.lbfr_drOverview.configure(height='200', text='Data range', width='200')
-                    # self.lbfr_drOverview.pack(side='top')
-                    
-                    # self.lbfr_tableOverview = ttk.Labelframe(self.frm_overview)
-                    # self.cnv_tableOverview = tk.Canvas(self.lbfr_tableOverview)
-                    # self.cnv_tableOverview.grid(column='0', columnspan='2', row='0')
-                    
-                    # self.btn_export = ttk.Button(self.lbfr_tableOverview)
-                    # self.btn_export.configure(text='export to csv')
-                    # self.btn_export.grid(column='0', row='1')
-                    
-                    # self.btn_modify = ttk.Button(self.lbfr_tableOverview)
-                    # self.btn_modify.configure(text='modify')
-                    # self.btn_modify.grid(column='1', row='1')
-                    
-                    # self.lbfr_tableOverview.configure(height='200', text='Table view', width='200')
-                    # self.lbfr_tableOverview.pack(side='top')
-                    
-                    # self.frm_overview.configure(height='200', width='200')
-                    # self.frm_overview.pack(side='top')
-                    
-                    # self.ntb_app.add(self.frm_overview, text='Overview')
-                    
-                    # #LOTTO- WEATHER, LOCATION TAB
-                    # self.frm_lotto = ttk.Frame(self.ntb_app)
-                    # self.lbfr_weather = ttk.Labelframe(self.frm_lotto)
-                    
-                    # self.lbl_weather = ttk.Label(self.lbfr_weather)
-                    # self.lbl_weather.configure(text='weather, icon, location')
-                    # self.lbl_weather.pack(side='top')
-                    
-                    # self.varTime = tk.StringVar()                   
-                    # self.lbl_time = ttk.Label(self.lbfr_weather)
-                    # self.lbl_time.configure(textvariable=self.varTime)
-                    # self.lbl_time.pack(side='top')
-                    
-                    # #self.calendar = CalendarFrame(self.lbfr_weather)
-                    # # TODO - self.calendar: code for custom option 'firstweekday' not implemented.
-                    # # TODO - self.calendar: code for custom option 'month' not implemented.
-                    # #self.calendar.pack(side='top')
-                    # self.calendar = tkcal.Calendar(self.lbfr_weather, selectmode='day', date_pattern=self._cal_datefmt)
-                    # self.calendar.pack(side='top', fill="both",expand=True)
-                    
-                    
-                    # self.lbfr_weather.configure(height='200', text='weather', width='200')
-                    # self.lbfr_weather.pack(side='top')
-                    
-                    # self.lbfr_lotto = ttk.Labelframe(self.frm_lotto)
-                    # self.lbl_lotto = ttk.Label(self.lbfr_lotto)
-                    
-                    # self.lbl_lotto.configure(text='disclaimer: 5 euro will be subtracted from your account')
-                    # self.lbl_lotto.pack(side='top')
-                    
-                    # self.btn_lotto = ttk.Button(self.lbfr_lotto)
-                    # self.btn_lotto.configure(text='I agree, play lotto')
-                    # self.btn_lotto.pack(side='top')
-                    
-                    # self.lbfr_lotto.configure(height='200', text='lotto', width='200')
-                    # self.lbfr_lotto.pack(side='top')
-                    
-                    # self.frm_lotto.configure(height='200', width='200')
-                    # self.frm_lotto.pack(side='top')
-                    
-                    # self.ntb_app.add(self.frm_lotto, text='Bells and whistlers')
+                    ##################### #LOTTO- WEATHER, LOCATION TAB
+        self.frm_lotto = ttk.Frame(self.ntb_app)
+        self.lbfr_weather = ttk.Labelframe(self.frm_lotto)
+        
+        self.lbl_weather = ttk.Label(self.lbfr_weather)
+        self.lbl_weather.configure(text='weather, icon, location')
+        self.lbl_weather.pack(side='top')
+        
+        self.varTime = tk.StringVar()                   
+        self.lbl_time = ttk.Label(self.lbfr_weather)
+        self.lbl_time.configure(textvariable=self.varTime)
+        self.lbl_time.pack(side='top')
+        
+        #self.calendar = CalendarFrame(self.lbfr_weather)
+        # TODO - self.calendar: code for custom option 'firstweekday' not implemented.
+        # TODO - self.calendar: code for custom option 'month' not implemented.
+        #self.calendar.pack(side='top')
+        self.calendar = tkcal.Calendar(self.lbfr_weather, selectmode='day', date_pattern=self._cal_datefmt)
+        self.calendar.pack(side='top', fill="both",expand=True)
+        
+        
+        self.lbfr_weather.configure(height='200', text='weather', width='200')
+        self.lbfr_weather.pack(side='top')
+        
+        self.lbfr_lotto = ttk.Labelframe(self.frm_lotto)
+        self.lbl_lotto = ttk.Label(self.lbfr_lotto)
+        
+        self.lbl_lotto.configure(text='disclaimer: 5 euro will be subtracted from your account')
+        self.lbl_lotto.pack(side='top')
+        
+        self.btn_lotto = ttk.Button(self.lbfr_lotto)
+        self.btn_lotto.configure(text='I agree, play lotto')
+        self.btn_lotto.pack(side='top')
+        
+        self.lbfr_lotto.configure(height='200', text='lotto', width='200')
+        self.lbfr_lotto.pack(side='top')
+        
+        self.frm_lotto.configure(height='200', width='200')
+        self.frm_lotto.pack(side='top')
+        
+        self.ntb_app.add(self.frm_lotto, text='Bells and whistlers')
+
+
         self.ntb_app.configure(style='Toolbutton', takefocus=True)
         self.ntb_app.pack( fill=tk.BOTH, expand=True)
         
