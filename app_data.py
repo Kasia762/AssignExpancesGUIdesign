@@ -4,6 +4,19 @@ Created on Sat Apr 24 15:53:00 2021
 
 @author: ilia
 """
+"""
+learn the function __initCreateTables
+
+after that, understand how works:
+__tableExists
+testPrintAllTables
+getContractorsList
+getAllTransactions
+
+and finally, write correct SQL query for 
+ getAllTransactionsPeriod
+getTransactionsPeriod
+"""
 
 import sqlite3
 import datetime as dt
@@ -190,7 +203,7 @@ class App_data:
                 ON tr.cat_id = ct.cat_id
             LEFT OUTER JOIN contractors AS cr
                 ON tr.cont_id = cr.cont_id
-            ORDER BY tr.trans_amount DESC 
+            ORDER BY tr.trans_date DESC 
             ;
             '''
         cur.execute(sql)
@@ -216,7 +229,7 @@ class App_data:
                 ON tr.cat_id = ct.cat_id
             LEFT OUTER JOIN contractors AS cr
                 ON tr.cont_id = cr.cont_id
-            ORDER BY tr.trans_amount DESC 
+            ORDER BY tr.trans_date DESC 
             ;
             '''
         cur.execute(sql)
@@ -242,9 +255,9 @@ class App_data:
                 ON tr.cat_id = ct.cat_id
             LEFT OUTER JOIN contractors AS cr
                 ON tr.cont_id = cr.cont_id
-            ORDER BY tr.trans_amount DESC 
+            ORDER BY tr.trans_date DESC 
             ;
-            '''
+            ''' 
         cur.execute(sql)
         data = cur.fetchall()
         return data
@@ -278,6 +291,7 @@ class App_data:
         
     
     def addTransaction(self, date, amount, category, contractor):
+        
         ## TODO: 1. data types checking
         # DATETIME converting:
         #     %Y: Year (4 digits)
@@ -314,6 +328,19 @@ class App_data:
         except sqlite3.Error:
             self.database.rollback()
             return (False, "SQL error",)
+        
+        
+        
+    def sumTransactions(self):
+        cur = self.database.cursor()
+        sql = '''
+            SELECT SUM(trans_amount)
+            FROM transactions          
+            ;
+            ''' 
+        data=cur.execute(sql)
+        data=cur.fetchall()[0][0]
+        return data
         
 
     def addContractor(self,  contractor):
@@ -420,7 +447,7 @@ database.commit()
 #================================================================
 #  TESTING
 
-val =[
+'''val =[
       ("12-03-2019","Lidl","12.34","food"),
       ("07-03-2019","Hesburger","12.24","Rent"),
       ("12-04-2019","McDonald","10.65","food"),
@@ -430,11 +457,14 @@ val =[
       ("10-05-2019","rent","1200.65","Rent"),
       ("12-03-2020","electricity","126.68","Rent"),
       ("15-09-2019","water","652.21","Rent")
-     ]
+      ]'''
+  
 
 
 print("\n\n\n Select all transactions and also names of category from other tables")
 badb = App_data()
+
+'''
 
 ## Fill transactions from val list
 ind_date = 0
@@ -445,13 +475,21 @@ for a in val:
     res = "---"
     ## convert string date into object
     date =  dt.datetime.strptime( a[  ind_date  ] , '%d-%m-%Y')
-    
+    #data time lib - dt
     ## convert number into number
     amount = float( a[ ind_amount ] )
     res = badb.addTransaction( date , amount ,  a[ ind_cat  ] , a[ ind_cont ] )
-    print(res)
-#------------            
-
+    print(res)'''
+    
+#------------  
+date2 = dt.datetime.now()          
+res = badb.addTransaction( 
+    date2, 
+    78.56,
+    "Groceries",
+    "K-Market")
+print(res)
+    
 
 badb.testPrintAllTables()
 print("\n\n")
@@ -468,5 +506,11 @@ print("\n")
 data = badb.getContractorList()
 for row in data:
     print(row)
+    
+print("sumformonth:",badb.sumTransactions())   
 
 badb.saveDataBase()
+
+
+
+

@@ -101,9 +101,9 @@ class LoginWin():
     def run(self):
         self.loginWindow.mainloop()
 
-#if __name__ == '__main__':
-#login_app = LoginWin()
-#applogin_app.run()
+if __name__ == '__main__':
+    login_app = LoginWin()
+    login_app.run()
 
 
 class AppWin:
