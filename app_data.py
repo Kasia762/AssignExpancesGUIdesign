@@ -336,17 +336,6 @@ class App_data:
         
         
         
-    def sumTransactions(self):
-        cur = self.database.cursor()
-        sql = '''
-            SELECT SUM(trans_amount)
-            FROM transactions          
-            ;
-            ''' 
-        data=cur.execute(sql)
-        data=cur.fetchall()[0][0]
-        return data
-        
 
     def addContractor(self,  contractor):
         ## TODO: 1. data types checking
