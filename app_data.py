@@ -203,7 +203,7 @@ class App_data:
                 ON tr.cat_id = ct.cat_id
             LEFT OUTER JOIN contractors AS cr
                 ON tr.cont_id = cr.cont_id
-            ORDER BY tr.trans_date DESC 
+            ORDER BY tr.trans_date ASC 
             ;
             '''
         cur.execute(sql)
@@ -211,7 +211,7 @@ class App_data:
         return data
     
     
-    def getAllTransactionsPeriod(self, startDate, endDate):
+    def getAllTransactionsPeriod(self,startDate, endDate):
     ## TODO: sql query is not correct
     ## TODO: sql query is not correct
     ## TODO: sql query is not correct
@@ -219,22 +219,24 @@ class App_data:
     ## TODO: sql query is not correct
     ## TODO: sql query is not correct
     ## TODO: sql query is not correct
-
+                
         ## TODO: check database connection
         cur = self.database.cursor()
         sql = '''
-            SELECT tr.trans_date , tr.trans_amount, ct.cat_name , cr.cont_name
-            FROM transactions AS tr 
-            LEFT OUTER JOIN categories AS ct
+        SELECT tr.trans_date , tr.trans_amount, ct.cat_name , cr.cont_name
+        FROM transactions AS tr
+        LEFT OUTER JOIN categories AS ct
                 ON tr.cat_id = ct.cat_id
             LEFT OUTER JOIN contractors AS cr
                 ON tr.cont_id = cr.cont_id
-            ORDER BY tr.trans_date DESC 
-            ;
-            '''
-        cur.execute(sql)
+        WHERE tr.trans_date BETWEEN ? AND ?
+        ORDER BY tr.trans_date DESC
+        '''
+        period = (startDate, endDate)
+        cur.execute(sql,period)
         data = cur.fetchall()
         return data
+        
 
 
     def getTransactionsPeriod(self, startDate, endDate, category, contractor):
@@ -249,16 +251,19 @@ class App_data:
         ## TODO: check database connection
         cur = self.database.cursor()
         sql = '''
-            SELECT tr.trans_date , tr.trans_amount, ct.cat_name , cr.cont_name
-            FROM transactions AS tr 
-            LEFT OUTER JOIN categories AS ct
+        SELECT tr.trans_date , tr.trans_amount, ct.cat_name , cr.cont_name
+        FROM transactions AS tr
+        LEFT OUTER JOIN categories AS ct
                 ON tr.cat_id = ct.cat_id
             LEFT OUTER JOIN contractors AS cr
                 ON tr.cont_id = cr.cont_id
-            ORDER BY tr.trans_date DESC 
-            ;
-            ''' 
-        cur.execute(sql)
+        WHERE (tr.trans_date BETWEEN ? AND ?)
+        AND ( ct.cat_name = ?) 
+        AND ( cr.cont_name = ?)
+        ORDER BY tr.trans_date DESC
+        '''
+        
+        cur.execute(sql, (startDate, endDate, category, contractor))
         data = cur.fetchall()
         return data
 
@@ -446,25 +451,30 @@ database.commit()
 #================================================================
 #================================================================
 #  TESTING
+badb = App_data()
+
 
 '''val =[
-      ("12-03-2019","Lidl","12.34","food"),
-      ("07-03-2019","Hesburger","12.24","Rent"),
-      ("12-04-2019","McDonald","10.65","food"),
-      ("12-03-2019","Obi","12.35","home"),
-      ("12-06-2019","Hesburger","189.65","restaurant"),
-      ("12-03-2020","Lidl","156.32","food"),
-      ("10-05-2019","rent","1200.65","Rent"),
-      ("12-03-2020","electricity","126.68","Rent"),
-      ("15-09-2019","water","652.21","Rent")
-      ]'''
+      ("01-01-2020","Lidl","12.34","Lotto"),
+      ("03-02-2020","S-Market","12.24","Rent"),
+      ("05-03-2020","McDonald","10.65","Groceries"),
+      ("08-04-2020","Obi","12.35","Subscribtions"),
+      ("12-05-2020","S-Market","189.65","Travel"),
+      ("15-06-2020","Lidl","156.32","Groceries"),
+      ("19-07-2019","rent","1200.65","Rent"),
+      ("20-08-2020","Lidl","126.68","Rent"),
+      ("20-09-2020","K-Market","652.21","Food"),
+      ("23-10-2019","S-Market","1200.65","Rent"),
+      ("25-11-2020","electricity","126.68","Rent"),
+      ("30-12-2020","Lidl","652.21","Rent")
+      ]
   
 
 
 print("\n\n\n Select all transactions and also names of category from other tables")
-badb = App_data()
 
-'''
+
+
 
 ## Fill transactions from val list
 ind_date = 0
@@ -479,13 +489,14 @@ for a in val:
     ## convert number into number
     amount = float( a[ ind_amount ] )
     res = badb.addTransaction( date , amount ,  a[ ind_cat  ] , a[ ind_cont ] )
-    print(res)'''
+    print(res)
+'''
     
 #------------  
 date2 = dt.datetime.now()          
 res = badb.addTransaction( 
     date2, 
-    78.56,
+    72.56,
     "Groceries",
     "K-Market")
 print(res)
@@ -498,6 +509,13 @@ for row in data:
     print("A", row)
 print("\n")
 
+print("All transactions\n")
+data=badb.getTransactionsPeriod('2020-03-06', '2021-04-31', 'Groceries', 'K-Market')
+for row in data:
+    print("B", row)
+print("\n")
+
+
 data = badb.getCategoriesList()
 for row in data:
     print(row)
@@ -507,7 +525,7 @@ data = badb.getContractorList()
 for row in data:
     print(row)
     
-print("sumformonth:",badb.sumTransactions())   
+
 
 badb.saveDataBase()
 
