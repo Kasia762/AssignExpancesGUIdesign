@@ -482,10 +482,6 @@ class AppWin:
         
 
 if __name__ == '__main__':
-<<<<<<< HEAD
-=======
-    
->>>>>>> 2cd62255651d94efc300b190bfbdbab55b349892
     app = LoginWin()
     app.run()
     
