@@ -55,7 +55,8 @@ class App_data:
         
         ### Open connection immideally when running
         ### if no database exist, create it
-        self.database = sqlite3.connect(':memory:', detect_types=sqlite3.PARSE_DECLTYPES)
+        self.database = sqlite3.connect(':memory:', 
+                        detect_types=sqlite3.PARSE_DECLTYPES|sqlite3.PARSE_COLNAMES)
         print("Loading db")
         self.__loadDB(self.database, self.databaseFilename)
         if not self.__tableExists(self.database, "transactions"):
@@ -197,7 +198,7 @@ class App_data:
         ## TODO: check database connection
         cur = self.database.cursor()
         sql = '''
-            SELECT tr.trans_date , tr.trans_amount, ct.cat_name , cr.cont_name
+            SELECT tr.trans_date "[timestamp]", tr.trans_amount, ct.cat_name , cr.cont_name
             FROM transactions AS tr 
             LEFT OUTER JOIN categories AS ct
                 ON tr.cat_id = ct.cat_id
@@ -223,7 +224,7 @@ class App_data:
         ## TODO: check database connection
         cur = self.database.cursor()
         sql = '''
-        SELECT tr.trans_date , tr.trans_amount, ct.cat_name , cr.cont_name
+        SELECT tr.trans_date "[timestamp]", tr.trans_amount, ct.cat_name , cr.cont_name
         FROM transactions AS tr
         LEFT OUTER JOIN categories AS ct
                 ON tr.cat_id = ct.cat_id
@@ -251,7 +252,7 @@ class App_data:
         ## TODO: check database connection
         cur = self.database.cursor()
         sql = '''
-        SELECT tr.trans_date , tr.trans_amount, ct.cat_name , cr.cont_name
+        SELECT tr.trans_date "[timestamp]", tr.trans_amount, ct.cat_name , cr.cont_name
         FROM transactions AS tr
         LEFT OUTER JOIN categories AS ct
                 ON tr.cat_id = ct.cat_id
@@ -266,16 +267,7 @@ class App_data:
         cur.execute(sql, (startDate, endDate, category, contractor))
         data = cur.fetchall()
         return data
-    
-    
-    def sumGetTransactionsPeriod(self,startDate, endDate, category, contractor):
-        cur = self.getTransactionsPeriod(startDate, endDate, category, contractor)
-        sql='''
-        SELECT sum(tr.trans_amount)
-        FROM transactions AS tr'''
-        cur.execute(sql)
-        data = cur.fetchall()[0][0]
-        return data
+     
 
 
     def getContractorList(self):
@@ -471,9 +463,6 @@ val =[
 
 print("\n\n\n Select all transactions and also names of category from other tables")
 
-
-
-
 ## Fill transactions from val list
 ind_date = 0
 ind_cont = 1
@@ -489,8 +478,8 @@ for a in val:
     res = badb.addTransaction( date , amount ,  a[ ind_cat  ] , a[ ind_cont ] )
     print(res)
 
-    
-#------------  
+#------------ 
+ 
 date2 = dt.datetime.now()          
 res = badb.addTransaction( 
     date2, 
@@ -502,24 +491,27 @@ print(res)
 
 badb.testPrintAllTables()
 print("\n\n")
+print("All transactions\n")
 data = badb.getAllTransactions()
 for row in data:
     print("A", row)
+    
+    
 print("\n")
-
-startDate = '2020-03-02'
-endDate = '2021-04-31'
-category = 'Rent'
-contractor = 'Lidl'
-
-print("All transactions\n")
-data=badb.getTransactionsPeriod('2020-03-02', '2021-04-31', 'Rent', 'Lidl')
+print("All transactions period\n")
+data=badb.getAllTransactionsPeriod('2020-03-06', '2021-04-31')
 for row in data:
     print("B", row)
 print("\n")
 
 
-print("sum:", badb.sumGetTransactionsPeriod(startDate, endDate, category, contractor))
+data=badb.getTransactionsPeriod('30.12.2020', '2021-04-31', 'Rent', 'Lidl')
+print("\n")
+print("All transactions period category\n")
+for row in data:
+    print("C", row)
+print("\n")
+
 
 data = badb.getCategoriesList()
 for row in data:
@@ -532,7 +524,7 @@ for row in data:
     
 
 
-badb.saveDataBase()
+#badb.saveDataBase()
 
 
 
