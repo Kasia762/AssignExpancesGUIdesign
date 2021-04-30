@@ -30,7 +30,7 @@ class App_data:
             
     def __init__(self):
         self.__debug = True
-        if type(self)._class_counter > 0:
+        if type(self)._class_counter > 4:
             print("One instance of class",type(self), " already exist.")
             print("For now only one instance is allowed.")
             raise ValueError
@@ -442,9 +442,15 @@ database.commit()
 #================================================================
 #  TESTING
 badb = App_data()
+date2 = dt.datetime.now()          
+res = badb.addTransaction( 
+    date2, 
+    72.56,
+    "Groceries",
+    "K-Market")
 
 
-'''val =[
+val =[
       ("01-01-2020","Lidl","12.34","Lotto"),
       ("03-02-2020","S-Market","12.24","Rent"),
       ("05-03-2020","McDonald","10.65","Groceries"),
@@ -458,13 +464,9 @@ badb = App_data()
       ("25-11-2020","electricity","126.68","Rent"),
       ("30-12-2020","Lidl","652.21","Rent")
       ]
-  
-
+ 
 
 print("\n\n\n Select all transactions and also names of category from other tables")
-
-
-
 
 ## Fill transactions from val list
 ind_date = 0
@@ -480,9 +482,10 @@ for a in val:
     amount = float( a[ ind_amount ] )
     res = badb.addTransaction( date , amount ,  a[ ind_cat  ] , a[ ind_cont ] )
     print(res)
-'''
-    
+
+   
 #------------  
+
 date2 = dt.datetime.now()          
 res = badb.addTransaction( 
     date2, 
@@ -490,16 +493,17 @@ res = badb.addTransaction(
     "Groceries",
     "K-Market")
 print(res)
+
     
 
 badb.testPrintAllTables()
+
 print("\n\n")
 print("All transactions\n")
 data = badb.getAllTransactions()
 for row in data:
     print("A", row)
-    
-    
+
 print("\n")
 print("All transactions period\n")
 data=badb.getAllTransactionsPeriod('2020-03-06', '2021-04-31')
@@ -522,7 +526,7 @@ print("\n")
 data = badb.getContractorList()
 for row in data:
     print(row)
-    
+ 
 
 
 #badb.saveDataBase()
