@@ -1,0 +1,306 @@
+<?xml version='1.0' encoding='utf-8'?>
+<interface version="1.1">
+  <object class="tk.Toplevel" id="root_login">
+    <property name="height">150</property>
+    <property name="resizable">none</property>
+    <property name="takefocus">false</property>
+    <property name="width">400</property>
+    <child>
+      <object class="ttk.Notebook" id="ntb_Login">
+        <property name="width">400</property>
+        <layout manager="grid">
+          <property name="column">0</property>
+          <property name="padx">3</property>
+          <property name="pady">3</property>
+          <property name="propagate">True</property>
+          <property name="row">0</property>
+          <property name="sticky">nsew</property>
+          <property type="col" id="0" name="minsize">0</property>
+          <property type="col" id="0" name="weight">1</property>
+          <property type="row" id="0" name="minsize">0</property>
+          <property type="row" id="0" name="weight">1</property>
+        </layout>
+        <child>
+          <object class="ttk.Notebook.Tab" id="ntab_login">
+            <property name="state">hidden</property>
+            <property name="sticky">nsew</property>
+            <property name="text" translatable="yes">log in</property>
+            <child>
+              <object class="ttk.Frame" id="frm_login">
+                <property name="height">0</property>
+                <property name="width">0</property>
+                <layout manager="grid">
+                  <property name="column">0</property>
+                  <property name="propagate">True</property>
+                  <property name="row">0</property>
+                  <property name="sticky">nsew</property>
+                  <property type="col" id="0" name="weight">1</property>
+                  <property type="row" id="0" name="weight">1</property>
+                </layout>
+                <child>
+                  <object class="ttk.Labelframe" id="lbfr_login">
+                    <property name="height">0</property>
+                    <property name="text" translatable="yes">Please log in below</property>
+                    <property name="width">0</property>
+                    <layout manager="grid">
+                      <property name="column">0</property>
+                      <property name="ipady">30</property>
+                      <property name="padx">40</property>
+                      <property name="pady">40</property>
+                      <property name="propagate">True</property>
+                      <property name="row">0</property>
+                      <property name="sticky">nsew</property>
+                      <property type="col" id="0" name="pad">20</property>
+                      <property type="col" id="0" name="weight">1</property>
+                      <property type="row" id="0" name="pad">10</property>
+                      <property type="row" id="0" name="weight">1</property>
+                    </layout>
+                    <child>
+                      <object class="ttk.Label" id="lbl_selectUser">
+                        <property name="text" translatable="yes">Select user</property>
+                        <layout manager="grid">
+                          <property name="column">0</property>
+                          <property name="propagate">True</property>
+                          <property name="row">0</property>
+                          <property name="sticky">s</property>
+                          <property type="col" id="0" name="pad">0</property>
+                          <property type="col" id="0" name="weight">1</property>
+                          <property type="row" id="0" name="pad">20</property>
+                          <property type="row" id="0" name="weight">0</property>
+                        </layout>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="ttk.Combobox" id="cmb_UserLogin">
+                        <property name="width">20</property>
+                        <layout manager="grid">
+                          <property name="column">0</property>
+                          <property name="pady">10</property>
+                          <property name="propagate">True</property>
+                          <property name="row">1</property>
+                          <property type="col" id="0" name="pad">0</property>
+                          <property type="col" id="0" name="weight">1</property>
+                        </layout>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="ttk.Label" id="lbl_PasswordLogin">
+                        <property name="text" translatable="yes">Enter password</property>
+                        <layout manager="grid">
+                          <property name="column">0</property>
+                          <property name="propagate">True</property>
+                          <property name="row">2</property>
+                          <property name="sticky">s</property>
+                          <property type="col" id="0" name="pad">0</property>
+                          <property type="col" id="0" name="weight">1</property>
+                          <property type="row" id="2" name="pad">15</property>
+                        </layout>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="ttk.Entry" id="txt_PasswordLogin">
+                        <property name="show">*</property>
+                        <property name="width">20</property>
+                        <layout manager="grid">
+                          <property name="column">0</property>
+                          <property name="pady">10</property>
+                          <property name="propagate">True</property>
+                          <property name="row">3</property>
+                          <property type="col" id="0" name="pad">0</property>
+                          <property type="col" id="0" name="weight">1</property>
+                        </layout>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="ttk.Button" id="btn_Login">
+                        <property name="text" translatable="yes">LOG IN</property>
+                        <property name="width">15</property>
+                        <layout manager="grid">
+                          <property name="column">0</property>
+                          <property name="pady">20</property>
+                          <property name="propagate">True</property>
+                          <property name="row">4</property>
+                          <property type="col" id="0" name="pad">0</property>
+                          <property type="col" id="0" name="weight">1</property>
+                        </layout>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+              </object>
+            </child>
+          </object>
+        </child>
+        <child>
+          <object class="ttk.Notebook.Tab" id="ntab_addUser">
+            <property name="sticky">nsew</property>
+            <property name="text" translatable="yes">add user</property>
+            <child>
+              <object class="ttk.Frame" id="frm_addUser">
+                <property name="height">0</property>
+                <property name="width">0</property>
+                <layout manager="grid">
+                  <property name="column">0</property>
+                  <property name="propagate">True</property>
+                  <property name="row">0</property>
+                  <property name="sticky">nsew</property>
+                  <property type="col" id="0" name="weight">1</property>
+                  <property type="row" id="0" name="weight">1</property>
+                </layout>
+                <child>
+                  <object class="ttk.Labelframe" id="lbfr_addUser">
+                    <property name="height">0</property>
+                    <property name="text" translatable="yes">Please enter the details below</property>
+                    <property name="width">0</property>
+                    <layout manager="grid">
+                      <property name="column">0</property>
+                      <property name="ipady">30</property>
+                      <property name="padx">40</property>
+                      <property name="pady">40</property>
+                      <property name="propagate">True</property>
+                      <property name="row">0</property>
+                      <property name="sticky">nsew</property>
+                      <property type="col" id="0" name="weight">1</property>
+                      <property type="row" id="0" name="weight">1</property>
+                    </layout>
+                    <child>
+                      <object class="ttk.Label" id="lbl_InfoAddUser">
+                        <property name="justify">center</property>
+                        <property name="text" translatable="yes">Please, enter new user name 
+and type your password two times</property>
+                        <layout manager="grid">
+                          <property name="column">0</property>
+                          <property name="columnspan">2</property>
+                          <property name="pady">15</property>
+                          <property name="propagate">True</property>
+                          <property name="row">0</property>
+                          <property type="col" id="0" name="pad">10</property>
+                          <property type="row" id="0" name="pad">0</property>
+                        </layout>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="ttk.Label" id="lbl_usernameAddUser">
+                        <property name="text" translatable="yes">Username</property>
+                        <layout manager="grid">
+                          <property name="column">0</property>
+                          <property name="padx">11</property>
+                          <property name="pady">10</property>
+                          <property name="propagate">True</property>
+                          <property name="row">1</property>
+                          <property name="sticky">e</property>
+                          <property type="col" id="0" name="pad">10</property>
+                          <property type="row" id="1" name="pad">10</property>
+                        </layout>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="ttk.Entry" id="txt_usernameAddUser">
+                        <layout manager="grid">
+                          <property name="column">1</property>
+                          <property name="propagate">True</property>
+                          <property name="row">1</property>
+                          <property name="sticky">w</property>
+                          <property type="col" id="1" name="pad">11</property>
+                          <property type="col" id="1" name="weight">1</property>
+                          <property type="row" id="1" name="pad">10</property>
+                        </layout>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="ttk.Label" id="lbl_PasswordAdd">
+                        <property name="text" translatable="yes">Password</property>
+                        <layout manager="grid">
+                          <property name="column">0</property>
+                          <property name="padx">11</property>
+                          <property name="pady">5</property>
+                          <property name="propagate">True</property>
+                          <property name="row">2</property>
+                          <property name="sticky">e</property>
+                          <property type="col" id="0" name="pad">10</property>
+                          <property type="row" id="2" name="pad">5</property>
+                        </layout>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="ttk.Entry" id="txt_passwordAdd">
+                        <property name="show">*</property>
+                        <layout manager="grid">
+                          <property name="column">1</property>
+                          <property name="propagate">True</property>
+                          <property name="row">2</property>
+                          <property name="sticky">w</property>
+                          <property type="col" id="1" name="pad">11</property>
+                          <property type="col" id="1" name="weight">1</property>
+                          <property type="row" id="2" name="pad">5</property>
+                        </layout>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="ttk.Label" id="lbl_PasswordConfAdd">
+                        <property name="text" translatable="yes">Confirm password</property>
+                        <layout manager="grid">
+                          <property name="column">0</property>
+                          <property name="padx">11</property>
+                          <property name="pady">5</property>
+                          <property name="propagate">True</property>
+                          <property name="row">3</property>
+                          <property name="sticky">e</property>
+                          <property type="col" id="0" name="pad">10</property>
+                          <property type="row" id="3" name="pad">5</property>
+                        </layout>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="ttk.Entry" id="txt_passwordConfAdd">
+                        <property name="show">*</property>
+                        <layout manager="grid">
+                          <property name="column">1</property>
+                          <property name="propagate">True</property>
+                          <property name="row">3</property>
+                          <property name="sticky">w</property>
+                          <property type="col" id="1" name="pad">11</property>
+                          <property type="col" id="1" name="weight">1</property>
+                          <property type="row" id="3" name="pad">5</property>
+                        </layout>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="ttk.Button" id="btn_submitAdd">
+                        <property name="text" translatable="yes">SUBMIT</property>
+                        <property name="width">15</property>
+                        <layout manager="grid">
+                          <property name="column">0</property>
+                          <property name="columnspan">2</property>
+                          <property name="ipadx">10</property>
+                          <property name="ipady">5</property>
+                          <property name="padx">10</property>
+                          <property name="pady">15</property>
+                          <property name="propagate">True</property>
+                          <property name="row">4</property>
+                          <property type="col" id="0" name="pad">10</property>
+                        </layout>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="ttk.Label" id="lbl_resultAdduser">
+                        <property name="textvariable">string:var_AddUserResult</property>
+                        <layout manager="grid">
+                          <property name="column">0</property>
+                          <property name="columnspan">2</property>
+                          <property name="propagate">True</property>
+                          <property name="row">5</property>
+                          <property type="col" id="0" name="pad">10</property>
+                        </layout>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+              </object>
+            </child>
+          </object>
+        </child>
+      </object>
+    </child>
+  </object>
+</interface>
