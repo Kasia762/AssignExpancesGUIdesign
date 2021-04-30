@@ -482,7 +482,6 @@ class AppWin:
         
 
 if __name__ == '__main__':
-
     app = LoginWin()
     app.run()
     
