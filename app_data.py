@@ -266,7 +266,16 @@ class App_data:
         cur.execute(sql, (startDate, endDate, category, contractor))
         data = cur.fetchall()
         return data
-
+    
+    
+    def sumGetTransactionsPeriod(self,startDate, endDate, category, contractor):
+        cur = self.getTransactionsPeriod(startDate, endDate, category, contractor)
+        sql='''
+        SELECT sum(tr.trans_amount)
+        FROM transactions AS tr'''
+        cur.execute(sql)
+        data = cur.fetchall()[0][0]
+        return data
 
 
     def getContractorList(self):
@@ -498,12 +507,19 @@ for row in data:
     print("A", row)
 print("\n")
 
+startDate = '2020-03-02'
+endDate = '2021-04-31'
+category = 'Rent'
+contractor = 'Lidl'
+
 print("All transactions\n")
-data=badb.getTransactionsPeriod('2020-03-02', '2021-04-31', 'Groceries', 'K-Market')
+data=badb.getTransactionsPeriod('2020-03-02', '2021-04-31', 'Rent', 'Lidl')
 for row in data:
     print("B", row)
 print("\n")
 
+
+print("sum:", badb.sumGetTransactionsPeriod(startDate, endDate, category, contractor))
 
 data = badb.getCategoriesList()
 for row in data:
