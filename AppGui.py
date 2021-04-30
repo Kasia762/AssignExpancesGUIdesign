@@ -25,91 +25,111 @@ class LoginWin:
         else:
             self.root_login = tk.Toplevel(master)
             
-        self.ntb_login = ttk.Notebook(self.root_login)
-        
-        
+        self.ntb_Login = ttk.Notebook(self.root_login)
         
         #LOG IN TAB
-        self.frm_Login = ttk.Frame(self.ntb_login)
-        self.lbfr_Login = ttk.Labelframe(self.frm_Login)
-        
-        #labels, entries and button in log in tab
-        self.lbl_SelectUser = ttk.Label(self.lbfr_Login)
-        self.lbl_SelectUser.configure(text='Select user')
-        self.lbl_SelectUser.pack(pady='10',side='top')
-        
-        self.cmb_SelectUser = ttk.Combobox(self.lbfr_Login, state="readonly")
-        self.cmb_SelectUser.pack(side='top')
-        
-        self.lbl_PasswordLogin = ttk.Label(self.lbfr_Login)
+        self.frm_login = ttk.Frame(self.ntb_Login)
+        self.lbfr_login = ttk.Labelframe(self.frm_login)
+        self.lbl_selectUser = ttk.Label(self.lbfr_login)
+        self.lbl_selectUser.configure(text='Select user')
+        self.lbl_selectUser.grid(column='0', row='0', sticky='s')
+        self.lbl_selectUser.master.rowconfigure('0', pad='20', weight='0')
+        self.lbl_selectUser.master.columnconfigure('0', pad='0', weight='1')
+        self.cmb_UserLogin = ttk.Combobox(self.lbfr_login, 
+                                          state="readonly")
+        self.cmb_UserLogin.configure(width='20')
+        self.cmb_UserLogin.grid(column='0', pady='10', row='1')
+        self.cmb_UserLogin.master.columnconfigure('0', pad='0', weight='1')
+        self.lbl_PasswordLogin = ttk.Label(self.lbfr_login)
         self.lbl_PasswordLogin.configure(text='Enter password')
-        self.lbl_PasswordLogin.pack(pady='10',side='top')
-        
-        self.txt_PasswordLogin = ttk.Entry(self.lbfr_Login, show="*" )
-        self.txt_PasswordLogin.pack(side='top')
-        
-        self.btn_Login = ttk.Button(self.lbfr_Login, command = self.cb_Login)
-        self.btn_Login.configure(text='LOG IN')
-        self.btn_Login.pack(pady='20',padx='30',ipadx='20',ipady='5',side='top')
-        
-        self.lbfr_Login.configure(text='Please log in below')
-        self.lbfr_Login.pack(ipadx='50', pady='50', side='top')
-        self.frm_Login.pack(side='top')
-        
-        self.ntb_login.add(self.frm_Login, state='hidden', text='log in')
-        
+        self.lbl_PasswordLogin.grid(column='0', row='2', sticky='s')
+        self.lbl_PasswordLogin.master.rowconfigure('2', pad='15')
+        self.lbl_PasswordLogin.master.columnconfigure('0', pad='0', weight='1')
+        self.txt_PasswordLogin = ttk.Entry(self.lbfr_login)
+        self.txt_PasswordLogin.configure(show='*', width='20')
+        self.txt_PasswordLogin.grid(column='0', pady='10', row='3')
+        self.txt_PasswordLogin.master.columnconfigure('0', pad='0', weight='1')
+        self.btn_Login = ttk.Button(self.lbfr_login, 
+                                    command = self.cb_Login)
+        self.btn_Login.configure(text='LOG IN', width='15')
+        self.btn_Login.grid(column='0', pady='20', row='4')
+        self.btn_Login.master.columnconfigure('0', pad='0', weight='1')
+        self.lbfr_login.configure(height='0', text='Please log in below', width='0')
+        self.lbfr_login.grid(column='0', ipady='30', padx='40', pady='40', row='0', sticky='nsew')
+        self.lbfr_login.master.rowconfigure('0', pad='10', weight='1')
+        self.lbfr_login.master.columnconfigure('0', pad='20', weight='1')
+        self.frm_login.configure(height='0', width='0')
+        self.frm_login.grid(column='0', row='0', sticky='nsew')
+        self.frm_login.master.rowconfigure('0', weight='1')
+        self.frm_login.master.columnconfigure('0', weight='1')
+        self.ntb_Login.add(self.frm_login, state='hidden', sticky='nsew', text='log in')        
         
         
         # ADD USER TAB
-        self.frm_AddUser = ttk.Frame(self.ntb_login)
-        self.lbfr_addUser = ttk.Labelframe(self.frm_AddUser)
+        self.frm_addUser = ttk.Frame(self.ntb_Login)
+        self.lbfr_addUser = ttk.Labelframe(self.frm_addUser)
+        self.lbl_InfoAddUser = ttk.Label(self.lbfr_addUser)
+        self.lbl_InfoAddUser.configure(justify='center', text='Please, enter new user name\n and type your password two times')
+        self.lbl_InfoAddUser.grid(column='0', columnspan='2', pady='15', row='0')
+        self.lbl_InfoAddUser.master.rowconfigure('0', pad='0')
+        self.lbl_InfoAddUser.master.columnconfigure('0', pad='10')
+        self.lbl_usernameAddUser = ttk.Label(self.lbfr_addUser)
+        self.lbl_usernameAddUser.configure(text='Username')
+        self.lbl_usernameAddUser.grid(column='0', padx='11', pady='10', row='1', sticky='e')
+        self.lbl_usernameAddUser.master.rowconfigure('1', pad='10')
+        self.lbl_usernameAddUser.master.columnconfigure('0', pad='10')
+        self.txt_usernameAddUser = ttk.Entry(self.lbfr_addUser)
+        self.txt_usernameAddUser.grid(column='1', row='1', sticky='w')
+        self.txt_usernameAddUser.master.rowconfigure('1', pad='10')
+        self.txt_usernameAddUser.master.columnconfigure('1', pad='11', weight='1')
+        self.lbl_PasswordAdd = ttk.Label(self.lbfr_addUser)
+        self.lbl_PasswordAdd.configure(text='Password')
+        self.lbl_PasswordAdd.grid(column='0', padx='11', pady='5', row='2', sticky='e')
+        self.lbl_PasswordAdd.master.rowconfigure('2', pad='5')
+        self.lbl_PasswordAdd.master.columnconfigure('0', pad='10')
+        self.txt_passwordAdd = ttk.Entry(self.lbfr_addUser)
+        self.txt_passwordAdd.configure(show='*')
+        self.txt_passwordAdd.grid(column='1', row='2', sticky='w')
+        self.txt_passwordAdd.master.rowconfigure('2', pad='5')
+        self.txt_passwordAdd.master.columnconfigure('1', pad='11', weight='1')
+        self.lbl_PasswordConfAdd = ttk.Label(self.lbfr_addUser)
+        self.lbl_PasswordConfAdd.configure(text='Confirm password')
+        self.lbl_PasswordConfAdd.grid(column='0', padx='11', pady='5', row='3', sticky='e')
+        self.lbl_PasswordConfAdd.master.rowconfigure('3', pad='5')
+        self.lbl_PasswordConfAdd.master.columnconfigure('0', pad='10')
+        self.txt_passwordConfAdd = ttk.Entry(self.lbfr_addUser)
+        self.txt_passwordConfAdd.configure(show='*')
+        self.txt_passwordConfAdd.grid(column='1', row='3', sticky='w')
+        self.txt_passwordConfAdd.master.rowconfigure('3', pad='5')
+        self.txt_passwordConfAdd.master.columnconfigure('1', pad='11', weight='1')
+        self.btn_submitAdd = ttk.Button(self.lbfr_addUser, 
+                                        command = self.cb_CreateUser)
+        self.btn_submitAdd.configure(text='SUBMIT', width='15')
+        self.btn_submitAdd.grid(column='0', columnspan='2', ipadx='10', ipady='5', padx='10', pady='15', row='4')
+        self.btn_submitAdd.master.columnconfigure('0', pad='10')
+        self.lbl_resultAdduser = ttk.Label(self.lbfr_addUser)
+        self.var_AddUserResult = tk.StringVar(value='Enter username, password and press Submit button')
+        self.lbl_resultAdduser.configure(textvariable=self.var_AddUserResult)
+        self.lbl_resultAdduser.grid(column='0', columnspan='2', row='5')
+        self.lbl_resultAdduser.master.columnconfigure('0', pad='10')
+        self.lbfr_addUser.configure(height='0', text='Please enter the details below', width='0')
+        self.lbfr_addUser.grid(column='0', ipady='30', padx='40', pady='40', row='0', sticky='nsew')
+        self.lbfr_addUser.master.rowconfigure('0', weight='1')
+        self.lbfr_addUser.master.columnconfigure('0', weight='1')
+        self.frm_addUser.configure(height='0', width='0')
+        self.frm_addUser.grid(column='0', row='0', sticky='nsew')
+        self.frm_addUser.master.rowconfigure('0', weight='1')
+        self.frm_addUser.master.columnconfigure('0', weight='1')
+        self.ntb_Login.add(self.frm_addUser, sticky='nsew', text='add user')
         
-        #labels, entries and button in add user tab
-        self.lbl_Username = ttk.Label(self.lbfr_addUser)
-        self.lbl_Username.configure(text='Username')#, justify=tk.RIGHT)
-        self.lbl_Username.grid(column='0', padx='10', pady='15', row='0', sticky='e')
-        
-        self.txt_Username = ttk.Entry(self.lbfr_addUser)
-        self.txt_Username.grid(column='1', row='0',padx='10')
-        
-        self.lbl_PasswordCreate = ttk.Label(self.lbfr_addUser)
-        self.lbl_PasswordCreate.configure(text='Password')
-        self.lbl_PasswordCreate.grid(column='0', padx='10', pady='5', row='1', sticky='e')
-        
-        self.txt_PasswordCreate = ttk.Entry(self.lbfr_addUser, show="*" )
-        self.txt_PasswordCreate.grid(column='1', row='1',padx='10')
-        
-        self.lbl_PasswordConfCreate = ttk.Label(self.lbfr_addUser)
-        self.lbl_PasswordConfCreate.configure(text='Confirm password')
-        self.lbl_PasswordConfCreate.grid(column='0', padx='10', pady='5', row='2', sticky='e')
-        
-        self.txt_PasswordConfCreate = ttk.Entry(self.lbfr_addUser, show="*" )
-        self.txt_PasswordConfCreate.grid(column='1', row='2',padx='10')
-        
-        self.btn_Submit = ttk.Button(self.lbfr_addUser, command = self.cb_CreateUser)
-        self.btn_Submit.configure(text='SUBMIT')
-        self.btn_Submit.grid(column='0', row='3',
-                                pady='20',ipadx='10',padx='10',ipady='5',columnspan='2')
-        
-        self.lbl_AdduserInfo = ttk.Label(self.lbfr_addUser)
-        #TODO: add text into label: about adding new user
-        self.lbl_AdduserInfo.configure(
-            text='Enter username to create\n and type selected password two times.',
-            justify=tk.CENTER)
-        self.lbl_AdduserInfo.grid(column='0', row='4',pady='10',columnspan='2')
-        
-        self.lbfr_addUser.configure(height='200', text='Please enter the details below', width='200')
-        self.lbfr_addUser.pack(ipadx='10',padx='50', pady='50', side='top')
-        
-        self.frm_AddUser.configure(height='300', width='300')
-        self.frm_AddUser.pack(side='top')
-        
-        self.ntb_login.add(self.frm_AddUser, text='add user')
-        self.ntb_login.pack(expand='true', fill='both', side='top')
-        
-        #self.root_login.configure(takefocus=False)
-        self.root_login.resizable(width=False, height=False)
-        
+        ## Window settings
+        self.ntb_Login.configure(width='400')
+        self.ntb_Login.grid(column='0', padx='3', pady='3', row='0', sticky='nsew')
+        self.ntb_Login.master.rowconfigure('0', minsize='0', weight='1')
+        self.ntb_Login.master.columnconfigure('0', minsize='0', weight='1')
+        self.root_login.configure(height='150', takefocus=False, width='400')
+        self.root_login.resizable(False, False)
+
         ## Style correcting for tab's well-view
         style = ttk.Style()                     
         current_theme =style.theme_use()
@@ -124,7 +144,10 @@ class LoginWin:
         self.loginWindow.grab_set()
         self.loginWindow.mainloop()
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 34e366d22dbe5fc5773010fa92b1862f212956cf
 
     def cb_CreateUser(self):
         """
@@ -136,27 +159,30 @@ class LoginWin:
 
         """
 
-        if not self.txt_Username.get():
-            self.lbl_Username.config(foreground="red")
+        if not self.txt_usernameAddUser.get():
+            self.lbl_usernameAddUser.config(foreground="red")
+            self.var_AddUserResult.set(value="User name cannot be empty")
             return False
         else:
-            self.lbl_Username.configure(foreground="black")
+            self.lbl_usernameAddUser.configure(foreground="black")
         
-        if not self.txt_PasswordCreate.get():
-            self.lbl_PasswordCreate.config(foreground="red")
+        if not self.txt_passwordAdd.get():
+            self.lbl_PasswordAdd.config(foreground="red")
+            self.var_AddUserResult.set(value="Password cannot be empty")
             return False
         else:
-            self.lbl_PasswordCreate.configure(foreground="black")
+            self.lbl_PasswordAdd.configure(foreground="black")
         
-        if not (self.txt_PasswordCreate.get() == self.txt_PasswordConfCreate.get()):
-            self.lbl_PasswordCreate.config(foreground="red")
-            self.lbl_PasswordConfCreate.config(foreground="red")
+        if not (self.txt_passwordAdd.get() == self.txt_passwordConfAdd.get()):
+            self.lbl_PasswordAdd.config(foreground="red")
+            self.lbl_PasswordConfAdd.config(foreground="red")
+            self.var_AddUserResult.set(value="Passwords are not match")
             return False
         else:
-            self.lbl_PasswordCreate.configure(foreground="black")
-            self.lbl_PasswordConfCreate.configure(foreground="black")
-        
+            self.lbl_PasswordAdd.configure(foreground="black")
+            self.lbl_PasswordConfAdd.configure(foreground="black")
         ## TODO: call UserCreate()
+        self.var_AddUserResult.set(value="Creating user...")
         pass
     
     
@@ -169,11 +195,11 @@ class LoginWin:
         None.
 
         """
-        if  self.cmb_SelectUser.current() < 0:
-            self.lbl_SelectUser.config(foreground="red")
+        if  self.cmb_UserLogin.current() < 0:
+            self.lbl_selectUser.config(foreground="red")
             return False
         else:
-            self.lbl_SelectUser.configure(foreground="black")
+            self.lbl_selectUser.configure(foreground="black")
 
         if not self.txt_PasswordLogin.get():
             self.lbl_PasswordLogin.config(foreground="red")
@@ -461,9 +487,17 @@ class AppWin:
         
 
 if __name__ == '__main__':
+<<<<<<< HEAD
     
     app = AppWin()
+=======
+
+    app = LoginWin()
+>>>>>>> 34e366d22dbe5fc5773010fa92b1862f212956cf
     app.run()
+    
+    # app = AppWin()
+    # app.run()
    
 
 
