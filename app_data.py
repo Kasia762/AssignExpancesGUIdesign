@@ -55,7 +55,8 @@ class App_data:
         
         ### Open connection immideally when running
         ### if no database exist, create it
-        self.database = sqlite3.connect(':memory:', detect_types=sqlite3.PARSE_DECLTYPES)
+        self.database = sqlite3.connect(':memory:', 
+                        detect_types=sqlite3.PARSE_DECLTYPES|sqlite3.PARSE_COLNAMES)
         print("Loading db")
         self.__loadDB(self.database, self.databaseFilename)
         if not self.__tableExists(self.database, "transactions"):
@@ -197,7 +198,7 @@ class App_data:
         ## TODO: check database connection
         cur = self.database.cursor()
         sql = '''
-            SELECT tr.trans_date , tr.trans_amount, ct.cat_name , cr.cont_name
+            SELECT tr.trans_date "[timestamp]", tr.trans_amount, ct.cat_name , cr.cont_name
             FROM transactions AS tr 
             LEFT OUTER JOIN categories AS ct
                 ON tr.cat_id = ct.cat_id
@@ -223,7 +224,7 @@ class App_data:
         ## TODO: check database connection
         cur = self.database.cursor()
         sql = '''
-        SELECT tr.trans_date , tr.trans_amount, ct.cat_name , cr.cont_name
+        SELECT tr.trans_date "[timestamp]", tr.trans_amount, ct.cat_name , cr.cont_name
         FROM transactions AS tr
         LEFT OUTER JOIN categories AS ct
                 ON tr.cat_id = ct.cat_id
@@ -251,7 +252,7 @@ class App_data:
         ## TODO: check database connection
         cur = self.database.cursor()
         sql = '''
-        SELECT tr.trans_date , tr.trans_amount, ct.cat_name , cr.cont_name
+        SELECT tr.trans_date "[timestamp]", tr.trans_amount, ct.cat_name , cr.cont_name
         FROM transactions AS tr
         LEFT OUTER JOIN categories AS ct
                 ON tr.cat_id = ct.cat_id
@@ -493,17 +494,25 @@ print(res)
 
 badb.testPrintAllTables()
 print("\n\n")
+print("All transactions\n")
 data = badb.getAllTransactions()
 for row in data:
     print("A", row)
+    
+    
 print("\n")
-
-print("All transactions\n")
-data=badb.getTransactionsPeriod('2020-03-06', '2021-04-31', 'Groceries', 'K-Market')
+print("All transactions period\n")
+data=badb.getAllTransactionsPeriod('2020-03-06', '2021-04-31')
 for row in data:
     print("B", row)
 print("\n")
 
+print("\n")
+print("All transactions period category\n")
+data=badb.getTransactionsPeriod('2020-03-06', '2021-04-31', 'Groceries', 'K-Market')
+for row in data:
+    print("B", row)
+print("\n")
 
 data = badb.getCategoriesList()
 for row in data:
@@ -516,7 +525,7 @@ for row in data:
     
 
 
-badb.saveDataBase()
+#badb.saveDataBase()
 
 
 
