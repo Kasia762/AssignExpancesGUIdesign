@@ -461,9 +461,38 @@
                         <child>
                           <object class="ttk.Label" id="placeHolder_label">
                             <property name="text" translatable="yes">put this calendar date choser</property>
-                            <layout manager="pack">
+                            <layout manager="grid">
+                              <property name="column">0</property>
                               <property name="propagate">True</property>
-                              <property name="side">top</property>
+                              <property name="row">0</property>
+                            </layout>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="ttk.Combobox" id="combobox1">
+                            <layout manager="grid">
+                              <property name="column">1</property>
+                              <property name="propagate">True</property>
+                              <property name="row">0</property>
+                            </layout>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="ttk.Label" id="label1">
+                            <property name="text" translatable="yes">label1</property>
+                            <layout manager="grid">
+                              <property name="column">2</property>
+                              <property name="propagate">True</property>
+                              <property name="row">0</property>
+                            </layout>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="ttk.Combobox" id="combobox2">
+                            <layout manager="grid">
+                              <property name="column">3</property>
+                              <property name="propagate">True</property>
+                              <property name="row">0</property>
                             </layout>
                           </object>
                         </child>
