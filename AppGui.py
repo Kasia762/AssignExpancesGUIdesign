@@ -125,6 +125,7 @@ class LoginWin:
         self.loginWindow.mainloop()
 
 
+
     def cb_CreateUser(self):
         """
         Create user callback
@@ -244,6 +245,7 @@ class AppWin:
         self.label2.master.columnconfigure('0', pad='10')
         self.cal_tr_To = tkcal.DateEntry(self.lbfr_drTransactions, date_pattern=_cal_datefmt)
         _text_ =  dt.date.today().strftime(_dt_datefmt)
+        print("tpe:",type(_text_))
         self.cal_tr_To.delete('0', 'end')
         self.cal_tr_To.insert('0', _text_)
         self.cal_tr_To.grid(column='1', row='1', sticky='w')
@@ -460,7 +462,7 @@ class AppWin:
 
 if __name__ == '__main__':
     
-    app = LoginWin()
+    app = AppWin()
     app.run()
    
 
