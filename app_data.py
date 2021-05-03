@@ -30,7 +30,7 @@ class App_data:
             
     def __init__(self):
         self.__debug = True
-        if type(self)._class_counter > 4:
+        if type(self)._class_counter > 0:
             print("One instance of class",type(self), " already exist.")
             print("For now only one instance is allowed.")
             raise ValueError
@@ -55,10 +55,12 @@ class App_data:
         
         ### Open connection immideally when running
         ### if no database exist, create it
-        self.database = sqlite3.connect(':memory:', 
+       # self.database = sqlite3.connect(':memory:', 
+       #                 detect_types=sqlite3.PARSE_DECLTYPES|sqlite3.PARSE_COLNAMES)
+        self.database = sqlite3.connect(self.databaseFilename, 
                         detect_types=sqlite3.PARSE_DECLTYPES|sqlite3.PARSE_COLNAMES)
         print("Loading db")
-        self.__loadDB(self.database, self.databaseFilename)
+       # self.__loadDB(self.database, self.databaseFilename)
         if not self.__tableExists(self.database, "transactions"):
             print("Creating tables in database...")
             self.__initCreateTables()
@@ -204,7 +206,7 @@ class App_data:
                 ON tr.cat_id = ct.cat_id
             LEFT OUTER JOIN contractors AS cr
                 ON tr.cont_id = cr.cont_id
-            ORDER BY tr.trans_date ASC 
+            ORDER BY tr.trans_date DESC 
             ;
             '''
         cur.execute(sql)
@@ -436,7 +438,7 @@ cur.executemany(sql,contr_list)
 database.commit()
 
 """
-
+'''
 #
 #================================================================
 #================================================================
@@ -530,7 +532,7 @@ for row in data:
 
 
 #badb.saveDataBase()
-
+'''
 
 
 

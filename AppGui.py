@@ -11,7 +11,7 @@ import tkcalendar as tkcal
 import time
 import datetime as dt
 from app_data import App_data 
-from addTransaction import AddTransaction as addT
+from addTransaction import AddTransaction 
 
 ## both format should match
 _dt_datefmt = "%d.%m.%Y"
@@ -288,7 +288,7 @@ class AppWin:
         self.lbfr_drTransactions.master.rowconfigure('0', pad='10', weight=0)
         self.lbfr_drTransactions.master.columnconfigure('0', pad='0', weight=1)
         self.lbfr_Operations = ttk.Labelframe(self.frm_transactions)
-        self.button1 = ttk.Button(self.lbfr_Operations, command = addT)
+        self.button1 = ttk.Button(self.lbfr_Operations, command = self.addTransactionButton)
         self.button1.configure(text='Add', width='20')
         self.button1.grid(column='0', row='0')
         self.button1.master.rowconfigure('0', pad='10')
@@ -313,13 +313,15 @@ class AppWin:
         self.button5.grid(column='1', row='1')
         self.button5.master.rowconfigure('1', pad='10')
         self.button5.master.columnconfigure('1', pad='25')
-        self.button6 = ttk.Button(self.lbfr_Operations)
+        self.button6 = ttk.Button(self.lbfr_Operations, command = self.playLotto)
         self.button6.configure(cursor='no', text='Play lotto', width='15')
         self.button6.grid(column='1', row='2')
         self.lbfr_Operations.configure(height='0', text='Commands', width='200')
         self.lbfr_Operations.grid(column='1', padx='5', row='0', sticky='ns')
         self.lbfr_Operations.master.rowconfigure('0', pad='10', weight=0)
+        
         self.lbfr_tableTransactions = ttk.Labelframe(self.frm_transactions)
+        
         self.tbl_transactions = ttk.Treeview(self.lbfr_tableTransactions)
         self.tbl_transactions_cols = ['column1', 'column2', 'column3', 'column4']
         self.tbl_transactions_dcols = ['column1', 'column2', 'column3', 'column4']
@@ -336,6 +338,7 @@ class AppWin:
         self.tbl_transactions.grid(column='0', padx='3', pady='3', row='0', sticky='nsew')
         self.tbl_transactions.master.rowconfigure('0', weight=1)
         self.tbl_transactions.master.columnconfigure('0', weight=1)
+        
         self.lbfr_tableTransactions.grid(column='0', columnspan='2', padx='5', row='1', sticky='nsew')
         self.lbfr_tableTransactions.master.rowconfigure('1', weight=1)
         self.lbfr_tableTransactions.master.columnconfigure('0', pad='0', weight=1)
@@ -470,25 +473,35 @@ class AppWin:
 
         # Main widget
         self.mainwindow = self.root_app
-
+#connection to data base
+        self.badb = App_data()
+#scroll bar      
+#make it refresable
+    def addTransactionButton(self):
+        addTrasactionWindow= AddTransaction(self.badb)
 
     def run(self):
         self.display_time()
-        self.table()
+        self.fillTransactionTable()
         self.mainwindow.mainloop()
         
-    def addTrans(self):
-        badb=App_data()
+    def playLotto(self):#make it as lotto
         date2 = dt.datetime.now()
-        res = badb.addTransaction(date2,123.12,"Groceries","K-Market")
+        res = self.badb.addTransaction(date2,-20,"Lotto",None)
+        self.fillTransactionTable()
         
-        
-    def table(self):
-        badb=App_data()
-        data = badb.getAllTransactions() 
+    def fillTransactionTable(self):
+        #first clear the treeview
+        for item in  self.tbl_transactions.get_children():
+             self.tbl_transactions.delete(item)
+        #then display data
+        count = 0
+        data = self.badb.getAllTransactions()
         for row in data:           
             self.tbl_transactions.insert('','end', values = row)
-                 
+            count+=1
+     #tree view 
+                
         
     def display_time(self):
         self.var_CurrentTime.set( value= time.strftime('%H:%M:%S') )
