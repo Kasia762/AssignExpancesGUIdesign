@@ -478,17 +478,24 @@ class AppWin:
 #scroll bar      
 #make it refresable
     def addTransactionButton(self):
-        addTrasactionWindow= AddTransaction(self.badb)
+        addTransactionWindow= AddTransaction(self.badb)
+      
+    
+    def addTrWindow(self):
+        a = AddTransaction.collectInput
+        print(a)
+        
+        #self.badb.addTransaction(a[0],a[1],a[2],a[3])
+        #self.fillTransactionTable()
 
-    def run(self):
-        self.display_time()
-        self.fillTransactionTable()
-        self.mainwindow.mainloop()
         
     def playLotto(self):#make it as lotto
-        date2 = dt.datetime.now()
-        res = self.badb.addTransaction(date2,-20,"Lotto",None)
+        date = dt.datetime.now()
+        amount = 21.32
+        
+        self.badb.addTransaction(date,amount,"Lotto",None)
         self.fillTransactionTable()
+        
         
     def fillTransactionTable(self):
         #first clear the treeview
@@ -507,7 +514,11 @@ class AppWin:
         self.var_CurrentTime.set( value= time.strftime('%H:%M:%S') )
         self.mainwindow.after(1000, self.display_time)     
 
-        
+    def run(self):
+        self.addTrWindow()
+        self.display_time()
+        self.fillTransactionTable()
+        self.mainwindow.mainloop()    
 
 if __name__ == '__main__':
     #app = LoginWin()
