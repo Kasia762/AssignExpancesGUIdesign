@@ -23,7 +23,8 @@ class AddTransaction:
         # build ui
         if master == None:
             print("Cannot run independently. Pass master attribute")
-            return 1
+            return
+        
         self.win_addtr = tk.Toplevel(master)
         ## Hide window 
         ## DO NOT forget to show at the end of init!!!
@@ -63,11 +64,11 @@ class AddTransaction:
         self.cmb_atcat = ttk.Combobox(self.lbfr_atinfo)
         self.cmb_atcat.grid(column='1', pady='10', row='0')
         
-        self.cmb_atcontr = ttk.Label(self.lbfr_atinfo)
-        self.cmb_atcontr.configure(text='Contractor')
-        self.cmb_atcontr.grid(column='0', padx='20', pady='10', row='1')
-        self.combobox2 = ttk.Combobox(self.lbfr_atinfo)
-        self.combobox2.grid(column='1', pady='10', row='1')
+        self.lbl_atcontr = ttk.Label(self.lbfr_atinfo)
+        self.lbl_atcontr.configure(text='Contractor')
+        self.lbl_atcontr.grid(column='0', padx='20', pady='10', row='1')
+        self.cmb_atcontr = ttk.Combobox(self.lbfr_atinfo)
+        self.cmb_atcontr.grid(column='1', pady='10', row='1')
         self.lbfr_atinfo.configure(height='200', text='Add information', width='200')
         self.lbfr_atinfo.pack(anchor='center', expand='true', fill='x', padx='20', side='top')
         self.lbfr_attype = ttk.Labelframe(self.fr_addtr)
@@ -108,7 +109,7 @@ class AddTransaction:
         
         #exit add window with button self.btn_exit - OK,EXIT
         self.btn_exit = ttk.Button(self.fr_addtr, command =self.win_addtr.destroy)
-        self.btn_exit.configure(text='ok, exit')
+        self.btn_exit.configure(text='Cancel')
         self.btn_exit.pack(anchor='center', padx='20', pady='15', side='right')
         
         #ADD BUTTON
@@ -122,7 +123,7 @@ class AddTransaction:
         self.win_addtr.configure(height='200', width='200')
         self.win_addtr.resizable(False, False)
         self.win_addtr.title('Add transaction')
-
+        ## Center window
         x_modal = 350
         y_modal = 400
         x_parent = master.winfo_width()
@@ -133,10 +134,18 @@ class AddTransaction:
         
         # SHOW window, fully constructed
         self.win_addtr.deiconify()
-         
+        # Main widget
+        self.mainwindow = self.win_addtr
+
         self.radioButtonSelection()    
         self.badb=dbconn
         self.run()
+
+    def __setAmountEntryToDefault(self):
+        #else print put correct values???
+        self.ent_atamount.delete(0, tk.END)
+        self.ent_atamount.insert(0, '0.0')
+        
     
     def radioButtonSelection(self):
         self.selection = self.var.get()
@@ -147,32 +156,36 @@ class AddTransaction:
             amountABS = float(self.ent_atamount.get())
         except:
             print("No number or whatever")
-            return
-        
-        if amountABS <= 0:
-            print("Entered amount is less or equal to zero.")
             tk.messagebox.showwarning("Enter valid data",
-                                      "Amount cannot be less or equal zero.\n\nPlease, enter positive amount.",
+                                      "Amount cannot be calculated.\n\nPlease, enter correct amount.",
                                       parent=self.mainwindow)
+            return
+        amountABS = abs(amountABS)
+        if amountABS == 0:
+            print("Entered amount is equal to zero.")
+            tk.messagebox.showwarning("Enter valid data",
+                                      "Amount cannot be  equal zero.\n\nPlease, enter positive amount.",
+                                      parent=self.mainwindow)
+            return
              
         if self.selection == 2:
-            #self.amount = float("-"+ self.ent_atamount.get())
             self.amount= float(-amountABS)
-           
-        else:#self.selection == 1:
-            #self.amount = float(self.ent_atamount.get())
+        elif self.selection == 1:
             self.amount = amountABS
+        else:
+            print("Some internal error: radiobutton not selected.")
+            raise("Radiobutton not selected")
+            return
         
         #TODO: add if else statements to check if values are correct
         date = self.cal_tr.get_date()
         category = self.cmb_atcat.get()
-        contractor = self.combobox2.get()
+        contractor = self.cmb_atcontr.get()
         amount = self.amount  
         
         #listTransaction = list[date,amount,category,contractor]  
         
-        #else print put correct values???
-        self.ent_atamount.delete(0,len(str(amount)))
+        self.__setAmountEntryToDefault()
         return 5
      
     def viewCatergories(self):
@@ -185,17 +198,16 @@ class AddTransaction:
         data = self.badb.getContractorList()
         ind_contr = 0
         tr=[i[ind_contr]for i in data]
-        self.combobox2['values']= tr   
+        self.cmb_atcontr['values']= tr   
        
             
-        # Main widget
-        self.mainwindow = self.win_addtr
         
 #amount no 0
 
     def run(self):
         #self.convertToNegative()
         #self.radioButtonSelection()
+        self.__setAmountEntryToDefault()
         self.viewContractors()
         self.viewCatergories()
         self.mainwindow.mainloop()

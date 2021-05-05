@@ -28,6 +28,10 @@ class LoginWin:
         else:
             self.root_login = tk.Toplevel(master)
             
+        ## Hide window 
+        ## DO NOT forget to show at the end of init!!!
+        self.root_login.withdraw()     
+            
         self.ntb_Login = ttk.Notebook(self.root_login)
         
         #LOG IN TAB
@@ -138,7 +142,10 @@ class LoginWin:
         current_theme =style.theme_use()
         style.theme_settings(current_theme, 
                 {"TNotebook.Tab": {"configure": {"padding": [95, 5]}}})
-   
+
+        # SHOW window, fully constructed
+        self.root_login.deiconify()
+    
         # Main widget
         self.loginWindow = self.root_login
         self.loginWindow.title("Login")
@@ -569,7 +576,7 @@ class AppWin:
         
     def display_time(self):
         self.var_CurrentTime.set( value= time.strftime('%H:%M:%S') )
-        self.mainwindow.after(1000, self.display_time)     
+        self.mainwindow.after(200, self.display_time)     
 
     def run(self):
         self.display_time()
