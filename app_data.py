@@ -200,7 +200,7 @@ class App_data:
         ## TODO: check database connection
         cur = self.database.cursor()
         sql = '''
-            SELECT tr.trans_date "[timestamp]", tr.trans_amount, ct.cat_name , cr.cont_name
+            SELECT tr.trans_id, tr.trans_date "[timestamp]", tr.trans_amount, ct.cat_name , cr.cont_name
             FROM transactions AS tr 
             LEFT OUTER JOIN categories AS ct
                 ON tr.cat_id = ct.cat_id
@@ -215,18 +215,11 @@ class App_data:
     
     
     def getAllTransactionsPeriod(self,startDate, endDate):
-    ## TODO: sql query is not correct
-    ## TODO: sql query is not correct
-    ## TODO: sql query is not correct
-    ## TODO: sql query is not correct
-    ## TODO: sql query is not correct
-    ## TODO: sql query is not correct
-    ## TODO: sql query is not correct
                 
         ## TODO: check database connection
         cur = self.database.cursor()
         sql = '''
-        SELECT tr.trans_date "[timestamp]", tr.trans_amount, ct.cat_name , cr.cont_name
+        SELECT tr.trans_id, tr.trans_date "[timestamp]", tr.trans_amount, ct.cat_name , cr.cont_name
         FROM transactions AS tr
         LEFT OUTER JOIN categories AS ct
                 ON tr.cat_id = ct.cat_id
@@ -243,18 +236,11 @@ class App_data:
 
 
     def getTransactionsPeriod(self, startDate, endDate, category, contractor):
-    ## TODO: sql query is not correct
-    ## TODO: sql query is not correct
-    ## TODO: sql query is not correct
-    ## TODO: sql query is not correct
-    ## TODO: sql query is not correct
-    ## TODO: sql query is not correct
-    ## TODO: sql query is not correct
     
         ## TODO: check database connection
         cur = self.database.cursor()
         sql = '''
-        SELECT tr.trans_date "[timestamp]", tr.trans_amount, ct.cat_name , cr.cont_name
+        SELECT tr.trans_id, tr.trans_date "[timestamp]", tr.trans_amount, ct.cat_name , cr.cont_name
         FROM transactions AS tr
         LEFT OUTER JOIN categories AS ct
                 ON tr.cat_id = ct.cat_id

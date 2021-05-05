@@ -19,12 +19,18 @@ _cal_datefmt = "dd.mm.yyyy"
 
 
 class AddTransaction:
-    def __init__(self,dbconn, master=None,):
+    def __init__(self, master, dbconn ):
         # build ui
-        #self.win_addtr = tk.Tk() if master is None else tk.Toplevel(master)
+        if master == None:
+            print("Cannot run independently. Pass master attribute")
+            return 1
         self.win_addtr = tk.Toplevel(master)
-        #apparently radiobuttons are not compatibile with tk.Tk
+        ## Hide window 
+        ## DO NOT forget to show at the end of init!!!
+        self.win_addtr.withdraw()     
         
+        #apparently radiobuttons are not compatibile with tk.Tk
+        self.win_addtr.grab_set()
         self.fr_addtr = ttk.Frame(self.win_addtr)
         
         self.lbfr_atdate = ttk.Labelframe(self.fr_addtr)
@@ -32,7 +38,9 @@ class AddTransaction:
         self.lbl_atdate.configure(text='Date:')
         self.lbl_atdate.grid(column='0', padx='40', pady='10', row='0')
         
-        self.cal_tr = tkcal.DateEntry(self.lbfr_atdate, date_pattern=_cal_datefmt)
+        self.cal_tr = tkcal.DateEntry(self.lbfr_atdate, 
+                                      date_pattern=_cal_datefmt,
+                                      state="readonly")
         _text_ = dt.date.today().strftime(_dt_datefmt)
         self.cal_tr.delete('0', 'end')
         self.cal_tr.insert('0', _text_)
@@ -112,9 +120,19 @@ class AddTransaction:
         self.fr_addtr.pack(expand='true', fill='both', padx='10', pady='10', side='top')
         
         self.win_addtr.configure(height='200', width='200')
-        self.win_addtr.geometry('350x400')
         self.win_addtr.resizable(False, False)
         self.win_addtr.title('Add transaction')
+
+        x_modal = 350
+        y_modal = 400
+        x_parent = master.winfo_width()
+        y_parent = master.winfo_height()
+        x = master.winfo_rootx() + (x_parent - x_modal) // 2
+        y = master.winfo_rooty() + (y_parent - y_modal) // 2
+        self.win_addtr.geometry('{}x{}+{}+{}'.format(x_modal, y_modal, x, y))
+        
+        # SHOW window, fully constructed
+        self.win_addtr.deiconify()
          
         self.radioButtonSelection()    
         self.badb=dbconn
@@ -125,7 +143,17 @@ class AddTransaction:
 
     def collectInput(self):
         #AMOUNT
-        amountABS = abs(float(self.ent_atamount.get()))
+        try:
+            amountABS = float(self.ent_atamount.get())
+        except:
+            print("No number or whatever")
+            return
+        
+        if amountABS <= 0:
+            print("Entered amount is less or equal to zero.")
+            tk.messagebox.showwarning("Enter valid data",
+                                      "Amount cannot be less or equal zero.\n\nPlease, enter positive amount.",
+                                      parent=self.mainwindow)
              
         if self.selection == 2:
             #self.amount = float("-"+ self.ent_atamount.get())

@@ -11,7 +11,7 @@ import tkcalendar as tkcal
 import time
 import datetime as dt
 from app_data import App_data 
-#from addTransaction import AddTransaction 
+from addTransaction import AddTransaction 
 
 ## both format should match
 _dt_datefmt = "%d.%m.%Y"
@@ -213,6 +213,10 @@ class AppWin:
     def __init__(self, master=None):
         # build ui
         self.root_app = tk.Tk() if master is None else tk.Toplevel(master)
+        ## Hide window 
+        ## DO NOT forget to show at the end of init!!!
+        self.root_app.withdraw()     
+        
         ### Notebook 
         self.ntb_app = ttk.Notebook(self.root_app)
         
@@ -498,40 +502,32 @@ class AppWin:
         self.root_app.resizable(True, True)
         self.root_app.title('Python cash')
 
+        # SHOW window, fully constructed
+        self.root_app.deiconify()
+
         # Main widget
         self.mainwindow = self.root_app
-#connection to data base
+        # DataHandler instance
         self.badb = App_data()
-#make it refresable
-
-
-      
-    
-    def addTrWindow(self):
-        # a = AddTransaction.collectInput
-        # print(a)
-        
-        #self.badb.addTransaction(a[0],a[1],a[2],a[3])
-        #self.fillTransactionTable()
-        pass
-
         
         
         
-    def fillTransactionTable(self):
+    def updateTransactionTable(self):
         #first clear the treeview
         for item in  self.tbl_transactions.get_children():
              self.tbl_transactions.delete(item)
         #then display data
         count = 0
         data = self.badb.getAllTransactions()
-        for row in data:           
-            self.tbl_transactions.insert('','end', values = row)
+        for row in data:
+            date = row[1].strftime(_dt_datefmt)
+            values = (date,row[2], row[3], row[4])
+            self.tbl_transactions.insert('','end', values = values)
             count+=1
      #tree view 
 
-    def h_btnTrAdd(self, widget_id):
-#        addTransactionWindow= AddTransaction(self.badb)
+    def h_btnTrAdd(self):
+        addTransactionWindow = AddTransaction(self.mainwindow, self.badb)
         pass
 
 
@@ -552,7 +548,7 @@ class AppWin:
         amount = 21.32
         
         self.badb.addTransaction(date,amount,"Lotto",None)
-        self.fillTransactionTable()
+        self.updateTransactionTable()
         
         pass
 
@@ -568,9 +564,6 @@ class AppWin:
     def h_btnCatDelete(self):
         pass
 
-    def run(self):
-        self.mainwindow.mainloop()
-
 
                 
         
@@ -579,9 +572,8 @@ class AppWin:
         self.mainwindow.after(1000, self.display_time)     
 
     def run(self):
-        self.addTrWindow()
         self.display_time()
-        self.fillTransactionTable()
+        self.updateTransactionTable()
         self.mainwindow.mainloop()    
 
 if __name__ == '__main__':
