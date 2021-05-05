@@ -241,6 +241,11 @@ class AppWin:
         self.progressbar.configure(orient='horizontal')
         self.progressbar.grid(column='2', padx='30', row='0', sticky='ew')
         self.progressbar.master.columnconfigure('2', weight=1)
+        # logout button
+        self.btn_Logout = ttk.Button(self.lbfr_account)
+        self.btn_Logout.configure(text='Logout', width='15')
+        self.btn_Logout.configure(command=self.h_btnLogout)
+        self.btn_Logout.grid(padx=10, column='3', row='0')
         self.lbfr_account.configure( text='Your account in summary')
         self.lbfr_account.grid(column='0', ipady='5', padx='10', pady='0', row='0', sticky='sew')
         self.lbfr_account.master.rowconfigure('0', pad='10', weight=0)
@@ -529,13 +534,20 @@ class AppWin:
         data = self.badb.getAllTransactions()
         for row in data:
             date = row[1].strftime(_dt_datefmt)
-            values = (date,row[2], row[3], row[4])
+            cat = row[3] if row[3] else ""
+            con = row[4] if row[4] else ""
+            values = (date, row[2], cat, con)
             self.tbl_transactions.insert('','end', values = values)
             count+=1
-     #tree view 
+
 
     def h_btnTrAdd(self):
         addTransactionWindow = AddTransaction(self.mainwindow, self.badb)
+        self.updateTransactionTable()
+        pass
+
+
+    def h_btnLogout(self):
         pass
 
 
@@ -560,8 +572,8 @@ class AppWin:
         
         pass
 
-    def tbl_transactions(self, mode=None, value=None, units=None):
-        pass
+    # def tbl_transactions(self, mode=None, value=None, units=None):
+    #     pass
 
     def h_btnCatAdd(self):
         pass
