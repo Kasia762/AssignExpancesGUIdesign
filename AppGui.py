@@ -11,7 +11,7 @@ import tkcalendar as tkcal
 import time
 import datetime as dt
 from app_data import App_data 
-from addTransaction import AddTransaction 
+#from addTransaction import AddTransaction 
 
 ## both format should match
 _dt_datefmt = "%d.%m.%Y"
@@ -256,7 +256,9 @@ class AppWin:
         self.lbl_trFrom.grid(column='0', padx='10', row='0', sticky='e')
         self.lbl_trFrom.master.rowconfigure('0', pad='10')
         self.lbl_trFrom.master.columnconfigure('0', pad='10')
-        self.cal_tr_From = tkcal.DateEntry(self.lbfr_drTransactions, date_pattern=_cal_datefmt)
+        self.cal_tr_From = tkcal.DateEntry(self.lbfr_drTransactions, 
+                                           date_pattern=_cal_datefmt,
+                                           state="readonly")
         _text_ = dt.date.today().strftime(_dt_datefmt)
         self.cal_tr_From.delete('0', 'end')
         self.cal_tr_From.insert('0', _text_)
@@ -268,7 +270,9 @@ class AppWin:
         self.label2.grid(column='0', padx='10', row='1', sticky='e')
         self.label2.master.rowconfigure('1', pad='10')
         self.label2.master.columnconfigure('0', pad='10')
-        self.cal_tr_To = tkcal.DateEntry(self.lbfr_drTransactions, date_pattern=_cal_datefmt)
+        self.cal_tr_To = tkcal.DateEntry(self.lbfr_drTransactions, 
+                                         date_pattern=_cal_datefmt,
+                                         state='readonly')
         _text_ =  dt.date.today().strftime(_dt_datefmt)
         self.cal_tr_To.delete('0', 'end')
         self.cal_tr_To.insert('0', _text_)
@@ -323,9 +327,16 @@ class AppWin:
         self.lbfr_tableTransactions = ttk.Labelframe(self.frm_transactions)
         
         self.tbl_transactions = ttk.Treeview(self.lbfr_tableTransactions)
+        self.scrb_transactionTableVert = ttk.Scrollbar(self.lbfr_tableTransactions)
+        self.scrb_transactionTableVert.configure(orient='vertical')
+        self.scrb_transactionTableVert.grid(column='1', row='0', sticky='ns')
+        self.scrb_transactionTableVert.configure(command=self.tbl_transactions.yview)
+        
         self.tbl_transactions_cols = ['column1', 'column2', 'column3', 'column4']
         self.tbl_transactions_dcols = ['column1', 'column2', 'column3', 'column4']
-        self.tbl_transactions.configure(columns=self.tbl_transactions_cols, displaycolumns=self.tbl_transactions_dcols)
+        self.tbl_transactions.configure(columns=self.tbl_transactions_cols, 
+                                        displaycolumns=self.tbl_transactions_dcols,
+                                        yscrollcommand=self.scrb_transactionTableVert.set)
         self.tbl_transactions.column('column1', anchor='w',stretch='true',width='200',minwidth='20')
         self.tbl_transactions.column('column2', anchor='w',stretch='true',width='200',minwidth='20')
         self.tbl_transactions.column('column3', anchor='w',stretch='true',width='200',minwidth='20')
@@ -475,18 +486,19 @@ class AppWin:
         self.mainwindow = self.root_app
 #connection to data base
         self.badb = App_data()
-#scroll bar      
 #make it refresable
     def addTransactionButton(self):
-        addTransactionWindow= AddTransaction(self.badb)
+#        addTransactionWindow= AddTransaction(self.badb)
+        pass
       
     
     def addTrWindow(self):
-        a = AddTransaction.collectInput
-        print(a)
+        # a = AddTransaction.collectInput
+        # print(a)
         
         #self.badb.addTransaction(a[0],a[1],a[2],a[3])
         #self.fillTransactionTable()
+        pass
 
         
     def playLotto(self):#make it as lotto

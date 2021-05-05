@@ -395,6 +395,18 @@
                         </child>
                       </object>
                     </child>
+                    <child>
+                      <object class="ttk.Scrollbar" id="scrb_transactionTableVert">
+                        <property name="command" type="command" cbtype="scroll">tbl_transactions</property>
+                        <property name="orient">vertical</property>
+                        <layout manager="grid">
+                          <property name="column">1</property>
+                          <property name="propagate">True</property>
+                          <property name="row">0</property>
+                          <property name="sticky">ns</property>
+                        </layout>
+                      </object>
+                    </child>
                   </object>
                 </child>
               </object>
@@ -431,6 +443,7 @@
                     <child>
                       <object class="ttk.Treeview" id="treeview1">
                         <property name="selectmode">extended</property>
+                        <property name="yscrollcommand" type="command" cbtype="scrollset">scrb_transactionTableVert</property>
                         <layout manager="grid">
                           <property name="column">0</property>
                           <property name="padx">3</property>
@@ -489,6 +502,17 @@
                             <property name="width">200</property>
                           </object>
                         </child>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="ttk.Scrollbar" id="scrb_transactionTableVert">
+                        <property name="orient">vertical</property>
+                        <property name="takefocus">false</property>
+                        <layout manager="grid">
+                          <property name="column">1</property>
+                          <property name="propagate">True</property>
+                          <property name="row">0</property>
+                        </layout>
                       </object>
                     </child>
                   </object>
