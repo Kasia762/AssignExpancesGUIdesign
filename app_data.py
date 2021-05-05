@@ -55,10 +55,12 @@ class App_data:
         
         ### Open connection immideally when running
         ### if no database exist, create it
-        self.database = sqlite3.connect(':memory:', 
+       # self.database = sqlite3.connect(':memory:', 
+       #                 detect_types=sqlite3.PARSE_DECLTYPES|sqlite3.PARSE_COLNAMES)
+        self.database = sqlite3.connect(self.databaseFilename, 
                         detect_types=sqlite3.PARSE_DECLTYPES|sqlite3.PARSE_COLNAMES)
         print("Loading db")
-        self.__loadDB(self.database, self.databaseFilename)
+       # self.__loadDB(self.database, self.databaseFilename)
         if not self.__tableExists(self.database, "transactions"):
             print("Creating tables in database...")
             self.__initCreateTables()
@@ -204,7 +206,7 @@ class App_data:
                 ON tr.cat_id = ct.cat_id
             LEFT OUTER JOIN contractors AS cr
                 ON tr.cont_id = cr.cont_id
-            ORDER BY tr.trans_date ASC 
+            ORDER BY tr.trans_date DESC 
             ;
             '''
         cur.execute(sql)
@@ -436,15 +438,21 @@ cur.executemany(sql,contr_list)
 database.commit()
 
 """
-
+'''
 #
 #================================================================
 #================================================================
 #  TESTING
 badb = App_data()
+date2 = dt.datetime.now()          
+res = badb.addTransaction( 
+    date2, 
+    72.56,
+    "Groceries",
+    "K-Market")
 
 
-'''val =[
+val =[
       ("01-01-2020","Lidl","12.34","Lotto"),
       ("03-02-2020","S-Market","12.24","Rent"),
       ("05-03-2020","McDonald","10.65","Groceries"),
@@ -458,13 +466,9 @@ badb = App_data()
       ("25-11-2020","electricity","126.68","Rent"),
       ("30-12-2020","Lidl","652.21","Rent")
       ]
-  
-
+ 
 
 print("\n\n\n Select all transactions and also names of category from other tables")
-
-
-
 
 ## Fill transactions from val list
 ind_date = 0
@@ -480,9 +484,10 @@ for a in val:
     amount = float( a[ ind_amount ] )
     res = badb.addTransaction( date , amount ,  a[ ind_cat  ] , a[ ind_cont ] )
     print(res)
-'''
-    
+
+   
 #------------  
+
 date2 = dt.datetime.now()          
 res = badb.addTransaction( 
     date2, 
@@ -490,16 +495,17 @@ res = badb.addTransaction(
     "Groceries",
     "K-Market")
 print(res)
+
     
 
 badb.testPrintAllTables()
+
 print("\n\n")
 print("All transactions\n")
 data = badb.getAllTransactions()
 for row in data:
     print("A", row)
-    
-    
+
 print("\n")
 print("All transactions period\n")
 data=badb.getAllTransactionsPeriod('2020-03-06', '2021-04-31')
@@ -522,11 +528,11 @@ print("\n")
 data = badb.getContractorList()
 for row in data:
     print(row)
-    
+ 
 
 
 #badb.saveDataBase()
-
+'''
 
 
 
