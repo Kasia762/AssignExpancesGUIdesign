@@ -10,7 +10,7 @@ import tkcalendar as tkcal
 import time
 import datetime as dt
 import tkinter as tk
-from app_data import App_data 
+from app_data import App_data
 
 
 ## both format should match
@@ -137,7 +137,7 @@ class AddTransaction:
         self.mainwindow = self.win_addtr
         
         ### Bindings
-        self.btn_add.bind('<Return>', lambda x: self.h_btnAdd() )
+        self.btn_add.bind('<Return>', lambda x: self.h_btnAdd(),  )
         self.mainwindow.bind('<Escape>', lambda x: self.h_btnCancel() )
         self.ent_atamount.bind('<Return>', lambda x: self.__evaluateAmountEntry() )
 
@@ -147,7 +147,7 @@ class AddTransaction:
 
     def __setAmountEntryToDefault(self):
         # Delete all and set to zero.
-        self.__setAmountEntry('0.0')
+        self.__setAmountEntry('00.00')
         self.ent_atamount.focus()
         self.ent_atamount.select_range(0, tk.END)
         
@@ -201,15 +201,21 @@ class AddTransaction:
             return
         
         #TODO: add if else statements to check if values are correct
-        date = self.cal_tr.get_date()
+        date = self.cal_tr.get_date().strftime(_dt_datefmt)
+        
         category = self.cmb_atcat.get()
         contractor = self.cmb_atcontr.get()
         amount = self.amount  
         
-        #listTransaction = list[date,amount,category,contractor]  
-        
         self.__setAmountEntryToDefault()
-        return 5
+        
+        #TODO: fix the date
+        
+        date2 = dt.datetime.now()
+        #date2="05.05.2021"
+        self.badb.addTransaction(date2,amount,category,contractor)
+    
+  
      
     def viewCatergories(self):
         data = self.badb.getCategoriesList()

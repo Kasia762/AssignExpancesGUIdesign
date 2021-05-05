@@ -517,9 +517,8 @@ class AppWin:
         
         # DataHandler instance
         self.badb = App_data()
-        
-        
-        
+                   
+            
     def updateTransactionTable(self):
         #first clear the treeview
         for item in  self.tbl_transactions.get_children():
@@ -536,6 +535,7 @@ class AppWin:
 
     def h_btnTrAdd(self):
         addTransactionWindow = AddTransaction(self.mainwindow, self.badb)
+        
         pass
 
 
@@ -543,7 +543,7 @@ class AppWin:
         pass
 
     def h_btnTrDelete(self):
-        pass
+        pass        
 
     def h_btnTrImport(self):
         pass
@@ -553,8 +553,7 @@ class AppWin:
 
     def h_btnTrLotto(self):
         date = dt.datetime.now()
-        amount = 21.32
-        
+        amount = -21.32
         self.badb.addTransaction(date,amount,"Lotto",None)
         self.updateTransactionTable()
         
