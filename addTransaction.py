@@ -106,16 +106,15 @@ class AddTransaction:
         self.lbl_atamount.grid(column='0', padx='40', pady='10', row='0')
         self.lbfr_atamount.configure(height='200', text='Type amount', width='200')
         self.lbfr_atamount.pack(anchor='center', expand='true', fill='both', padx='20', side='top')
-        
-        #exit add window with button self.btn_exit - OK,EXIT
+        # ADD BUTTON
+        self.btn_add = ttk.Button(self.fr_addtr, command = self.h_btnAdd)
+        self.btn_add.configure(text='Add')
+        self.btn_add.pack(anchor='center', padx='5', pady='15', side='right')
+        # Cancel button
         self.btn_exit = ttk.Button(self.fr_addtr, command =self.h_btnCancel)
         self.btn_exit.configure(text='Cancel')
         self.btn_exit.pack(anchor='center', padx='20', pady='15', side='right')
         
-        #ADD BUTTON
-        self.btn_add = ttk.Button(self.fr_addtr, command = self.h_btnAdd)
-        self.btn_add.configure(text='Add')
-        self.btn_add.pack(anchor='center', padx='5', pady='15', side='right')
         
         self.fr_addtr.configure(height='200', width='200')
         self.fr_addtr.pack(expand='true', fill='both', padx='10', pady='10', side='top')
@@ -140,6 +139,7 @@ class AddTransaction:
         ### Bindings
         self.btn_add.bind('<Return>', lambda x: self.h_btnAdd() )
         self.mainwindow.bind('<Escape>', lambda x: self.h_btnCancel() )
+        self.ent_atamount.bind('<Return>', lambda x: self.__evaluateAmountEntry() )
 
         self.radioButtonSelection()    
         self.badb=dbconn
@@ -147,9 +147,25 @@ class AddTransaction:
 
     def __setAmountEntryToDefault(self):
         # Delete all and set to zero.
-        self.ent_atamount.delete(0, tk.END)
-        self.ent_atamount.insert(0, '0.0')
+        self.__setAmountEntry('0.0')
+        self.ent_atamount.focus()
+        self.ent_atamount.select_range(0, tk.END)
         
+    def __setAmountEntry(self, value):
+        # Delete all and set to zero.
+        self.ent_atamount.delete(0, tk.END)
+        self.ent_atamount.insert(0, value)
+        
+    def __evaluateAmountEntry(self):
+        # Try to evaluate string in Entry as python:
+        try:
+            s = self.ent_atamount.get()
+            news = str( eval(s) )
+            self.__setAmountEntry(news)
+            self.ent_atamount.tk_focusNext().focus()
+        except:
+            print("Amoun cannot be calculated...")
+            self.ent_atamount.select_range(0, tk.END)
         
     def h_btnCancel(self):
         self.mainwindow.destroy()
