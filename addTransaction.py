@@ -19,12 +19,19 @@ _cal_datefmt = "dd.mm.yyyy"
 
 
 class AddTransaction:
-    def __init__(self,dbconn, master=None,):
+    def __init__(self, master, dbconn ):
         # build ui
-        #self.win_addtr = tk.Tk() if master is None else tk.Toplevel(master)
-        self.win_addtr = tk.Toplevel(master)
-        #apparently radiobuttons are not compatibile with tk.Tk
+        if master == None:
+            print("Cannot run independently. Pass master attribute")
+            return
         
+        self.win_addtr = tk.Toplevel(master)
+        ## Hide window 
+        ## DO NOT forget to show at the end of init!!!
+        self.win_addtr.withdraw()     
+        
+        #apparently radiobuttons are not compatibile with tk.Tk
+        self.win_addtr.grab_set()
         self.fr_addtr = ttk.Frame(self.win_addtr)
         
         self.lbfr_atdate = ttk.Labelframe(self.fr_addtr)
@@ -32,7 +39,9 @@ class AddTransaction:
         self.lbl_atdate.configure(text='Date:')
         self.lbl_atdate.grid(column='0', padx='40', pady='10', row='0')
         
-        self.cal_tr = tkcal.DateEntry(self.lbfr_atdate, date_pattern=_cal_datefmt)
+        self.cal_tr = tkcal.DateEntry(self.lbfr_atdate, 
+                                      date_pattern=_cal_datefmt,
+                                      state="readonly")
         _text_ = dt.date.today().strftime(_dt_datefmt)
         self.cal_tr.delete('0', 'end')
         self.cal_tr.insert('0', _text_)
@@ -55,11 +64,11 @@ class AddTransaction:
         self.cmb_atcat = ttk.Combobox(self.lbfr_atinfo)
         self.cmb_atcat.grid(column='1', pady='10', row='0')
         
-        self.cmb_atcontr = ttk.Label(self.lbfr_atinfo)
-        self.cmb_atcontr.configure(text='Contractor')
-        self.cmb_atcontr.grid(column='0', padx='20', pady='10', row='1')
-        self.combobox2 = ttk.Combobox(self.lbfr_atinfo)
-        self.combobox2.grid(column='1', pady='10', row='1')
+        self.lbl_atcontr = ttk.Label(self.lbfr_atinfo)
+        self.lbl_atcontr.configure(text='Contractor')
+        self.lbl_atcontr.grid(column='0', padx='20', pady='10', row='1')
+        self.cmb_atcontr = ttk.Combobox(self.lbfr_atinfo)
+        self.cmb_atcontr.grid(column='1', pady='10', row='1')
         self.lbfr_atinfo.configure(height='200', text='Add information', width='200')
         self.lbfr_atinfo.pack(anchor='center', expand='true', fill='x', padx='20', side='top')
         self.lbfr_attype = ttk.Labelframe(self.fr_addtr)
@@ -97,54 +106,109 @@ class AddTransaction:
         self.lbl_atamount.grid(column='0', padx='40', pady='10', row='0')
         self.lbfr_atamount.configure(height='200', text='Type amount', width='200')
         self.lbfr_atamount.pack(anchor='center', expand='true', fill='both', padx='20', side='top')
-        
-        #exit add window with button self.btn_exit - OK,EXIT
-        self.btn_exit = ttk.Button(self.fr_addtr, command =self.win_addtr.destroy)
-        self.btn_exit.configure(text='ok, exit')
-        self.btn_exit.pack(anchor='center', padx='20', pady='15', side='right')
-        
-        #ADD BUTTON
-        self.btn_add = ttk.Button(self.fr_addtr, command = self.collectInput)
+        # ADD BUTTON
+        self.btn_add = ttk.Button(self.fr_addtr, command = self.h_btnAdd)
         self.btn_add.configure(text='Add')
         self.btn_add.pack(anchor='center', padx='5', pady='15', side='right')
+        # Cancel button
+        self.btn_exit = ttk.Button(self.fr_addtr, command =self.h_btnCancel)
+        self.btn_exit.configure(text='Cancel')
+        self.btn_exit.pack(anchor='center', padx='20', pady='15', side='right')
+        
         
         self.fr_addtr.configure(height='200', width='200')
         self.fr_addtr.pack(expand='true', fill='both', padx='10', pady='10', side='top')
         
         self.win_addtr.configure(height='200', width='200')
-        self.win_addtr.geometry('350x400')
         self.win_addtr.resizable(False, False)
         self.win_addtr.title('Add transaction')
-         
+        ## Center window
+        x_modal = 350
+        y_modal = 400
+        x_parent = master.winfo_width()
+        y_parent = master.winfo_height()
+        x = master.winfo_rootx() + (x_parent - x_modal) // 2
+        y = master.winfo_rooty() + (y_parent - y_modal) // 2
+        self.win_addtr.geometry('{}x{}+{}+{}'.format(x_modal, y_modal, x, y))
+        
+        # SHOW window, fully constructed
+        self.win_addtr.deiconify()
+        # Main widget
+        self.mainwindow = self.win_addtr
+        
+        ### Bindings
+        self.btn_add.bind('<Return>', lambda x: self.h_btnAdd() )
+        self.mainwindow.bind('<Escape>', lambda x: self.h_btnCancel() )
+        self.ent_atamount.bind('<Return>', lambda x: self.__evaluateAmountEntry() )
+
         self.radioButtonSelection()    
         self.badb=dbconn
         self.run()
+
+    def __setAmountEntryToDefault(self):
+        # Delete all and set to zero.
+        self.__setAmountEntry('0.0')
+        self.ent_atamount.focus()
+        self.ent_atamount.select_range(0, tk.END)
+        
+    def __setAmountEntry(self, value):
+        # Delete all and set to zero.
+        self.ent_atamount.delete(0, tk.END)
+        self.ent_atamount.insert(0, value)
+        
+    def __evaluateAmountEntry(self):
+        # Try to evaluate string in Entry as python:
+        try:
+            s = self.ent_atamount.get()
+            news = str( eval(s) )
+            self.__setAmountEntry(news)
+            self.ent_atamount.tk_focusNext().focus()
+        except:
+            print("Amoun cannot be calculated...")
+            self.ent_atamount.select_range(0, tk.END)
+        
+    def h_btnCancel(self):
+        self.mainwindow.destroy()
     
     def radioButtonSelection(self):
         self.selection = self.var.get()
 
-    def collectInput(self):
+    def h_btnAdd(self):
         #AMOUNT
-        amountABS = abs(float(self.ent_atamount.get()))
+        try:
+            amountABS = float(self.ent_atamount.get())
+        except:
+            print("No number or whatever")
+            tk.messagebox.showwarning("Enter valid data",
+                                      "Amount cannot be calculated.\n\nPlease, enter correct amount.",
+                                      parent=self.mainwindow)
+            return
+        amountABS = abs(amountABS)
+        if amountABS == 0:
+            print("Entered amount is equal to zero.")
+            tk.messagebox.showwarning("Enter valid data",
+                                      "Amount cannot be  equal zero.\n\nPlease, enter positive amount.",
+                                      parent=self.mainwindow)
+            return
              
         if self.selection == 2:
-            #self.amount = float("-"+ self.ent_atamount.get())
             self.amount= float(-amountABS)
-           
-        else:#self.selection == 1:
-            #self.amount = float(self.ent_atamount.get())
+        elif self.selection == 1:
             self.amount = amountABS
+        else:
+            print("Some internal error: radiobutton not selected.")
+            raise("Radiobutton not selected")
+            return
         
         #TODO: add if else statements to check if values are correct
         date = self.cal_tr.get_date()
         category = self.cmb_atcat.get()
-        contractor = self.combobox2.get()
+        contractor = self.cmb_atcontr.get()
         amount = self.amount  
         
         #listTransaction = list[date,amount,category,contractor]  
         
-        #else print put correct values???
-        self.ent_atamount.delete(0,len(str(amount)))
+        self.__setAmountEntryToDefault()
         return 5
      
     def viewCatergories(self):
@@ -157,17 +221,16 @@ class AddTransaction:
         data = self.badb.getContractorList()
         ind_contr = 0
         tr=[i[ind_contr]for i in data]
-        self.combobox2['values']= tr   
+        self.cmb_atcontr['values']= tr   
        
             
-        # Main widget
-        self.mainwindow = self.win_addtr
         
 #amount no 0
 
     def run(self):
         #self.convertToNegative()
         #self.radioButtonSelection()
+        self.__setAmountEntryToDefault()
         self.viewContractors()
         self.viewCatergories()
         self.mainwindow.mainloop()
