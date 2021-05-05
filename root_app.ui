@@ -242,7 +242,8 @@
                       <property type="row" id="0" name="weight">0</property>
                     </layout>
                     <child>
-                      <object class="ttk.Button" id="button1">
+                      <object class="ttk.Button" id="btn_trAdd">
+                        <property name="command" type="command" cbtype="with_wid">h_btnTrAdd</property>
                         <property name="text" translatable="yes">Add</property>
                         <property name="width">20</property>
                         <layout manager="grid">
@@ -255,7 +256,8 @@
                       </object>
                     </child>
                     <child>
-                      <object class="ttk.Button" id="button2">
+                      <object class="ttk.Button" id="btn_trChange">
+                        <property name="command" type="command" cbtype="simple">h_btnTrChange</property>
                         <property name="text" translatable="yes">Change</property>
                         <property name="width">20</property>
                         <layout manager="grid">
@@ -268,7 +270,8 @@
                       </object>
                     </child>
                     <child>
-                      <object class="ttk.Button" id="button3">
+                      <object class="ttk.Button" id="btn_trDelete">
+                        <property name="command" type="command" cbtype="simple">h_btnTrDelete</property>
                         <property name="text" translatable="yes">Delete</property>
                         <property name="width">20</property>
                         <layout manager="grid">
@@ -281,7 +284,8 @@
                       </object>
                     </child>
                     <child>
-                      <object class="ttk.Button" id="button4">
+                      <object class="ttk.Button" id="btn_trImport">
+                        <property name="command" type="command" cbtype="simple">h_btnTrImport</property>
                         <property name="text" translatable="yes">Import CSV...</property>
                         <property name="width">20</property>
                         <layout manager="grid">
@@ -294,7 +298,8 @@
                       </object>
                     </child>
                     <child>
-                      <object class="ttk.Button" id="button5">
+                      <object class="ttk.Button" id="btn_trExport">
+                        <property name="command" type="command" cbtype="simple">h_btnTrExport</property>
                         <property name="text" translatable="yes">Export CSV...</property>
                         <property name="width">20</property>
                         <layout manager="grid">
@@ -307,7 +312,8 @@
                       </object>
                     </child>
                     <child>
-                      <object class="ttk.Button" id="button6">
+                      <object class="ttk.Button" id="btn_trLotto">
+                        <property name="command" type="command" cbtype="simple">h_btnTrLotto</property>
                         <property name="cursor">no</property>
                         <property name="text" translatable="yes">Play lotto</property>
                         <property name="width">15</property>
@@ -335,6 +341,7 @@
                     <child>
                       <object class="ttk.Treeview" id="tbl_transactions">
                         <property name="selectmode">extended</property>
+                        <property name="yscrollcommand" type="command" cbtype="scrollset">scrb_trTableVert</property>
                         <layout manager="grid">
                           <property name="column">0</property>
                           <property name="padx">3</property>
@@ -395,6 +402,18 @@
                         </child>
                       </object>
                     </child>
+                    <child>
+                      <object class="ttk.Scrollbar" id="scrb_trTableVert">
+                        <property name="command" type="command" cbtype="scroll">tbl_transactions</property>
+                        <property name="orient">vertical</property>
+                        <layout manager="grid">
+                          <property name="column">1</property>
+                          <property name="propagate">True</property>
+                          <property name="row">0</property>
+                          <property name="sticky">ns</property>
+                        </layout>
+                      </object>
+                    </child>
                   </object>
                 </child>
               </object>
@@ -417,7 +436,7 @@
                   <property type="row" id="0" name="weight">1</property>
                 </layout>
                 <child>
-                  <object class="ttk.Labelframe" id="labelframe3">
+                  <object class="ttk.Labelframe" id="lbfr_tableCategories">
                     <layout manager="grid">
                       <property name="column">0</property>
                       <property name="columnspan">2</property>
@@ -429,8 +448,9 @@
                       <property type="row" id="1" name="weight">1</property>
                     </layout>
                     <child>
-                      <object class="ttk.Treeview" id="treeview1">
+                      <object class="ttk.Treeview" id="tbl_categories">
                         <property name="selectmode">extended</property>
+                        <property name="yscrollcommand" type="command" cbtype="scrollset">scrb_catTableVert</property>
                         <layout manager="grid">
                           <property name="column">0</property>
                           <property name="padx">3</property>
@@ -491,6 +511,19 @@
                         </child>
                       </object>
                     </child>
+                    <child>
+                      <object class="ttk.Scrollbar" id="scrb_catTableVert">
+                        <property name="command" type="command" cbtype="scroll">tbl_categories</property>
+                        <property name="orient">vertical</property>
+                        <property name="takefocus">false</property>
+                        <layout manager="grid">
+                          <property name="column">1</property>
+                          <property name="propagate">True</property>
+                          <property name="row">0</property>
+                          <property name="sticky">ns</property>
+                        </layout>
+                      </object>
+                    </child>
                   </object>
                 </child>
                 <child>
@@ -508,7 +541,8 @@
                       <property type="row" id="0" name="weight">0</property>
                     </layout>
                     <child>
-                      <object class="ttk.Button" id="button13">
+                      <object class="ttk.Button" id="btn_catAdd">
+                        <property name="command" type="command" cbtype="simple">h_btnCatAdd</property>
                         <property name="text" translatable="yes">Add</property>
                         <property name="width">20</property>
                         <layout manager="grid">
@@ -521,7 +555,8 @@
                       </object>
                     </child>
                     <child>
-                      <object class="ttk.Button" id="button14">
+                      <object class="ttk.Button" id="btn_catChange">
+                        <property name="command" type="command" cbtype="simple">h_btnCatChange</property>
                         <property name="text" translatable="yes">Change</property>
                         <property name="width">20</property>
                         <layout manager="grid">
@@ -534,7 +569,8 @@
                       </object>
                     </child>
                     <child>
-                      <object class="ttk.Button" id="button15">
+                      <object class="ttk.Button" id="btn_catDelete">
+                        <property name="command" type="command" cbtype="simple">h_btnCatDelete</property>
                         <property name="text" translatable="yes">Delete</property>
                         <property name="width">20</property>
                         <layout manager="grid">
@@ -582,7 +618,7 @@
                     </child>
                     <child>
                       <object class="ttk.Entry" id="txt_cat_Name">
-                        <property name="text" translatable="yes">##############   CHANGE TO DATEENTRY</property>
+                        <property name="text" translatable="yes">##############   NAME of category</property>
                         <layout manager="grid">
                           <property name="column">1</property>
                           <property name="padx">0</property>
@@ -611,7 +647,7 @@
                     </child>
                     <child>
                       <object class="ttk.Entry" id="entry7">
-                        <property name="text" translatable="yes">##############   CHANGE TO DATEENTRY</property>
+                        <property name="text" translatable="yes">##############   DISABLE IT</property>
                         <layout manager="grid">
                           <property name="column">1</property>
                           <property name="propagate">True</property>
@@ -639,7 +675,7 @@
                     </child>
                     <child>
                       <object class="ttk.Entry" id="entry8">
-                        <property name="text" translatable="yes">##############   CHANGE TO DATEENTRY</property>
+                        <property name="text" translatable="yes">##############   DISABLE IT</property>
                         <layout manager="grid">
                           <property name="column">1</property>
                           <property name="propagate">True</property>

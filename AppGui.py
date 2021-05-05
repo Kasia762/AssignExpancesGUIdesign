@@ -11,7 +11,7 @@ import tkcalendar as tkcal
 import time
 import datetime as dt
 from app_data import App_data 
-from addTransaction import AddTransaction 
+#from addTransaction import AddTransaction 
 
 ## both format should match
 _dt_datefmt = "%d.%m.%Y"
@@ -256,7 +256,9 @@ class AppWin:
         self.lbl_trFrom.grid(column='0', padx='10', row='0', sticky='e')
         self.lbl_trFrom.master.rowconfigure('0', pad='10')
         self.lbl_trFrom.master.columnconfigure('0', pad='10')
-        self.cal_tr_From = tkcal.DateEntry(self.lbfr_drTransactions, date_pattern=_cal_datefmt)
+        self.cal_tr_From = tkcal.DateEntry(self.lbfr_drTransactions, 
+                                           date_pattern=_cal_datefmt,
+                                           state="readonly")
         _text_ = dt.date.today().strftime(_dt_datefmt)
         self.cal_tr_From.delete('0', 'end')
         self.cal_tr_From.insert('0', _text_)
@@ -268,7 +270,9 @@ class AppWin:
         self.label2.grid(column='0', padx='10', row='1', sticky='e')
         self.label2.master.rowconfigure('1', pad='10')
         self.label2.master.columnconfigure('0', pad='10')
-        self.cal_tr_To = tkcal.DateEntry(self.lbfr_drTransactions, date_pattern=_cal_datefmt)
+        self.cal_tr_To = tkcal.DateEntry(self.lbfr_drTransactions, 
+                                         date_pattern=_cal_datefmt,
+                                         state='readonly')
         _text_ =  dt.date.today().strftime(_dt_datefmt)
         self.cal_tr_To.delete('0', 'end')
         self.cal_tr_To.insert('0', _text_)
@@ -288,34 +292,40 @@ class AppWin:
         self.lbfr_drTransactions.master.rowconfigure('0', pad='10', weight=0)
         self.lbfr_drTransactions.master.columnconfigure('0', pad='0', weight=1)
         self.lbfr_Operations = ttk.Labelframe(self.frm_transactions)
-        self.button1 = ttk.Button(self.lbfr_Operations, command = self.addTransactionButton)
-        self.button1.configure(text='Add', width='20')
-        self.button1.grid(column='0', row='0')
-        self.button1.master.rowconfigure('0', pad='10')
-        self.button1.master.columnconfigure('0', pad='10')
-        self.button2 = ttk.Button(self.lbfr_Operations)
-        self.button2.configure(text='Change', width='20')
-        self.button2.grid(column='0', row='1')
-        self.button2.master.rowconfigure('1', pad='10')
-        self.button2.master.columnconfigure('0', pad='10')
-        self.button3 = ttk.Button(self.lbfr_Operations)
-        self.button3.configure(text='Delete', width='20')
-        self.button3.grid(column='0', row='2')
-        self.button3.master.rowconfigure('2', pad='10')
-        self.button3.master.columnconfigure('0', pad='10')
-        self.button4 = ttk.Button(self.lbfr_Operations)
-        self.button4.configure(text='Import CSV...', width='20')
-        self.button4.grid(column='1', row='0')
-        self.button4.master.rowconfigure('0', pad='10')
-        self.button4.master.columnconfigure('1', pad='25')
-        self.button5 = ttk.Button(self.lbfr_Operations)
-        self.button5.configure(text='Export CSV...', width='20')
-        self.button5.grid(column='1', row='1')
-        self.button5.master.rowconfigure('1', pad='10')
-        self.button5.master.columnconfigure('1', pad='25')
-        self.button6 = ttk.Button(self.lbfr_Operations, command = self.playLotto)
-        self.button6.configure(cursor='no', text='Play lotto', width='15')
-        self.button6.grid(column='1', row='2')
+        self.btn_trAdd = ttk.Button(self.lbfr_Operations)
+        self.btn_trAdd.configure(text='Add', width='20')
+        self.btn_trAdd.grid(column='0', row='0')
+        self.btn_trAdd.master.rowconfigure('0', pad='10')
+        self.btn_trAdd.master.columnconfigure('0', pad='10')
+        self.btn_trAdd.configure(command=self.h_btnTrAdd)
+        self.btn_trChange = ttk.Button(self.lbfr_Operations)
+        self.btn_trChange.configure(text='Change', width='20')
+        self.btn_trChange.grid(column='0', row='1')
+        self.btn_trChange.master.rowconfigure('1', pad='10')
+        self.btn_trChange.master.columnconfigure('0', pad='10')
+        self.btn_trChange.configure(command=self.h_btnTrChange)
+        self.btn_trDelete = ttk.Button(self.lbfr_Operations)
+        self.btn_trDelete.configure(text='Delete', width='20')
+        self.btn_trDelete.grid(column='0', row='2')
+        self.btn_trDelete.master.rowconfigure('2', pad='10')
+        self.btn_trDelete.master.columnconfigure('0', pad='10')
+        self.btn_trDelete.configure(command=self.h_btnTrDelete)
+        self.btn_trImport = ttk.Button(self.lbfr_Operations)
+        self.btn_trImport.configure(text='Import CSV...', width='20')
+        self.btn_trImport.grid(column='1', row='0')
+        self.btn_trImport.master.rowconfigure('0', pad='10')
+        self.btn_trImport.master.columnconfigure('1', pad='25')
+        self.btn_trImport.configure(command=self.h_btnTrImport)
+        self.btn_trExport = ttk.Button(self.lbfr_Operations)
+        self.btn_trExport.configure(text='Export CSV...', width='20')
+        self.btn_trExport.grid(column='1', row='1')
+        self.btn_trExport.master.rowconfigure('1', pad='10')
+        self.btn_trExport.master.columnconfigure('1', pad='25')
+        self.btn_trExport.configure(command=self.h_btnTrExport)
+        self.btn_trLotto = ttk.Button(self.lbfr_Operations)
+        self.btn_trLotto.configure(cursor='no', text='Play lotto', width='15')
+        self.btn_trLotto.grid(column='1', row='2')
+        self.btn_trLotto.configure(command=self.h_btnTrLotto)
         self.lbfr_Operations.configure(height='0', text='Commands', width='200')
         self.lbfr_Operations.grid(column='1', padx='5', row='0', sticky='ns')
         self.lbfr_Operations.master.rowconfigure('0', pad='10', weight=0)
@@ -323,9 +333,16 @@ class AppWin:
         self.lbfr_tableTransactions = ttk.Labelframe(self.frm_transactions)
         
         self.tbl_transactions = ttk.Treeview(self.lbfr_tableTransactions)
+        self.scrb_trTableVert = ttk.Scrollbar(self.lbfr_tableTransactions)
+        self.scrb_trTableVert.configure(orient='vertical')
+        self.scrb_trTableVert.grid(column='1', row='0', sticky='ns')
+        self.scrb_trTableVert.configure(command=self.tbl_transactions.yview)
+        
         self.tbl_transactions_cols = ['column1', 'column2', 'column3', 'column4']
         self.tbl_transactions_dcols = ['column1', 'column2', 'column3', 'column4']
-        self.tbl_transactions.configure(columns=self.tbl_transactions_cols, displaycolumns=self.tbl_transactions_dcols)
+        self.tbl_transactions.configure(columns=self.tbl_transactions_cols, 
+                                        displaycolumns=self.tbl_transactions_dcols,
+                                        yscrollcommand=self.scrb_trTableVert.set)
         self.tbl_transactions.column('column1', anchor='w',stretch='true',width='200',minwidth='20')
         self.tbl_transactions.column('column2', anchor='w',stretch='true',width='200',minwidth='20')
         self.tbl_transactions.column('column3', anchor='w',stretch='true',width='200',minwidth='20')
@@ -350,41 +367,51 @@ class AppWin:
         
         ### Categories tab
         self.frm_categories = ttk.Frame(self.ntb_app)
-        self.labelframe3 = ttk.Labelframe(self.frm_categories)
-        self.treeview1 = ttk.Treeview(self.labelframe3)
-        self.treeview1_cols = ['column5', 'column6', 'column7', 'column8']
-        self.treeview1_dcols = ['column5', 'column6', 'column7', 'column8']
-        self.treeview1.configure(columns=self.treeview1_cols, displaycolumns=self.treeview1_dcols)
-        self.treeview1.column('column5', anchor='w',stretch='true',width='200',minwidth='20')
-        self.treeview1.column('column6', anchor='w',stretch='true',width='200',minwidth='20')
-        self.treeview1.column('column7', anchor='w',stretch='true',width='200',minwidth='20')
-        self.treeview1.column('column8', anchor='w',stretch='true',width='200',minwidth='20')
-        self.treeview1.heading('column5', anchor='w',text='column1')
-        self.treeview1.heading('column6', anchor='w',text='column2')
-        self.treeview1.heading('column7', anchor='w',text='column3')
-        self.treeview1.heading('column8', anchor='w',text='column4')
-        self.treeview1.grid(column='0', padx='3', pady='3', row='0', sticky='nsew')
-        self.treeview1.master.rowconfigure('0', weight=1)
-        self.treeview1.master.columnconfigure('0', weight=1)
-        self.labelframe3.grid(column='0', columnspan='2', padx='5', row='1', sticky='nsew')
-        self.labelframe3.master.rowconfigure('1', weight=1)
-        self.labelframe3.master.columnconfigure('0', pad='0', weight=1)
+        self.lbfr_tableCategories = ttk.Labelframe(self.frm_categories)
+        # table
+        self.tbl_categories = ttk.Treeview(self.lbfr_tableCategories)
+        self.scrb_catTableVert = ttk.Scrollbar(self.lbfr_tableCategories)
+        self.scrb_catTableVert.configure(orient='vertical', takefocus=False)
+        self.scrb_catTableVert.grid(column='1', row='0', sticky='ns')
+        self.scrb_catTableVert.configure(command=self.tbl_categories.yview)
+        self.tbl_categories_cols = ['column5', 'column6', 'column7', 'column8']
+        self.tbl_categories_dcols = ['column5', 'column6', 'column7', 'column8']
+        self.tbl_categories.configure(columns=self.tbl_categories_cols, 
+                                      displaycolumns=self.tbl_categories_dcols,
+                                        yscrollcommand=self.scrb_catTableVert.set)
+        self.tbl_categories.column('column5', anchor='w',stretch='true',width='200',minwidth='20')
+        self.tbl_categories.column('column6', anchor='w',stretch='true',width='200',minwidth='20')
+        self.tbl_categories.column('column7', anchor='w',stretch='true',width='200',minwidth='20')
+        self.tbl_categories.column('column8', anchor='w',stretch='true',width='200',minwidth='20')
+        self.tbl_categories.heading('column5', anchor='w',text='column1')
+        self.tbl_categories.heading('column6', anchor='w',text='column2')
+        self.tbl_categories.heading('column7', anchor='w',text='column3')
+        self.tbl_categories.heading('column8', anchor='w',text='column4')
+        self.tbl_categories.grid(column='0', padx='3', pady='3', row='0', sticky='nsew')
+        self.tbl_categories.master.rowconfigure('0', weight='1')
+        self.tbl_categories.master.columnconfigure('0', weight='1')
+        self.lbfr_tableCategories.grid(column='0', columnspan='2', padx='5', row='1', sticky='nsew')
+        self.lbfr_tableCategories.master.rowconfigure('1', weight='1')
+        self.lbfr_tableCategories.master.columnconfigure('0', pad='0', weight='1')
         self.lbfr_cat_Commands = ttk.Labelframe(self.frm_categories)
-        self.button13 = ttk.Button(self.lbfr_cat_Commands)
-        self.button13.configure(text='Add', width='20')
-        self.button13.grid(column='0', row='0')
-        self.button13.master.rowconfigure('0', pad='10')
-        self.button13.master.columnconfigure('0', pad='10')
-        self.button14 = ttk.Button(self.lbfr_cat_Commands)
-        self.button14.configure(text='Change', width='20')
-        self.button14.grid(column='0', row='1')
-        self.button14.master.rowconfigure('1', pad='10')
-        self.button14.master.columnconfigure('0', pad='10')
-        self.button15 = ttk.Button(self.lbfr_cat_Commands)
-        self.button15.configure(text='Delete', width='20')
-        self.button15.grid(column='0', row='2')
-        self.button15.master.rowconfigure('2', pad='10')
-        self.button15.master.columnconfigure('0', pad='10')
+        self.btn_catAdd = ttk.Button(self.lbfr_cat_Commands)
+        self.btn_catAdd.configure(text='Add', width='20')
+        self.btn_catAdd.grid(column='0', row='0')
+        self.btn_catAdd.master.rowconfigure('0', pad='10')
+        self.btn_catAdd.master.columnconfigure('0', pad='10')
+        self.btn_catAdd.configure(command=self.h_btnCatAdd)
+        self.btn_catChange = ttk.Button(self.lbfr_cat_Commands)
+        self.btn_catChange.configure(text='Change', width='20')
+        self.btn_catChange.grid(column='0', row='1')
+        self.btn_catChange.master.rowconfigure('1', pad='10')
+        self.btn_catChange.master.columnconfigure('0', pad='10')
+        self.btn_catChange.configure(command=self.h_btnCatChange)
+        self.btn_catDelete = ttk.Button(self.lbfr_cat_Commands)
+        self.btn_catDelete.configure(text='Delete', width='20')
+        self.btn_catDelete.grid(column='0', row='2')
+        self.btn_catDelete.master.rowconfigure('2', pad='10')
+        self.btn_catDelete.master.columnconfigure('0', pad='10')
+        self.btn_catDelete.configure(command=self.h_btnCatDelete)
         self.lbfr_cat_Commands.configure(height='0', text='Commands', width='200')
         self.lbfr_cat_Commands.grid(column='1', padx='5', row='0', sticky='ns')
         self.lbfr_cat_Commands.master.rowconfigure('0', pad='10', weight=0)
@@ -475,26 +502,20 @@ class AppWin:
         self.mainwindow = self.root_app
 #connection to data base
         self.badb = App_data()
-#scroll bar      
 #make it refresable
-    def addTransactionButton(self):
-        addTransactionWindow= AddTransaction(self.badb)
+
+
       
     
     def addTrWindow(self):
-        a = AddTransaction.collectInput
-        print(a)
+        # a = AddTransaction.collectInput
+        # print(a)
         
         #self.badb.addTransaction(a[0],a[1],a[2],a[3])
         #self.fillTransactionTable()
+        pass
 
         
-    def playLotto(self):#make it as lotto
-        date = dt.datetime.now()
-        amount = 21.32
-        
-        self.badb.addTransaction(date,amount,"Lotto",None)
-        self.fillTransactionTable()
         
         
     def fillTransactionTable(self):
@@ -508,6 +529,49 @@ class AppWin:
             self.tbl_transactions.insert('','end', values = row)
             count+=1
      #tree view 
+
+    def h_btnTrAdd(self, widget_id):
+#        addTransactionWindow= AddTransaction(self.badb)
+        pass
+
+
+    def h_btnTrChange(self):
+        pass
+
+    def h_btnTrDelete(self):
+        pass
+
+    def h_btnTrImport(self):
+        pass
+
+    def h_btnTrExport(self):
+        pass
+
+    def h_btnTrLotto(self):
+        date = dt.datetime.now()
+        amount = 21.32
+        
+        self.badb.addTransaction(date,amount,"Lotto",None)
+        self.fillTransactionTable()
+        
+        pass
+
+    def tbl_transactions(self, mode=None, value=None, units=None):
+        pass
+
+    def h_btnCatAdd(self):
+        pass
+
+    def h_btnCatChange(self):
+        pass
+
+    def h_btnCatDelete(self):
+        pass
+
+    def run(self):
+        self.mainwindow.mainloop()
+
+
                 
         
     def display_time(self):
