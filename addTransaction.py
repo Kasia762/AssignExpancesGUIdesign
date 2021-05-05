@@ -108,12 +108,12 @@ class AddTransaction:
         self.lbfr_atamount.pack(anchor='center', expand='true', fill='both', padx='20', side='top')
         
         #exit add window with button self.btn_exit - OK,EXIT
-        self.btn_exit = ttk.Button(self.fr_addtr, command =self.win_addtr.destroy)
+        self.btn_exit = ttk.Button(self.fr_addtr, command =self.h_btnCancel)
         self.btn_exit.configure(text='Cancel')
         self.btn_exit.pack(anchor='center', padx='20', pady='15', side='right')
         
         #ADD BUTTON
-        self.btn_add = ttk.Button(self.fr_addtr, command = self.collectInput)
+        self.btn_add = ttk.Button(self.fr_addtr, command = self.h_btnAdd)
         self.btn_add.configure(text='Add')
         self.btn_add.pack(anchor='center', padx='5', pady='15', side='right')
         
@@ -136,21 +136,28 @@ class AddTransaction:
         self.win_addtr.deiconify()
         # Main widget
         self.mainwindow = self.win_addtr
+        
+        ### Bindings
+        self.btn_add.bind('<Return>', lambda x: self.h_btnAdd() )
+        self.mainwindow.bind('<Escape>', lambda x: self.h_btnCancel() )
 
         self.radioButtonSelection()    
         self.badb=dbconn
         self.run()
 
     def __setAmountEntryToDefault(self):
-        #else print put correct values???
+        # Delete all and set to zero.
         self.ent_atamount.delete(0, tk.END)
         self.ent_atamount.insert(0, '0.0')
         
+        
+    def h_btnCancel(self):
+        self.mainwindow.destroy()
     
     def radioButtonSelection(self):
         self.selection = self.var.get()
 
-    def collectInput(self):
+    def h_btnAdd(self):
         #AMOUNT
         try:
             amountABS = float(self.ent_atamount.get())

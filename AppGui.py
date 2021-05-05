@@ -514,6 +514,7 @@ class AppWin:
 
         # Main widget
         self.mainwindow = self.root_app
+        
         # DataHandler instance
         self.badb = App_data()
         
