@@ -135,7 +135,7 @@ class App_data:
             self.cur.execute('''
                         CREATE TABLE transactions (
                             trans_id INTEGER NOT NULL  PRIMARY KEY,
-                            trans_date DATETIME NOT NULL,
+                            trans_date DATE NOT NULL,
                             trans_amount REAL NOT NULL,
                             cont_id INTEGER,
                             cat_id INTEGER,
@@ -200,7 +200,7 @@ class App_data:
         ## TODO: check database connection
         cur = self.database.cursor()
         sql = '''
-            SELECT tr.trans_id, tr.trans_date "[timestamp]", tr.trans_amount, ct.cat_name , cr.cont_name
+            SELECT tr.trans_id, tr.trans_date, tr.trans_amount, ct.cat_name , cr.cont_name
             FROM transactions AS tr 
             LEFT OUTER JOIN categories AS ct
                 ON tr.cat_id = ct.cat_id
@@ -219,7 +219,7 @@ class App_data:
         ## TODO: check database connection
         cur = self.database.cursor()
         sql = '''
-        SELECT tr.trans_id, tr.trans_date "[timestamp]", tr.trans_amount, ct.cat_name , cr.cont_name
+        SELECT tr.trans_id, tr.trans_date, tr.trans_amount, ct.cat_name , cr.cont_name
         FROM transactions AS tr
         LEFT OUTER JOIN categories AS ct
                 ON tr.cat_id = ct.cat_id
@@ -228,7 +228,7 @@ class App_data:
         WHERE tr.trans_date BETWEEN ? AND ?
         ORDER BY tr.trans_date DESC
         '''
-        period = (startDate, endDate)
+        period = (startDate, endDate,)
         cur.execute(sql,period)
         data = cur.fetchall()
         return data
@@ -240,7 +240,7 @@ class App_data:
         ## TODO: check database connection
         cur = self.database.cursor()
         sql = '''
-        SELECT tr.trans_id, tr.trans_date "[timestamp]", tr.trans_amount, ct.cat_name , cr.cont_name
+        SELECT tr.trans_id, tr.trans_date, tr.trans_amount, ct.cat_name , cr.cont_name
         FROM transactions AS tr
         LEFT OUTER JOIN categories AS ct
                 ON tr.cat_id = ct.cat_id
@@ -266,6 +266,7 @@ class App_data:
             '''
         cur.execute(sql)
         data = cur.fetchone()[0]
+        data = data if data else 0.0
         return data
 
 
