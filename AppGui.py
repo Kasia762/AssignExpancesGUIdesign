@@ -528,7 +528,11 @@ class AppWin:
         self.root_app.minsize(700, 400)
         self.root_app.resizable(True, True)
         self.root_app.title('Python cash')
-
+        
+        ### BINDs
+        self.cal_tr_To.bind('<<DateEntrySelected>>', lambda x: self.updateTransactionTable() )
+        self.cal_tr_From.bind('<<DateEntrySelected>>', lambda x: self.updateTransactionTable() )
+        
         # SHOW window, fully constructed
         self.root_app.deiconify()
 
@@ -546,7 +550,10 @@ class AppWin:
              self.tbl_transactions.delete(item)
         #then display data
         count = 0
-        data = self.badb.getAllTransactions()
+        datefr = self.cal_tr_From.get_date()
+        dateto = self.cal_tr_To.get_date()
+        
+        data = self.badb.getAllTransactionsPeriod(datefr, dateto)
         for row in data:
             date = row[1].strftime(_dt_datefmt)
             cat = row[3] if row[3] else ""
@@ -596,7 +603,7 @@ class AppWin:
         date = dt.datetime.now()
         amount = 21.32
         
-        self.badb.addTransaction(date,amount,"Lotto",None)
+        self.badb.addTransaction(date, amount, "Lotto", None)
         self.updateTransactionTable()
         
         pass
