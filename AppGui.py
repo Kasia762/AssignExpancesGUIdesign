@@ -235,12 +235,17 @@ class AppWin:
         self.lbl_balance.grid(column='0', padx='10', pady='5', row='0')
         self.lbl_percentage = ttk.Label(self.lbfr_account)
         self.var_CurrentBalance = tk.StringVar(value="...")
-        self.lbl_percentage.configure(textvariable=self.var_CurrentBalance)
+        self.lbl_percentage.configure(font='{Arial} 12 {bold}', textvariable=self.var_CurrentBalance)
         self.lbl_percentage.grid(column='1', row='0')
         self.progressbar = ttk.Progressbar(self.lbfr_account)
         self.progressbar.configure(orient='horizontal')
         self.progressbar.grid(column='2', padx='30', row='0', sticky='ew')
         self.progressbar.master.columnconfigure('2', weight=1)
+        # logout button
+        self.btn_Logout = ttk.Button(self.lbfr_account)
+        self.btn_Logout.configure(text='Logout', width='15')
+        self.btn_Logout.configure(command=self.h_btnLogout)
+        self.btn_Logout.grid(padx=10, column='3', row='0')
         self.lbfr_account.configure( text='Your account in summary')
         self.lbfr_account.grid(column='0', ipady='5', padx='10', pady='0', row='0', sticky='sew')
         self.lbfr_account.master.rowconfigure('0', pad='10', weight=0)
@@ -349,19 +354,19 @@ class AppWin:
         self.scrb_trTableVert.grid(column='1', row='0', sticky='ns')
         self.scrb_trTableVert.configure(command=self.tbl_transactions.yview)
         
-        self.tbl_transactions_cols = ['column1', 'column2', 'column3', 'column4']
-        self.tbl_transactions_dcols = ['column1', 'column2', 'column3', 'column4']
+        self.tbl_transactions_cols = ['#1', '#2', '#3', '#4']
+        self.tbl_transactions_dcols = ['#1', '#2', '#3', '#4']
         self.tbl_transactions.configure(columns=self.tbl_transactions_cols, 
                                         displaycolumns=self.tbl_transactions_dcols,
                                         yscrollcommand=self.scrb_trTableVert.set)
-        self.tbl_transactions.column('column1', anchor='w',stretch='true',width='200',minwidth='20')
-        self.tbl_transactions.column('column2', anchor='w',stretch='true',width='200',minwidth='20')
-        self.tbl_transactions.column('column3', anchor='w',stretch='true',width='200',minwidth='20')
-        self.tbl_transactions.column('column4', anchor='w',stretch='true',width='200',minwidth='20')
-        self.tbl_transactions.heading('column1', anchor='w',text='Date')
-        self.tbl_transactions.heading('column2', anchor='w',text='Amount')
-        self.tbl_transactions.heading('column3', anchor='w',text='Category')
-        self.tbl_transactions.heading('column4', anchor='w',text='Contractor')
+        self.tbl_transactions.column('#1', anchor='w',stretch='true',width='200',minwidth='20')
+        self.tbl_transactions.column('#2', anchor='w',stretch='true',width='200',minwidth='20')
+        self.tbl_transactions.column('#3', anchor='w',stretch='true',width='200',minwidth='20')
+        self.tbl_transactions.column('#4', anchor='w',stretch='true',width='200',minwidth='20')
+        self.tbl_transactions.heading('#1', anchor='w',text='Date')
+        self.tbl_transactions.heading('#2', anchor='w',text='Amount')
+        self.tbl_transactions.heading('#3', anchor='w',text='Category')
+        self.tbl_transactions.heading('#4', anchor='w',text='Contractor')
         self.tbl_transactions['show'] = 'headings'
         self.tbl_transactions.grid(column='0', padx='3', pady='3', row='0', sticky='nsew')
         self.tbl_transactions.master.rowconfigure('0', weight=1)
@@ -385,19 +390,16 @@ class AppWin:
         self.scrb_catTableVert.configure(orient='vertical', takefocus=False)
         self.scrb_catTableVert.grid(column='1', row='0', sticky='ns')
         self.scrb_catTableVert.configure(command=self.tbl_categories.yview)
-        self.tbl_categories_cols = ['column5', 'column6', 'column7', 'column8']
-        self.tbl_categories_dcols = ['column5', 'column6', 'column7', 'column8']
+        self.tbl_categories_cols = ['#1', '#2']
+        self.tbl_categories_dcols = ['#1', '#2']
         self.tbl_categories.configure(columns=self.tbl_categories_cols, 
                                       displaycolumns=self.tbl_categories_dcols,
-                                        yscrollcommand=self.scrb_catTableVert.set)
-        self.tbl_categories.column('column5', anchor='w',stretch='true',width='200',minwidth='20')
-        self.tbl_categories.column('column6', anchor='w',stretch='true',width='200',minwidth='20')
-        self.tbl_categories.column('column7', anchor='w',stretch='true',width='200',minwidth='20')
-        self.tbl_categories.column('column8', anchor='w',stretch='true',width='200',minwidth='20')
-        self.tbl_categories.heading('column5', anchor='w',text='column1')
-        self.tbl_categories.heading('column6', anchor='w',text='column2')
-        self.tbl_categories.heading('column7', anchor='w',text='column3')
-        self.tbl_categories.heading('column8', anchor='w',text='column4')
+                                      yscrollcommand=self.scrb_catTableVert.set)
+        self.tbl_categories.column('#1', anchor='w',stretch='false',width='40',minwidth='40')
+        self.tbl_categories.column('#2', anchor='w',stretch='true',width='200',minwidth='200')
+        self.tbl_categories.heading('#1', anchor='w',text='ID')
+        self.tbl_categories.heading('#2', anchor='w',text='Name')
+        self.tbl_categories['show'] = 'headings'
         self.tbl_categories.grid(column='0', padx='3', pady='3', row='0', sticky='nsew')
         self.tbl_categories.master.rowconfigure('0', weight='1')
         self.tbl_categories.master.columnconfigure('0', weight='1')
@@ -439,30 +441,30 @@ class AppWin:
         self.txt_cat_Name.grid(column='1', padx='0', row='0', sticky='w')
         self.txt_cat_Name.master.rowconfigure('0', pad='10')
         self.txt_cat_Name.master.columnconfigure('1', pad='20', weight=1)
-        self.label9 = ttk.Label(self.lbfr_cat_data)
-        self.label9.configure(text='To:')
-        self.label9.grid(column='0', padx='10', row='1', sticky='e')
-        self.label9.master.rowconfigure('1', pad='10')
-        self.label9.master.columnconfigure('0', pad='10')
-        self.entry7 = ttk.Entry(self.lbfr_cat_data)
-        _text_ = ''
-        self.entry7.delete('0', 'end')
-        self.entry7.insert('0', _text_)
-        self.entry7.grid(column='1', row='1', sticky='w')
-        self.entry7.master.rowconfigure('1', pad='10')
-        self.entry7.master.columnconfigure('1', pad='20', weight=1)
-        self.label10 = ttk.Label(self.lbfr_cat_data)
-        self.label10.configure(text='To:')
-        self.label10.grid(column='0', padx='10', row='2', sticky='e')
-        self.label10.master.rowconfigure('1', pad='10')
-        self.label10.master.columnconfigure('0', pad='10')
-        self.entry8 = ttk.Entry(self.lbfr_cat_data)
-        _text_ = ''
-        self.entry8.delete('0', 'end')
-        self.entry8.insert('0', _text_)
-        self.entry8.grid(column='1', row='2', sticky='w')
-        self.entry8.master.rowconfigure('1', pad='10')
-        self.entry8.master.columnconfigure('1', pad='20', weight=1)
+        # self.label9 = ttk.Label(self.lbfr_cat_data)
+        # self.label9.configure(text='To:')
+        # self.label9.grid(column='0', padx='10', row='1', sticky='e')
+        # self.label9.master.rowconfigure('1', pad='10')
+        # self.label9.master.columnconfigure('0', pad='10')
+        # self.entry7 = ttk.Entry(self.lbfr_cat_data)
+        # _text_ = ''
+        # self.entry7.delete('0', 'end')
+        # self.entry7.insert('0', _text_)
+        # self.entry7.grid(column='1', row='1', sticky='w')
+        # self.entry7.master.rowconfigure('1', pad='10')
+        # self.entry7.master.columnconfigure('1', pad='20', weight=1)
+        # self.label10 = ttk.Label(self.lbfr_cat_data)
+        # self.label10.configure(text='To:')
+        # self.label10.grid(column='0', padx='10', row='2', sticky='e')
+        # self.label10.master.rowconfigure('1', pad='10')
+        # self.label10.master.columnconfigure('0', pad='10')
+        # self.entry8 = ttk.Entry(self.lbfr_cat_data)
+        # _text_ = ''
+        # self.entry8.delete('0', 'end')
+        # self.entry8.insert('0', _text_)
+        # self.entry8.grid(column='1', row='2', sticky='w')
+        # self.entry8.master.rowconfigure('1', pad='10')
+        # self.entry8.master.columnconfigure('1', pad='20', weight=1)
         self.lbfr_cat_data.configure(height='0', text='Data for operations')
         self.lbfr_cat_data.grid(column='0', ipadx='0', ipady='0', padx='5', pady='0', row='0', sticky='nsew')
         self.lbfr_cat_data.master.rowconfigure('0', pad='10', weight=0)
@@ -476,19 +478,37 @@ class AppWin:
         ### Lotto tab
         self.frm_lotto = ttk.Frame(self.ntb_app)
         self.lbfr_weather = ttk.Labelframe(self.frm_lotto)
-        self.calendar = tkcal.Calendar(self.lbfr_weather)
+        self.var_Calendar = tk.StringVar(value='--.--.----')
+        self.calendar = tkcal.Calendar(self.lbfr_weather, 
+                                       selectmode='day', date_pattern=_cal_datefmt,
+                                       textvariable=self.var_Calendar)
         self.calendar.grid(column='0', padx='10', pady='10', row='2')
         self.lbfr_weather.configure(text='Calendar')
         self.lbfr_weather.grid(column='0', row='0', sticky='nsew')
         self.labelframe5 = ttk.Labelframe(self.frm_lotto)
         self.label6 = ttk.Label(self.labelframe5)
         self.label6.configure(justify='center', text='weather, icon, location')
-        self.label6.grid(column='0', row='0', sticky='e')
+        self.label6.grid(column='0', row='0', 
+                         columnspan='2', sticky='',
+                         pady=20)
+        # time
+        self.lbl_lt_time = ttk.Label(self.labelframe5)
+        self.lbl_lt_time.configure(justify='center', text='Current time:')
+        self.lbl_lt_time.grid(column='0', row='1', sticky='e')
         self.label7 = ttk.Label(self.labelframe5)
         self.var_CurrentTime = tk.StringVar(value='eeef')
-        self.label7.configure(background='lightgreen', font='{Arial} 16 {}', foreground='black', justify='center')
+        self.label7.configure( font='{Arial} 16 {}', foreground='black', justify='center')
         self.label7.configure(textvariable=self.var_CurrentTime, width='20')
-        self.label7.grid(column='0', row='1')
+        self.label7.grid(column='1', row='1', pady=10)
+        # date
+        self.lbl_lt_date = ttk.Label(self.labelframe5)
+        self.lbl_lt_date.configure(justify='center', text='Selected date:')
+        self.lbl_lt_date.grid(column='0', row='2', sticky='e')
+        self.lbl_lt_cal = ttk.Label(self.labelframe5)
+        self.lbl_lt_cal.configure(font='{Arial} 16 {}', foreground='black', justify='center')
+        self.lbl_lt_cal.configure(textvariable=self.var_Calendar, width='20')
+        self.lbl_lt_cal.grid(column='1', row='2')
+        #
         self.labelframe5.configure(text='Weather')
         self.labelframe5.grid(column='1', row='0', sticky='nsew')
         self.labelframe5.master.columnconfigure('1', weight=1)
@@ -508,7 +528,11 @@ class AppWin:
         self.root_app.minsize(700, 400)
         self.root_app.resizable(True, True)
         self.root_app.title('Python cash')
-
+        
+        ### BINDs
+        self.cal_tr_To.bind('<<DateEntrySelected>>', lambda x: self.updateTransactionTable() )
+        self.cal_tr_From.bind('<<DateEntrySelected>>', lambda x: self.updateTransactionTable() )
+        
         # SHOW window, fully constructed
         self.root_app.deiconify()
 
@@ -526,16 +550,40 @@ class AppWin:
              self.tbl_transactions.delete(item)
         #then display data
         count = 0
-        data = self.badb.getAllTransactions()
+        datefr = self.cal_tr_From.get_date()
+        dateto = self.cal_tr_To.get_date()
+        
+        data = self.badb.getAllTransactionsPeriod(datefr, dateto)
         for row in data:
             date = row[1].strftime(_dt_datefmt)
-            values = (date,row[2], row[3], row[4])
+            cat = row[3] if row[3] else ""
+            con = row[4] if row[4] else ""
+            values = (date, row[2], cat, con)
             self.tbl_transactions.insert('','end', values = values)
             count+=1
-     #tree view 
+
+
+    def updateCategoriesTable(self):
+        #first clear the treeview
+        for item in  self.tbl_categories.get_children():
+             self.tbl_categories.delete(item)
+        #then display data
+        data = self.badb.getCategoriesList()
+        for row in data:
+            cat = row[0] if row[0] else ""
+            _id = row[1] if row[1] else ""
+            values = (_id, cat)
+            self.tbl_categories.insert('','end', values = values)
+
+
 
     def h_btnTrAdd(self):
         addTransactionWindow = AddTransaction(self.mainwindow, self.badb)
+        self.updateTransactionTable()
+        pass
+
+
+    def h_btnLogout(self):
         pass
 
 
@@ -555,13 +603,13 @@ class AppWin:
         date = dt.datetime.now()
         amount = 21.32
         
-        self.badb.addTransaction(date,amount,"Lotto",None)
+        self.badb.addTransaction(date, amount, "Lotto", None)
         self.updateTransactionTable()
         
         pass
 
-    def tbl_transactions(self, mode=None, value=None, units=None):
-        pass
+    # def tbl_transactions(self, mode=None, value=None, units=None):
+    #     pass
 
     def h_btnCatAdd(self):
         pass
@@ -577,11 +625,18 @@ class AppWin:
         
     def display_time(self):
         self.var_CurrentTime.set( value= time.strftime('%H:%M:%S') )
-        self.mainwindow.after(200, self.display_time)     
+        self.mainwindow.after(1000, self.display_time)     
+
+    def display_balance(self):
+        val = self.badb.getBalance()
+        self.var_CurrentBalance.set( value= f"{val:.2f}" )
+        self.mainwindow.after(5000, self.display_time)     
 
     def run(self):
-        self.display_time()
         self.updateTransactionTable()
+        self.updateCategoriesTable()
+        self.display_time()
+        self.display_balance()
         self.mainwindow.mainloop()    
 
 if __name__ == '__main__':

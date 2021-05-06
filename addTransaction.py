@@ -163,9 +163,12 @@ class AddTransaction:
             news = str( eval(s) )
             self.__setAmountEntry(news)
             self.ent_atamount.tk_focusNext().focus()
+            return True
         except:
             print("Amoun cannot be calculated...")
+            self.ent_atamount.focus()
             self.ent_atamount.select_range(0, tk.END)
+            return False
         
     def h_btnCancel(self):
         self.mainwindow.destroy()
@@ -175,6 +178,8 @@ class AddTransaction:
 
     def h_btnAdd(self):
         #AMOUNT
+        if not self.__evaluateAmountEntry() :
+            return
         try:
             amountABS = float(self.ent_atamount.get())
         except:
