@@ -213,6 +213,21 @@ class App_data:
         data = cur.fetchall()
         return data
     
+    def chartMonth(self,month):
+        cur = self.database.cursor()
+        sql ='''
+        SELECT SUM(tr.trans_amount),ct.cat_name
+        FROM  transactions AS tr
+        LEFT OUTER JOIN categories AS ct
+                ON tr.cat_id = ct.cat_id
+        WHERE  strftime('%m',tr.trans_date) IN (?)
+        GROUP BY ct.cat_name;
+        '''
+        cur.execute(sql,(month,))
+        data = cur.fetchall()
+        return data
+        
+    
     
     def getAllTransactionsPeriod(self,startDate, endDate):
                 
@@ -529,8 +544,7 @@ for row in data:
  
 
 
-#badb.saveDataBase()
+#badb.saveDataBase()'
 '''
-
 
 

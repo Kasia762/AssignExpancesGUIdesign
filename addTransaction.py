@@ -215,11 +215,10 @@ class AddTransaction:
         #listTransaction = list[date,amount,category,contractor]  
         
         self.__setAmountEntryToDefault()
-        date2 = dt.datetime.now()
-        print("date2:",date2)
-        print("date:", date)
+       
+        
       
-        self.badb.addTransaction(date2,amount,category,contractor)
+        self.badb.addTransaction(date,amount,category,contractor)
      
     def viewCatergories(self):
         data = self.badb.getCategoriesList()

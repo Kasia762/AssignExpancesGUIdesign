@@ -11,7 +11,9 @@ import tkcalendar as tkcal
 import time
 import datetime as dt
 from app_data import App_data 
-from addTransaction import AddTransaction 
+from addTransaction import AddTransaction
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+import matplotlib.pyplot as plt
 
 ## both format should match
 _dt_datefmt = "%d.%m.%Y"
@@ -543,8 +545,29 @@ class AppWin:
         # Main widget
         self.mainwindow = self.root_app
         
+    def chartSpendingsMonth(self):
+        month="05"
+        amount = 0
+        category = 1
         
+        am = [-i[amount] for i in self.badb.chartMonth(month)]
+        print(am)
         
+        cat=[i[category] for i in self.badb.chartMonth(month)]
+        print(cat)
+        #fig = plt.figure(dpi=dpi)
+    
+        fig = plt.figure(dpi=100)
+        ax = fig.add_subplot(111)
+        chart = FigureCanvasTkAgg(fig, self.lbfr_Acc_Chart)
+        chart.get_tk_widget().pack(padx=5, pady=5,
+                                         side=tk.BOTTOM,
+                                        fill=tk.BOTH, expand=True)
+       
+        ax.bar(cat,height=am)
+        ax.set_title('Spendings in '+ month)
+        ax.set_xlabel("Categories");ax.set_ylabel("Spendings in Euros")      
+       
         
     def updateTransactionTable(self):
         #first clear the treeview
@@ -602,9 +625,8 @@ class AppWin:
         pass
 
     def h_btnTrLotto(self):
-        date = dt.datetime.now()
+        date = dt.date.today()
         amount = -5.00
-        
         self.badb.addTransaction(date, amount, "Lotto", None)
         self.updateTransactionTable()
         
@@ -636,6 +658,7 @@ class AppWin:
         self.mainwindow.after(5000, self.display_time)     
 
     def run(self):
+        self.chartSpendingsMonth()
         self.updateTransactionTable()
         self.updateCategoriesTable()
         self.display_time()
