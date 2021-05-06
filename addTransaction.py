@@ -20,11 +20,14 @@ _cal_datefmt = "dd.mm.yyyy"
 
 class AddTransaction:
     def __init__(self, master, dbconn ):
+        
+        ## DB-connection
+        self.badb=dbconn
+        
         # build ui
         if master == None:
             print("Cannot run independently. Pass master attribute")
             return
-        
         self.win_addtr = tk.Toplevel(master)
         ## Hide window 
         ## DO NOT forget to show at the end of init!!!
@@ -141,9 +144,6 @@ class AddTransaction:
         self.mainwindow.bind('<Escape>', lambda x: self.h_btnCancel() )
         self.ent_atamount.bind('<Return>', lambda x: self.__evaluateAmountEntry() )
 
-        self.radioButtonSelection()    
-        self.badb=dbconn
-        self.run()
 
     def __setAmountEntryToDefault(self):
         # Delete all and set to zero.
@@ -211,7 +211,8 @@ class AddTransaction:
         contractor = self.cmb_atcontr.get()
         amount = self.amount  
         
-        self.badb.addTransaction(date, amount, category, contractor)
+        res = self.badb.addTransaction(date, amount, category, contractor)
+        print(res)
         #listTransaction = list[date,amount,category,contractor]  
         
         self.__setAmountEntryToDefault()
@@ -231,12 +232,10 @@ class AddTransaction:
        
             
         
-#amount no 0
-
     def run(self):
-        #self.convertToNegative()
-        #self.radioButtonSelection()
+        self.radioButtonSelection()
         self.__setAmountEntryToDefault()
         self.viewContractors()
         self.viewCatergories()
         self.mainwindow.mainloop()
+

@@ -310,7 +310,7 @@ class App_data:
 
         ## TODO: 2. select category and contractor not by name, but ID
         
-        if not ( isinstance(date, dt.date) or isinstance(date, dt.datetime) ):
+        if not ( isinstance(date, dt.date) ):
             return (False, "date is not datetime either date type parametr")
         if not ( isinstance(amount, float) or isinstance(amount, int) ):
             return (False, "Amount is not real either integer number")

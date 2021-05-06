@@ -580,8 +580,10 @@ class AppWin:
 
 
     def h_btnTrAdd(self):
-        addTransactionWindow = AddTransaction(self.mainwindow, self.badb)
-        self.updateTransactionTable()
+        self.addTransactionWindow = AddTransaction(self.mainwindow, self.badb)
+        self.addTransactionWindow.run()
+        #self.mainwindow.wait_window(addTransactionWindow)
+        #self.updateTransactionTable()
         pass
 
 
@@ -602,7 +604,7 @@ class AppWin:
         pass
 
     def h_btnTrLotto(self):
-        date = dt.datetime.now()
+        date = dt.datetime.today()
         amount = -5.00
         
         self.badb.addTransaction(date, amount, "Lotto", None)
