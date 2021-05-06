@@ -360,8 +360,8 @@ class AppWin:
         self.scrb_trTableVert.grid(column='1', row='0', sticky='ns')
         self.scrb_trTableVert.configure(command=self.tbl_transactions.yview)
         
-        self.tbl_transactions_cols = ['#1', '#2', '#3', '#4']
-        self.tbl_transactions_dcols = ['#1', '#2', '#3', '#4']
+        self.tbl_transactions_cols = ['#1', '#2', '#3', '#4','#5']
+        self.tbl_transactions_dcols = ['#1', '#2', '#3', '#4','#5']
         self.tbl_transactions.configure(columns=self.tbl_transactions_cols, 
                                         displaycolumns=self.tbl_transactions_dcols,
                                         yscrollcommand=self.scrb_trTableVert.set)
@@ -369,10 +369,12 @@ class AppWin:
         self.tbl_transactions.column('#2', anchor='w',stretch='true',width='200',minwidth='20')
         self.tbl_transactions.column('#3', anchor='w',stretch='true',width='200',minwidth='20')
         self.tbl_transactions.column('#4', anchor='w',stretch='true',width='200',minwidth='20')
-        self.tbl_transactions.heading('#1', anchor='w',text='Date')
-        self.tbl_transactions.heading('#2', anchor='w',text='Amount')
-        self.tbl_transactions.heading('#3', anchor='w',text='Category')
-        self.tbl_transactions.heading('#4', anchor='w',text='Contractor')
+        self.tbl_transactions.column('#5', anchor='w',stretch='true',width='200',minwidth='20')
+        self.tbl_transactions.heading('#1', anchor='w',text='ID')
+        self.tbl_transactions.heading('#2', anchor='w',text='Date')
+        self.tbl_transactions.heading('#3', anchor='w',text='Amount')
+        self.tbl_transactions.heading('#4', anchor='w',text='Category')
+        self.tbl_transactions.heading('#5', anchor='w',text='Contractor')
         self.tbl_transactions['show'] = 'headings'
         self.tbl_transactions.grid(column='0', padx='3', pady='3', row='0', sticky='nsew')
         self.tbl_transactions.master.rowconfigure('0', weight=1)
@@ -551,22 +553,18 @@ class AppWin:
         category = 1
         
         am = [-i[amount] for i in self.badb.chartMonth(month)]
-        print(am)
-        
         cat=[i[category] for i in self.badb.chartMonth(month)]
-        print(cat)
-        #fig = plt.figure(dpi=dpi)
     
+        #fig = plt.figure(dpi=dpi)
         fig = plt.figure(dpi=100)
         ax = fig.add_subplot(111)
         chart = FigureCanvasTkAgg(fig, self.lbfr_Acc_Chart)
         chart.get_tk_widget().pack(padx=5, pady=5,
                                          side=tk.BOTTOM,
                                         fill=tk.BOTH, expand=True)
-       
         ax.bar(cat,height=am)
         ax.set_title('Spendings in '+ month)
-        ax.set_xlabel("Categories");ax.set_ylabel("Spendings in Euros")      
+        ax.set_xlabel("Categories");ax.set_ylabel("Spendings [Euros]")      
        
         
     def updateTransactionTable(self):
@@ -580,10 +578,11 @@ class AppWin:
         
         data = self.badb.getAllTransactionsPeriod(datefr, dateto)
         for row in data:
+            idvalue = row[0]
             date = row[1].strftime(_dt_datefmt)
             cat = row[3] if row[3] else ""
             con = row[4] if row[4] else ""
-            values = (date, row[2], cat, con)
+            values = (idvalue,date, row[2], cat, con)
             self.tbl_transactions.insert('','end', values = values)
             count+=1
 
@@ -611,11 +610,22 @@ class AppWin:
     def h_btnLogout(self):
         pass
 
-
+    def treeSelection(self):
+        line = self.tbl_transactions.selection()
+        value = self.tbl_transactions.item(line)['values']
+        return value
+        
+        
     def h_btnTrChange(self):
         pass
 
     def h_btnTrDelete(self):
+        print(self.treeSelection())
+        val = str(self.treeSelection()[0])
+        print(val)
+        self.badb.deleteTransaction(val)
+        self.updateTransactionTable()
+       
         pass
 
     def h_btnTrImport(self):
@@ -644,8 +654,7 @@ class AppWin:
     def h_btnCatDelete(self):
         pass
 
-
-                
+               
         
     def display_time(self):
         self.var_CurrentTime.set( value= time.strftime('%H:%M:%S') )
@@ -657,7 +666,9 @@ class AppWin:
         self.var_CurrentBalance.set( value= f"{val:.2f}" )
         self.mainwindow.after(5000, self.display_time)     
 
+
     def run(self):
+        self.treeSelection()
         self.chartSpendingsMonth()
         self.updateTransactionTable()
         self.updateCategoriesTable()

@@ -349,8 +349,17 @@ class App_data:
         except sqlite3.Error:
             self.database.rollback()
             return (False, "SQL error",)
+    
+
         
-        
+    def deleteTransaction(self,val):
+        cur = self.database.cursor()
+        sql= '''
+            DELETE FROM transactions AS tr
+            WHERE tr.trans_id = ?
+            '''   
+        cur.execute(sql,(val,))
+        self.database.commit()
         
 
     def addContractor(self,  contractor):
