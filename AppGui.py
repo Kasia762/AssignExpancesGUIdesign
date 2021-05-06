@@ -235,7 +235,7 @@ class AppWin:
         self.lbl_balance.grid(column='0', padx='10', pady='5', row='0')
         self.lbl_percentage = ttk.Label(self.lbfr_account)
         self.var_CurrentBalance = tk.StringVar(value="...")
-        self.lbl_percentage.configure(textvariable=self.var_CurrentBalance)
+        self.lbl_percentage.configure(font='{Arial} 12 {bold}', textvariable=self.var_CurrentBalance)
         self.lbl_percentage.grid(column='1', row='0')
         self.progressbar = ttk.Progressbar(self.lbfr_account)
         self.progressbar.configure(orient='horizontal')
@@ -620,10 +620,16 @@ class AppWin:
         self.var_CurrentTime.set( value= time.strftime('%H:%M:%S') )
         self.mainwindow.after(1000, self.display_time)     
 
+    def display_balance(self):
+        val = self.badb.getBalance()
+        self.var_CurrentBalance.set( value= f"{val:.2f}" )
+        self.mainwindow.after(5000, self.display_time)     
+
     def run(self):
         self.updateTransactionTable()
         self.updateCategoriesTable()
         self.display_time()
+        self.display_balance()
         self.mainwindow.mainloop()    
 
 if __name__ == '__main__':

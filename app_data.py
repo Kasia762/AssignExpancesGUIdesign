@@ -257,6 +257,17 @@ class App_data:
         return data
 
 
+    def getBalance(self):
+        ## TODO: check database connection
+        cur = self.database.cursor()
+        sql = '''
+            SELECT  SUM(tr.trans_amount)
+            FROM  transactions AS tr ;
+            '''
+        cur.execute(sql)
+        data = cur.fetchone()[0]
+        return data
+
 
     def getContractorList(self):
         ## TODO: check database connection
