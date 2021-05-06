@@ -218,6 +218,10 @@ class LoginWin:
 
 class AppWin:
     def __init__(self, master=None):
+        
+        # DataHandler instance
+        self.badb = App_data()
+        
         # build ui
         self.root_app = tk.Tk() if master is None else tk.Toplevel(master)
         ## Hide window 
@@ -539,8 +543,6 @@ class AppWin:
         # Main widget
         self.mainwindow = self.root_app
         
-        # DataHandler instance
-        self.badb = App_data()
         
         
         
@@ -601,7 +603,7 @@ class AppWin:
 
     def h_btnTrLotto(self):
         date = dt.datetime.now()
-        amount = 21.32
+        amount = -5.00
         
         self.badb.addTransaction(date, amount, "Lotto", None)
         self.updateTransactionTable()
@@ -628,6 +630,7 @@ class AppWin:
         self.mainwindow.after(1000, self.display_time)     
 
     def display_balance(self):
+        ## TODO: not by after
         val = self.badb.getBalance()
         self.var_CurrentBalance.set( value= f"{val:.2f}" )
         self.mainwindow.after(5000, self.display_time)     

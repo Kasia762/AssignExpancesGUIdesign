@@ -211,6 +211,7 @@ class AddTransaction:
         contractor = self.cmb_atcontr.get()
         amount = self.amount  
         
+        self.badb.addTransaction(date, amount, category, contractor)
         #listTransaction = list[date,amount,category,contractor]  
         
         self.__setAmountEntryToDefault()
