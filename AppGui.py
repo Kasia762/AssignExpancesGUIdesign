@@ -272,8 +272,6 @@ class AppWin:
         
         #GET TODAYS MONTH NAME
         monthname=dt.datetime.now().strftime("%B")
-        print(monthname)
-        
         self.spn_month = ttk.Spinbox(self.lbfr_Acc_Chart,
                                      values =("January","February","March",
                                               "April","May", "June",
@@ -585,10 +583,8 @@ class AppWin:
             else: 
               tk.messagebox.showwarning("Spinbox!!!!","put correct month",
                                       parent=self.mainwindow)
-            
-            
+               
         monthname = str(mon)
-        print(getmonth())
         month=str(getmonth())
         amount = 0
         category = 1
@@ -604,8 +600,7 @@ class AppWin:
                                          column="0",row="2",columnspan="2")
         ax.bar(cat,height=am)
         ax.set_title('Spendings in '+ monthname)
-        ax.set_xlabel("Categories");ax.set_ylabel("Spendings [Euros]")      
-        #TODO: update chart after adding the trasaction
+        ax.set_xlabel("Categories");ax.set_ylabel("Spendings [Euros]")
         
         
     def updateTransactionTable(self):
@@ -627,7 +622,7 @@ class AppWin:
             values = (idvalue,date, row[2], cat, con)
             self.tbl_transactions.insert('','end', values = values)
             count+=1
-            
+        self.mainwindow.after(5000, self.updateTransactionTable)  
         self.chartSpendingsMonth()
         
 
@@ -719,8 +714,6 @@ class AppWin:
 
     def run(self):
         self.treeSelection()
-        
-        #self.chartSpendingsMonth()
         self.updateTransactionTable()
         self.updateCategoriesTable()
         self.display_time()
