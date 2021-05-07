@@ -14,6 +14,7 @@ from app_data import App_data
 from addTransaction import AddTransaction
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 import matplotlib.pyplot as plt
+import lotto
 
 ## both format should match
 _dt_datefmt = "%d.%m.%Y"
@@ -245,7 +246,7 @@ class AppWin:
         self.lbl_percentage.grid(column='1', row='0')
         self.progressbar = ttk.Progressbar(self.lbfr_account)
         self.progressbar.configure(orient='horizontal')
-        self.progressbar.grid(column='2', padx='30', row='0', sticky='ew')
+        self.progressbar.grid(column='2', padx='10', row='0', sticky='ew')
         self.progressbar.master.columnconfigure('2', weight=1)
         # logout button
         self.btn_Logout = ttk.Button(self.lbfr_account)
@@ -269,6 +270,24 @@ class AppWin:
         self.frm_account.master.columnconfigure('0', weight=1)
         self.ntb_app.add(self.frm_account, sticky='nsew', text='Account')
         
+        #GET TODAYS MONTH NAME
+        monthname=dt.datetime.now().strftime("%B")
+        print(monthname)
+        
+        self.spn_month = ttk.Spinbox(self.lbfr_Acc_Chart,
+                                     values =("January","February","March",
+                                              "April","May", "June",
+                                              "July","August","September",
+                                              "October","November","December"))
+        
+        self.spn_month.delete('0','end')
+        self.spn_month.insert('0',monthname)
+        self.spn_month.grid(column='0',row='0')
+        
+        self.btn_Update = ttk.Button(self.lbfr_Acc_Chart)
+        self.btn_Update.configure(text='Update', width='15')
+        self.btn_Update.configure(command=self.chartSpendingsMonth)
+        self.btn_Update.grid(column='1',row='0')
         
         ### Transactions tab
         self.frm_transactions = ttk.Frame(self.ntb_app)
@@ -548,7 +567,29 @@ class AppWin:
         self.mainwindow = self.root_app
         
     def chartSpendingsMonth(self):
-        month="05"
+        mon = self.spn_month.get()
+        
+        def getmonth():
+            if mon == "January": return "01"
+            elif mon =="February": return "02"
+            elif mon == "March": return "03"
+            elif mon == "April": return "04"
+            elif mon == "May": return "05"
+            elif mon == "June": return "06"
+            elif mon == "July": return "07"
+            elif mon == "August": return "08"
+            elif mon == "September": return "09"
+            elif mon == "October": return "10"
+            elif mon == "December": return "12"
+            elif mon == "November": return "11"
+            else: 
+              tk.messagebox.showwarning("Spinbox!!!!","put correct month",
+                                      parent=self.mainwindow)
+            
+            
+        monthname = str(mon)
+        print(getmonth())
+        month=str(getmonth())
         amount = 0
         category = 1
         
@@ -559,15 +600,16 @@ class AppWin:
         fig = plt.figure(dpi=100)
         ax = fig.add_subplot(111)
         chart = FigureCanvasTkAgg(fig, self.lbfr_Acc_Chart)
-        chart.get_tk_widget().pack(padx=5, pady=5,
-                                         side=tk.BOTTOM,
-                                        fill=tk.BOTH, expand=True)
+        chart.get_tk_widget().grid(padx=5, pady=5,
+                                         column="0",row="2",columnspan="2")
         ax.bar(cat,height=am)
-        ax.set_title('Spendings in '+ month)
+        ax.set_title('Spendings in '+ monthname)
         ax.set_xlabel("Categories");ax.set_ylabel("Spendings [Euros]")      
-       
+        #TODO: update chart after adding the trasaction
+        
         
     def updateTransactionTable(self):
+        self.display_balance()
         #first clear the treeview
         for item in  self.tbl_transactions.get_children():
              self.tbl_transactions.delete(item)
@@ -585,7 +627,9 @@ class AppWin:
             values = (idvalue,date, row[2], cat, con)
             self.tbl_transactions.insert('','end', values = values)
             count+=1
-
+            
+        self.chartSpendingsMonth()
+        
 
     def updateCategoriesTable(self):
         #first clear the treeview
@@ -598,13 +642,12 @@ class AppWin:
             _id = row[1] if row[1] else ""
             values = (_id, cat)
             self.tbl_categories.insert('','end', values = values)
-
+        
 
 
     def h_btnTrAdd(self):
-        addTransactionWindow = AddTransaction(self.mainwindow, self.badb)
-        self.updateTransactionTable()
-        pass
+        self.addTransactionWindow = AddTransaction(self.mainwindow, self.badb)
+        self.updateTransactionTable()       
 
 
     def h_btnLogout(self):
@@ -636,9 +679,15 @@ class AppWin:
 
     def h_btnTrLotto(self):
         date = dt.date.today()
-        amount = -5.00
+        amount = lotto.check()
         self.badb.addTransaction(date, amount, "Lotto", None)
         self.updateTransactionTable()
+        if amount < 0:
+            tk.messagebox.showwarning("LOTTO RESULTS!!!!","You have bad luck",
+                                      parent=self.mainwindow)
+        else:
+            tk.messagebox.showwarning("LOTTO RESULTS!!!!","You won "+str(amount)+", yeay",
+                                      parent=self.mainwindow)
         
         pass
 
@@ -666,10 +715,12 @@ class AppWin:
         self.var_CurrentBalance.set( value= f"{val:.2f}" )
         self.mainwindow.after(5000, self.display_time)     
 
+    
 
     def run(self):
         self.treeSelection()
-        self.chartSpendingsMonth()
+        
+        #self.chartSpendingsMonth()
         self.updateTransactionTable()
         self.updateCategoriesTable()
         self.display_time()
