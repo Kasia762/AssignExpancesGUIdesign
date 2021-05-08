@@ -551,18 +551,17 @@ class AppWin:
         for item in  self.tbl_transactions.get_children():
              self.tbl_transactions.delete(item)
         #then display data
-        count = 0
         datefr = self.cal_tr_From.get_date()
         dateto = self.cal_tr_To.get_date()
         
         data = self.badb.getAllTransactionsPeriod(datefr, dateto)
-        for row in data:
+        
+        for i, row in enumerate(data):
             date = row[1].strftime(_dt_datefmt)
             cat = row[3] if row[3] else ""
             con = row[4] if row[4] else ""
             values = (date, row[2], cat, con)
-            self.tbl_transactions.insert('','end', values = values)
-            count+=1
+            self.tbl_transactions.insert('','end', values = values )
 
 
     def updateCategoriesTable(self):

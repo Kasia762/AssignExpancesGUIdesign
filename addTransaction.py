@@ -10,7 +10,6 @@ import tkcalendar as tkcal
 import time
 import datetime as dt
 import tkinter as tk
-from app_data import App_data 
 
 
 ## both format should match
@@ -195,7 +194,7 @@ class AddTransaction:
                                       "Amount cannot be  equal zero.\n\nPlease, enter positive amount.",
                                       parent=self.mainwindow)
             return
-             
+            
         if self.selection == 2:
             self.amount= float(-amountABS)
         elif self.selection == 1:
@@ -207,21 +206,16 @@ class AddTransaction:
         
         #TODO: add if else statements to check if values are correct
         date = self.cal_tr.get_date()
+        date = dt.datetime.now()
         category = self.cmb_atcat.get()
         contractor = self.cmb_atcontr.get()
         amount = self.amount  
         
         res = self.badb.addTransaction(date, amount, category, contractor)
         print(res)
-        #listTransaction = list[date,amount,category,contractor]  
-        
         self.__setAmountEntryToDefault()
-        date2 = dt.datetime.now()
-        print("date2:",date2)
-        print("date:", date)
-      
-        self.badb.addTransaction(date2,amount,category,contractor)
-     
+
+        
     def viewCatergories(self):
         data = self.badb.getCategoriesList()
         ind_cat = 0

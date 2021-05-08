@@ -298,23 +298,29 @@ class App_data:
     
     def addTransaction(self, date, amount, category, contractor):
         
-        ## TODO: 1. data types checking
-        # DATETIME converting:
-        #     %Y: Year (4 digits)
-        #     %m: Month
-        #     %d: Day of month
-        #     %H: Hour (24 hour)
-        #     %M: Minutes
-        #     %S: Seconds
-        #     %f: Microseconds
-
         ## TODO: 2. select category and contractor not by name, but ID
+
+        def is_date(dtchck):
+            import datetime
+            """
+            Returns True if is date
+            Returns False if is datetime
+            Returns None if it is neither of these things
+            """
+            try:
+                dtchck.date()
+                return False
+            except:
+                if isinstance(dtchck, datetime.date):
+                    return True
+            return None
         
-        if not ( isinstance(date, dt.date) ):
+        if  is_date(date) == False:
+            date = date.date()
+        if  is_date(date) != True:
             return (False, "date is not datetime either date type parametr")
         if not ( isinstance(amount, float) or isinstance(amount, int) ):
             return (False, "Amount is not real either integer number")
-        
         cur = self.database.cursor()
         sql= '''
                 INSERT INTO transactions
@@ -331,9 +337,9 @@ class App_data:
             self.database.commit()
             ## print(type(date),  type(amount),  type(category),  type(contractor), sep='\t')
             return (True, "OK",)
-        except sqlite3.Error:
+        except sqlite3.Error as err:
             self.database.rollback()
-            return (False, "SQL error",)
+            return (False, "SQL error: %s"% err,)
         
         
         
