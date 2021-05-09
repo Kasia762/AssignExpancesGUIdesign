@@ -18,10 +18,10 @@ _cal_datefmt = "dd.mm.yyyy"
 
 
 class AddTransaction:
-    def __init__(self, master, dbconn ):
+    def __init__(self, master, controller ):
         
         ## DB-connection
-        self.badb=dbconn
+        self.controller = controller
         
         # build ui
         if master == None:
@@ -32,7 +32,6 @@ class AddTransaction:
         ## DO NOT forget to show at the end of init!!!
         self.win_addtr.withdraw()     
         
-        #apparently radiobuttons are not compatibile with tk.Tk
         self.win_addtr.grab_set()
         self.fr_addtr = ttk.Frame(self.win_addtr)
         
@@ -211,19 +210,20 @@ class AddTransaction:
         contractor = self.cmb_atcontr.get()
         amount = self.amount  
         
-        res = self.badb.addTransaction(date, amount, category, contractor)
+        res = self.controller.badb.addTransaction(date, amount, category, contractor)
         print(res)
         self.__setAmountEntryToDefault()
+        self.controller.updateTransactionTable()
 
         
     def viewCatergories(self):
-        data = self.badb.getCategoriesList()
+        data = self.controller.badb.getCategoriesList()
         ind_cat = 0
         tr=[i[ind_cat]for i in data]
         self.cmb_atcat['values']= tr
           
     def viewContractors(self):
-        data = self.badb.getContractorList()
+        data = self.controller.badb.getContractorList()
         ind_contr = 0
         tr=[i[ind_contr]for i in data]
         self.cmb_atcontr['values']= tr   

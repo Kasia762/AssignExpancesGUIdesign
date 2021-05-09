@@ -26,7 +26,7 @@ class ImportApp:
         
         ## BINDs
         self.mainwindow.bind_class("TCombobox","<<ComboboxSelected>>", self.updatePreview)
-        self.mainwindow.bind_class("TCheckbox","<<Toggle>>", self.updatePreview)
+        self.mainwindow.bind_class("TCheckbutton","<<Toggle>>", self.updatePreview)
         self.mainwindow.bind('<Escape>', lambda x: self.mainwindow.destroy() )
         
         self.__df = pd.DataFrame()

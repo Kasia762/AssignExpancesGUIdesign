@@ -579,8 +579,8 @@ class AppWin:
 
 
     def h_btnTrAdd(self):
-        self.addTransactionWindow = AddTransaction(self.mainwindow, self.badb)
-        self.addTransactionWindow.run()
+        addTransactionWindow = AddTransaction(self.mainwindow, self)
+        addTransactionWindow.run()
         #self.mainwindow.wait_window(addTransactionWindow)
         #self.updateTransactionTable()
         pass
