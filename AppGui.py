@@ -603,7 +603,8 @@ class AppWin:
         ax.set_title('Spendings in '+ monthname)
         ax.set_xlabel("Categories");ax.set_ylabel("Spendings [Euros]")
         
-        
+#add another chart
+      
     def updateTransactionTable(self):
         self.display_balance()
         #first clear the treeview
