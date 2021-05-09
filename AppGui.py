@@ -382,9 +382,9 @@ class AppWin:
         self.tbl_transactions.configure(columns=self.tbl_transactions_cols, 
                                         displaycolumns=self.tbl_transactions_dcols,
                                         yscrollcommand=self.scrb_trTableVert.set)
-        self.tbl_transactions.column('#1', anchor='w',stretch='true',width='200',minwidth='20')
-        self.tbl_transactions.column('#2', anchor='w',stretch='true',width='200',minwidth='20')
-        self.tbl_transactions.column('#3', anchor='w',stretch='true',width='200',minwidth='20')
+        self.tbl_transactions.column('#1', anchor='w',stretch='true',width='50',minwidth='20')
+        self.tbl_transactions.column('#2', anchor='w',stretch='true',width='180',minwidth='20')
+        self.tbl_transactions.column('#3', anchor='w',stretch='true',width='180',minwidth='20')
         self.tbl_transactions.column('#4', anchor='w',stretch='true',width='200',minwidth='20')
         self.tbl_transactions.column('#5', anchor='w',stretch='true',width='200',minwidth='20')
         self.tbl_transactions.heading('#1', anchor='w',text='ID')
@@ -591,13 +591,14 @@ class AppWin:
         
         am = [-i[amount] for i in self.badb.chartMonth(month)]
         cat=[i[category] for i in self.badb.chartMonth(month)]
+        print(i for i in self.badb.chartMonth(month))
     
         #fig = plt.figure(dpi=dpi)
         fig = plt.figure(dpi=100)
         ax = fig.add_subplot(111)
         chart = FigureCanvasTkAgg(fig, self.lbfr_Acc_Chart)
         chart.get_tk_widget().grid(padx=5, pady=5,
-                                         column="0",row="2",columnspan="2")
+                                         column="0",row="1",columnspan="2")
         ax.bar(cat,height=am)
         ax.set_title('Spendings in '+ monthname)
         ax.set_xlabel("Categories");ax.set_ylabel("Spendings [Euros]")
@@ -623,7 +624,7 @@ class AppWin:
             self.tbl_transactions.insert('','end', values = values)
             count+=1
         self.mainwindow.after(5000, self.updateTransactionTable)  
-        self.chartSpendingsMonth()
+        #self.chartSpendingsMonth()
         
 
     def updateCategoriesTable(self):
@@ -641,7 +642,7 @@ class AppWin:
 
 
     def h_btnTrAdd(self):
-        self.addTransactionWindow = AddTransaction(self.mainwindow, self.badb)
+        AddTransaction(self.mainwindow,self.badb).run()
         self.updateTransactionTable()       
 
 
@@ -655,13 +656,18 @@ class AppWin:
         
         
     def h_btnTrChange(self):
-        pass
+        id_value = str(self.treeSelection()[0])
+        print(id_value)
+       # AddTransaction(self.mainwindow,self.badb).h_btnAdd(2,id_value)
+        AddTransaction(self.mainwindow,self.badb, id_value).run()
+        self.updateTransactionTable()
+        
 
     def h_btnTrDelete(self):
         print(self.treeSelection())
-        val = str(self.treeSelection()[0])
-        print(val)
-        self.badb.deleteTransaction(val)
+        id_value = str(self.treeSelection()[0])
+        print(id_value)
+        self.badb.deleteTransaction(id_value)
         self.updateTransactionTable()
        
         pass
@@ -708,7 +714,7 @@ class AppWin:
         ## TODO: not by after
         val = self.badb.getBalance()
         self.var_CurrentBalance.set( value= f"{val:.2f}" )
-        self.mainwindow.after(5000, self.display_time)     
+        #self.mainwindow.after(5000, self.display_time)     
 
     
 
