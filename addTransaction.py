@@ -73,23 +73,23 @@ class AddTransaction:
         
         #radiobox stuff
         #TODO: add option to control wheter amount is positive or negative
-        self.var = tk.IntVar()
+        self.var = tk.StringVar()
         #self.var.set("2")
         self.rbt_with = ttk.Radiobutton(self.lbfr_attype,
                                         variable=self.var,
-                                        value=1,
+                                        value="outcome",#string - dep, income
                                         command=self.radioButtonSelection)
-        self.rbt_with.configure(text='Withdrawal')
+        self.rbt_with.configure(text='Withdrawal\n(Outcome)')
         self.rbt_with.grid(column='0', padx='40', pady='10', row='0')
         
         
         self.rbt_depo = ttk.Radiobutton(self.lbfr_attype,
                                         variable=self.var,
-                                        value=2,
+                                        value="income",
                                         command=self.radioButtonSelection)
-        self.rbt_depo.configure(text='Deposit')
+        self.rbt_depo.configure(text='Deposit\n(Income)')
         self.rbt_depo.grid(column='1', pady='10', row='0')
-        self.rbt_depo.invoke()
+        self.rbt_with.invoke()
                        
         self.lbfr_attype.configure(height='200', text='Select transaction type', width='200')
         self.lbfr_attype.pack(anchor='center', expand='true', fill='x', padx='20', side='top')
@@ -232,9 +232,9 @@ class AddTransaction:
                                       parent=self.mainwindow)
             return
              
-        if self.selection == 2:
+        if self.selection == "outcome":
             self.amount= float(-amountABS)
-        elif self.selection == 1:
+        elif self.selection == "income":
             self.amount = amountABS
         else:
             print("Some internal error: radiobutton not selected.")
