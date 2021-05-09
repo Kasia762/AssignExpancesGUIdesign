@@ -9,6 +9,7 @@ import tkinter as tk
 import tkinter.ttk as ttk
 import os.path
 import pandas as pd
+import numpy as np
 import tkinter.filedialog as fd
 import datetime
 import dateutil.parser 
@@ -23,8 +24,8 @@ class ImportApp:
         # build ui
         self.root_import = tk.Tk() if master is None else tk.Toplevel(master)
         self.GUI(self.root_import)
-        self.root_import.configure(height='300', relief='flat', width='300')
-        self.root_import.geometry('700x400')
+        #self.root_import.configure(height='300', relief='flat', width='300')
+        self.root_import.geometry('800x400')
         self.root_import.minsize(600, 300)
         self.root_import.resizable(True, True)
         self.root_import.title('Import transactions from CSV...')
@@ -86,7 +87,17 @@ class ImportApp:
             
         sep = self.detect_separator(filePath)
         try:
-            self.__df = pd.read_csv(filePath, sep=sep[0])
+            sep = sep[0]
+            if sep == ';':
+                dec = ','
+            else: 
+                dec = '.'
+        except:
+            sep = ','
+        print ("sep:", sep, "decimal:", dec)
+        try:
+            del self.__df
+            self.__df = pd.read_csv(filePath, sep=sep[0], decimal=dec)
         except:
             print("Some error happend during opening csv file")
             # TODO: show some gui error message
@@ -100,6 +111,10 @@ class ImportApp:
             self.cmb_Amount['values'] = cols
             self.cmb_Category['values'] = cols
             self.cmb_Contractor['values'] = cols
+            self.cmb_Date.set('')
+            self.cmb_Amount.set('')
+            self.cmb_Category.set('')
+            self.cmb_Contractor.set('')
         except:
             print("Some error happend during parsing csv file")
             # TODO: show some gui error message
@@ -108,6 +123,26 @@ class ImportApp:
                                   parent=self.mainwindow)
             return
 
+    def __parse_date(self, d):
+        if self.set_dateToday.get():
+            resdate = datetime.datetime.now().date()
+        else:
+            try:
+                resdate = dateutil.parser.parse( d )
+            except:
+                resdate = datetime.datetime.now().date()
+        return resdate
+        
+    def __parse_amount(self, a):
+        if not ( isinstance(a, float) or isinstance(a, int) ):
+            return np.nan
+        a = round(a, 2)
+        if a == 0.0:
+            return np.nan
+        if self.set_WithdrawalOnly.get():
+            return ( - abs(a) )
+        else:
+            return a
 
     def processTable(self, mode='preview'):
         self.progressbar['maximum'] = len(self.__df) // 100
@@ -118,67 +153,48 @@ class ImportApp:
         amount_col = self.cmb_Amount.get()
         cat_col = self.cmb_Category.get()
         cont_col = self.cmb_Contractor.get()
-        cols = list([ date_col, amount_col, cat_col, cont_col])
+        cols = list([ date_col, "", amount_col, "", cat_col, cont_col])
+        date_n ,dateres_n ,amount_n , amountres_n ,cat_n ,cont_n = 1,2,3,4,5,6
+        
         ### Select data from all file
         subdf = pd.DataFrame()
+        subdf.insert(0, "0" , str('') )
         for i, col in enumerate(cols):
+            i += 1
             if col :
                 if mode == 'preview':
-                    subdf.insert(len(subdf.columns), col, self.__df[col].head(20) , allow_duplicates=True)
-                elif (mode == 'check') or (mode == 'import'):
-                    subdf.insert(len(subdf.columns), col, self.__df[col] , allow_duplicates=True)
+                    subdf.insert(len(subdf.columns), "", self.__df.loc[:,col].head(20) , allow_duplicates=True)
+                else:
+                    subdf.insert(len(subdf.columns), "", self.__df.loc[:,col] , allow_duplicates=True)
             else:
                 subdf.insert(i, str(i) , ''  )
-        
+
         ### Process data: 
-            
-        if (mode == 'check') or (mode == 'import'):
+        if mode in ['check', 'import']:
             if amount_col == '':
                 tk.messagebox.showwarning("CSV column selection",
-                                      "Column for amount_col is not selected.\n\nPlease, select column corresponding to amount.",
+                                      "Column for Amount is not selected.\n\nPlease, select column corresponding to amount.",
                                       parent=self.mainwindow)
                 return
-            ## TODO: convert types
-            subdf.dropna(subset=list([amount_col,]), inplace=True)
-
-        ### Process data
+        ### Check  data
         self.progressbar.start()
+        subdf.iloc[:,dateres_n] = subdf.iloc[:,date_n].apply(self.__parse_date)
+        subdf.iloc[:,amountres_n] = subdf.iloc[:,amount_n].apply(self.__parse_amount)
         for index, row in subdf.iterrows():
             if index % 100 == 0:
                 self.progressbar.update()
-            tag = ""
-            if mode == 'preview':
-                self.tbl_transactions.insert('','end', values = ( [(index+1)] + list(row)) )
-            elif (mode == 'check') or (mode == 'import'):
-                ## Check values
-                if row[amount_col] == 0.0:
-                    subdf.at[index, date_col] = pd.NaN
-                    tag += "DELETED"
-                if self.set_dateToday:
-                    resdate = datetime.datetime.now().date()
-                    tag += ", DATE" 
-                else:
-                    try:
-                        resdate = dateutil.parser.parse( row[date_col] )
-                    except:
-                        resdate = datetime.datetime.now().date()
-                        tag += ", exDATE" 
-                subdf.at[index, date_col] = str(resdate)
-                result = str(index+1) + " " + tag
-                iid = self.tbl_transactions.insert('','end', values = ( [result] + list(row))  )
+            iid = self.tbl_transactions.insert('','end', values = ( list(row))  )
         
         ### Do import after all checks
         if mode == 'import':
-            subdf.dropna(subset=list([amount_col,]), inplace=True)
+            subdf.dropna(subset=list([amountres_n,]), inplace=True)
             # TODO: import into database
         self.progressbar.stop()
         pass
 
 
     def updatePreview(self, event):
-        self.processTable()
-        pass
-    
+        self.processTable(mode='preview')
     
     def h_btnCheck(self):
         self.processTable(mode='check')
@@ -300,18 +316,23 @@ class ImportApp:
         self.scrb_TableVert.configure(orient='vertical')
         self.scrb_TableVert.grid(column='1', row='0', sticky='ns')
         self.scrb_TableVert.configure(command=self.tbl_transactions.yview)
-        self.tbl_transactions_cols = ['check','date', 'amount', 'cat', 'contr']
-        self.tbl_transactions_dcols = ['check', 'date', 'amount', 'cat', 'contr']
+        self.tbl_transactions_cols = ['result', 'date', 'dateresult', 'amount', 'amountresult', 'cat', 'contr']
+        self.tbl_transactions_dcols = ['result', 'date', 'dateresult', 'amount', 'amountresult', 'cat', 'contr']
         self.tbl_transactions.configure(columns=self.tbl_transactions_cols, 
                                         displaycolumns=self.tbl_transactions_dcols,
                                         yscrollcommand=self.scrb_TableVert.set)
-        self.tbl_transactions.column('check', anchor='w',stretch='true',width='80',minwidth='20')
-        self.tbl_transactions.column('date', anchor='w',stretch='true',width='80',minwidth='20')
+        self.tbl_transactions.column('result', anchor='w',stretch='true',width='70',minwidth='20')
+        self.tbl_transactions.column('date', anchor='w',stretch='true',width='70',minwidth='20')
+        self.tbl_transactions.column('dateresult', anchor='w',stretch='true',width='90',minwidth='20')
         self.tbl_transactions.column('amount', anchor='w',stretch='true',width='50',minwidth='20')
+        self.tbl_transactions.column('amountresult', anchor='w',stretch='true',width='80',minwidth='20')
         self.tbl_transactions.column('cat', anchor='w',stretch='true',width='150',minwidth='20')
         self.tbl_transactions.column('contr', anchor='w',stretch='true',width='150',minwidth='20')
+        self.tbl_transactions.heading('result', anchor='w',text='Result')
         self.tbl_transactions.heading('date', anchor='w',text='Date')
+        self.tbl_transactions.heading('dateresult', anchor='w',text='Date to import')
         self.tbl_transactions.heading('amount', anchor='w',text='Amount')
+        self.tbl_transactions.heading('amountresult', anchor='w',text='Amount to import')
         self.tbl_transactions.heading('cat', anchor='w',text='Category')
         self.tbl_transactions.heading('contr', anchor='w',text='Contractor')
         self.tbl_transactions['show']='headings'
