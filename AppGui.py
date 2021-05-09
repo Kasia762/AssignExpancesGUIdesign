@@ -11,7 +11,10 @@ import tkcalendar as tkcal
 import time
 import datetime as dt
 from app_data import App_data 
-from addTransaction import AddTransaction 
+from addTransaction import AddTransaction
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+import matplotlib.pyplot as plt
+import lotto
 
 ## both format should match
 _dt_datefmt = "%d.%m.%Y"
@@ -231,7 +234,7 @@ class AppWin:
         ### Notebook 
         self.ntb_app = ttk.Notebook(self.root_app)
         
-        ### Account tab
+        ### ACCOUNT TAB
         self.frm_account = ttk.Frame(self.ntb_app)
         self.lbfr_account = ttk.Labelframe(self.frm_account)
         self.lbl_balance = ttk.Label(self.lbfr_account)
@@ -243,7 +246,7 @@ class AppWin:
         self.lbl_percentage.grid(column='1', row='0')
         self.progressbar = ttk.Progressbar(self.lbfr_account)
         self.progressbar.configure(orient='horizontal')
-        self.progressbar.grid(column='2', padx='30', row='0', sticky='ew')
+        self.progressbar.grid(column='2', padx='10', row='0', sticky='ew')
         self.progressbar.master.columnconfigure('2', weight=1)
         # logout button
         self.btn_Logout = ttk.Button(self.lbfr_account)
@@ -267,8 +270,24 @@ class AppWin:
         self.frm_account.master.columnconfigure('0', weight=1)
         self.ntb_app.add(self.frm_account, sticky='nsew', text='Account')
         
+        #GET TODAYS MONTH NAME
+        monthname=dt.datetime.now().strftime("%B")
+        self.spn_month = ttk.Spinbox(self.lbfr_Acc_Chart,
+                                     values =("January","February","March",
+                                              "April","May", "June",
+                                              "July","August","September",
+                                              "October","November","December"))
         
-        ### Transactions tab
+        self.spn_month.delete('0','end')
+        self.spn_month.insert('0',monthname)
+        self.spn_month.grid(column='0',row='0')
+        
+        self.btn_Update = ttk.Button(self.lbfr_Acc_Chart)
+        self.btn_Update.configure(text='Update', width='15')
+        self.btn_Update.configure(command=self.chartSpendingsMonth)
+        self.btn_Update.grid(column='1',row='0')
+        
+        ### TRANSACTIONS TAB
         self.frm_transactions = ttk.Frame(self.ntb_app)
         self.lbfr_drTransactions = ttk.Labelframe(self.frm_transactions)
         self.lbl_trFrom = ttk.Label(self.lbfr_drTransactions)
@@ -358,19 +377,21 @@ class AppWin:
         self.scrb_trTableVert.grid(column='1', row='0', sticky='ns')
         self.scrb_trTableVert.configure(command=self.tbl_transactions.yview)
         
-        self.tbl_transactions_cols = ['#1', '#2', '#3', '#4']
-        self.tbl_transactions_dcols = ['#1', '#2', '#3', '#4']
+        self.tbl_transactions_cols = ['#1', '#2', '#3', '#4','#5']
+        self.tbl_transactions_dcols = ['#1', '#2', '#3', '#4','#5']
         self.tbl_transactions.configure(columns=self.tbl_transactions_cols, 
                                         displaycolumns=self.tbl_transactions_dcols,
                                         yscrollcommand=self.scrb_trTableVert.set)
-        self.tbl_transactions.column('#1', anchor='w',stretch='true',width='200',minwidth='20')
-        self.tbl_transactions.column('#2', anchor='w',stretch='true',width='200',minwidth='20')
-        self.tbl_transactions.column('#3', anchor='w',stretch='true',width='200',minwidth='20')
+        self.tbl_transactions.column('#1', anchor='w',stretch='true',width='50',minwidth='20')
+        self.tbl_transactions.column('#2', anchor='w',stretch='true',width='180',minwidth='20')
+        self.tbl_transactions.column('#3', anchor='w',stretch='true',width='180',minwidth='20')
         self.tbl_transactions.column('#4', anchor='w',stretch='true',width='200',minwidth='20')
-        self.tbl_transactions.heading('#1', anchor='w',text='Date')
-        self.tbl_transactions.heading('#2', anchor='w',text='Amount')
-        self.tbl_transactions.heading('#3', anchor='w',text='Category')
-        self.tbl_transactions.heading('#4', anchor='w',text='Contractor')
+        self.tbl_transactions.column('#5', anchor='w',stretch='true',width='200',minwidth='20')
+        self.tbl_transactions.heading('#1', anchor='w',text='ID')
+        self.tbl_transactions.heading('#2', anchor='w',text='Date')
+        self.tbl_transactions.heading('#3', anchor='w',text='Amount')
+        self.tbl_transactions.heading('#4', anchor='w',text='Category')
+        self.tbl_transactions.heading('#5', anchor='w',text='Contractor')
         self.tbl_transactions['show'] = 'headings'
         self.tbl_transactions.grid(column='0', padx='3', pady='3', row='0', sticky='nsew')
         self.tbl_transactions.master.rowconfigure('0', weight=1)
@@ -385,7 +406,7 @@ class AppWin:
         self.ntb_app.add(self.frm_transactions, text='Trancations')
         
         
-        ### Categories tab
+        ### CATEGORIES TAB
         self.frm_categories = ttk.Frame(self.ntb_app)
         self.lbfr_tableCategories = ttk.Labelframe(self.frm_categories)
         # table
@@ -445,30 +466,7 @@ class AppWin:
         self.txt_cat_Name.grid(column='1', padx='0', row='0', sticky='w')
         self.txt_cat_Name.master.rowconfigure('0', pad='10')
         self.txt_cat_Name.master.columnconfigure('1', pad='20', weight=1)
-        # self.label9 = ttk.Label(self.lbfr_cat_data)
-        # self.label9.configure(text='To:')
-        # self.label9.grid(column='0', padx='10', row='1', sticky='e')
-        # self.label9.master.rowconfigure('1', pad='10')
-        # self.label9.master.columnconfigure('0', pad='10')
-        # self.entry7 = ttk.Entry(self.lbfr_cat_data)
-        # _text_ = ''
-        # self.entry7.delete('0', 'end')
-        # self.entry7.insert('0', _text_)
-        # self.entry7.grid(column='1', row='1', sticky='w')
-        # self.entry7.master.rowconfigure('1', pad='10')
-        # self.entry7.master.columnconfigure('1', pad='20', weight=1)
-        # self.label10 = ttk.Label(self.lbfr_cat_data)
-        # self.label10.configure(text='To:')
-        # self.label10.grid(column='0', padx='10', row='2', sticky='e')
-        # self.label10.master.rowconfigure('1', pad='10')
-        # self.label10.master.columnconfigure('0', pad='10')
-        # self.entry8 = ttk.Entry(self.lbfr_cat_data)
-        # _text_ = ''
-        # self.entry8.delete('0', 'end')
-        # self.entry8.insert('0', _text_)
-        # self.entry8.grid(column='1', row='2', sticky='w')
-        # self.entry8.master.rowconfigure('1', pad='10')
-        # self.entry8.master.columnconfigure('1', pad='20', weight=1)
+        
         self.lbfr_cat_data.configure(height='0', text='Data for operations')
         self.lbfr_cat_data.grid(column='0', ipadx='0', ipady='0', padx='5', pady='0', row='0', sticky='nsew')
         self.lbfr_cat_data.master.rowconfigure('0', pad='10', weight=0)
@@ -479,7 +477,7 @@ class AppWin:
         self.ntb_app.add(self.frm_categories, text='Categories	')
         
         
-        ### Lotto tab
+        ### LOTTO TAB
         self.frm_lotto = ttk.Frame(self.ntb_app)
         self.lbfr_weather = ttk.Labelframe(self.frm_lotto)
         self.var_Calendar = tk.StringVar(value='--.--.----')
@@ -522,7 +520,7 @@ class AppWin:
         self.ntb_app.add(self.frm_lotto, text='Bells and whistlers')
         
         
-        ### NOTEBOOK grid ...
+        ### NOTEBOOK GRID ...
         self.ntb_app.configure(style='Toolbutton', takefocus=True)
         self.ntb_app.grid(column='0', padx='5', pady='5', row='0', sticky='nsew')
         self.ntb_app.master.rowconfigure('0', weight=1)
@@ -543,10 +541,47 @@ class AppWin:
         # Main widget
         self.mainwindow = self.root_app
         
+    def chartSpendingsMonth(self):
+        mon = self.spn_month.get()
         
+        def getmonth():
+            if mon == "January": return "01"
+            elif mon =="February": return "02"
+            elif mon == "March": return "03"
+            elif mon == "April": return "04"
+            elif mon == "May": return "05"
+            elif mon == "June": return "06"
+            elif mon == "July": return "07"
+            elif mon == "August": return "08"
+            elif mon == "September": return "09"
+            elif mon == "October": return "10"
+            elif mon == "December": return "12"
+            elif mon == "November": return "11"
+            else: 
+              tk.messagebox.showwarning("Spinbox!!!!","put correct month",
+                                      parent=self.mainwindow)
+               
+        monthname = str(mon)
+        month=str(getmonth())
+        amount = 0
+        category = 1
         
+        am = [-i[amount] for i in self.badb.chartMonth(month)]
+        cat=[i[category] for i in self.badb.chartMonth(month)]
+        print(i for i in self.badb.chartMonth(month))
+    
+        #fig = plt.figure(dpi=dpi)
+        fig = plt.figure(dpi=100)
+        ax = fig.add_subplot(111)
+        chart = FigureCanvasTkAgg(fig, self.lbfr_Acc_Chart)
+        chart.get_tk_widget().grid(padx=5, pady=5,
+                                         column="0",row="1",columnspan="2")
+        ax.bar(cat,height=am)
+        ax.set_title('Spendings in '+ monthname)
+        ax.set_xlabel("Categories");ax.set_ylabel("Spendings [Euros]")
         
     def updateTransactionTable(self):
+        self.display_balance()
         #first clear the treeview
         for item in  self.tbl_transactions.get_children():
              self.tbl_transactions.delete(item)
@@ -557,13 +592,16 @@ class AppWin:
         
         data = self.badb.getAllTransactionsPeriod(datefr, dateto)
         for row in data:
+            idvalue = row[0]
             date = row[1].strftime(_dt_datefmt)
             cat = row[3] if row[3] else ""
             con = row[4] if row[4] else ""
-            values = (date, row[2], cat, con)
+            values = (idvalue,date, row[2], cat, con)
             self.tbl_transactions.insert('','end', values = values)
             count+=1
-
+        self.mainwindow.after(5000, self.updateTransactionTable)  
+        #self.chartSpendingsMonth()
+        
 
     def updateCategoriesTable(self):
         #first clear the treeview
@@ -576,7 +614,7 @@ class AppWin:
             _id = row[1] if row[1] else ""
             values = (_id, cat)
             self.tbl_categories.insert('','end', values = values)
-
+        
 
 
     def h_btnTrAdd(self):
@@ -584,17 +622,32 @@ class AppWin:
         self.addTransactionWindow.run()
         #self.mainwindow.wait_window(addTransactionWindow)
         #self.updateTransactionTable()
-        pass
 
 
     def h_btnLogout(self):
         pass
 
-
+    def treeSelection(self):
+        line = self.tbl_transactions.selection()
+        value = self.tbl_transactions.item(line)['values']
+        return value
+        
+        
     def h_btnTrChange(self):
-        pass
+        id_value = str(self.treeSelection()[0])
+        print(id_value)
+       # AddTransaction(self.mainwindow,self.badb).h_btnAdd(2,id_value)
+        AddTransaction(self.mainwindow,self.badb, id_value).run()
+        self.updateTransactionTable()
+        
 
     def h_btnTrDelete(self):
+        print(self.treeSelection())
+        id_value = str(self.treeSelection()[0])
+        print(id_value)
+        self.badb.deleteTransaction(id_value)
+        self.updateTransactionTable()
+       
         pass
 
     def h_btnTrImport(self):
@@ -604,16 +657,18 @@ class AppWin:
         pass
 
     def h_btnTrLotto(self):
-        date = dt.datetime.today()
-        amount = -5.00
-        
+        date = dt.date.today()
+        amount = lotto.check()
         self.badb.addTransaction(date, amount, "Lotto", None)
         self.updateTransactionTable()
-        
+        if amount < 0:
+            tk.messagebox.showwarning("LOTTO RESULTS!!!!","You have bad luck",
+                                      parent=self.mainwindow)
+        else:
+            tk.messagebox.showwarning("LOTTO RESULTS!!!!","You won "+str(amount)+", yeay",
+                                      parent=self.mainwindow)
         pass
 
-    # def tbl_transactions(self, mode=None, value=None, units=None):
-    #     pass
 
     def h_btnCatAdd(self):
         pass
@@ -624,8 +679,7 @@ class AppWin:
     def h_btnCatDelete(self):
         pass
 
-
-                
+               
         
     def display_time(self):
         self.var_CurrentTime.set( value= time.strftime('%H:%M:%S') )
@@ -635,9 +689,12 @@ class AppWin:
         ## TODO: not by after
         val = self.badb.getBalance()
         self.var_CurrentBalance.set( value= f"{val:.2f}" )
-        self.mainwindow.after(5000, self.display_time)     
+        #self.mainwindow.after(5000, self.display_time)     
+
+    
 
     def run(self):
+        self.treeSelection()
         self.updateTransactionTable()
         self.updateCategoriesTable()
         self.display_time()

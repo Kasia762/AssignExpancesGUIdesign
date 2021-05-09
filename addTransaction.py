@@ -19,11 +19,9 @@ _cal_datefmt = "dd.mm.yyyy"
 
 
 class AddTransaction:
-    def __init__(self, master, dbconn ):
-        
-        ## DB-connection
-        self.badb=dbconn
-        
+    def __init__(self, master, dbconn,id_value=None):
+        self.id_transaction = id_value
+
         # build ui
         if master == None:
             print("Cannot run independently. Pass master attribute")
@@ -43,11 +41,8 @@ class AddTransaction:
         self.lbl_atdate.grid(column='0', padx='40', pady='10', row='0')
         
         self.cal_tr = tkcal.DateEntry(self.lbfr_atdate, 
-                                      date_pattern=_cal_datefmt,
-                                      state="readonly")
-        _text_ = dt.date.today().strftime(_dt_datefmt)
-        self.cal_tr.delete('0', 'end')
-        self.cal_tr.insert('0', _text_)
+                                      date_pattern=_cal_datefmt)
+        #state="readonly"   
         self.cal_tr.grid(column='1', pady='0', row='0')
         
         #TODO: make nicer gui?? calendar?? seems too on the left?
@@ -78,23 +73,23 @@ class AddTransaction:
         
         #radiobox stuff
         #TODO: add option to control wheter amount is positive or negative
-        self.var = tk.IntVar()
+        self.var = tk.StringVar()
         #self.var.set("2")
         self.rbt_with = ttk.Radiobutton(self.lbfr_attype,
                                         variable=self.var,
-                                        value=1,
+                                        value="outcome",#string - dep, income
                                         command=self.radioButtonSelection)
-        self.rbt_with.configure(text='Withdrawal')
+        self.rbt_with.configure(text='Withdrawal\n(Outcome)')
         self.rbt_with.grid(column='0', padx='40', pady='10', row='0')
         
         
         self.rbt_depo = ttk.Radiobutton(self.lbfr_attype,
                                         variable=self.var,
-                                        value=2,
+                                        value="income",
                                         command=self.radioButtonSelection)
-        self.rbt_depo.configure(text='Deposit')
+        self.rbt_depo.configure(text='Deposit\n(Income)')
         self.rbt_depo.grid(column='1', pady='10', row='0')
-        self.rbt_depo.invoke()
+        self.rbt_with.invoke()
                        
         self.lbfr_attype.configure(height='200', text='Select transaction type', width='200')
         self.lbfr_attype.pack(anchor='center', expand='true', fill='x', padx='20', side='top')
@@ -111,7 +106,7 @@ class AddTransaction:
         self.lbfr_atamount.pack(anchor='center', expand='true', fill='both', padx='20', side='top')
         # ADD BUTTON
         self.btn_add = ttk.Button(self.fr_addtr, command = self.h_btnAdd)
-        self.btn_add.configure(text='Add')
+       
         self.btn_add.pack(anchor='center', padx='5', pady='15', side='right')
         # Cancel button
         self.btn_exit = ttk.Button(self.fr_addtr, command =self.h_btnCancel)
@@ -124,7 +119,7 @@ class AddTransaction:
         
         self.win_addtr.configure(height='200', width='200')
         self.win_addtr.resizable(False, False)
-        self.win_addtr.title('Add transaction')
+        
         ## Center window
         x_modal = 350
         y_modal = 400
@@ -144,12 +139,50 @@ class AddTransaction:
         self.mainwindow.bind('<Escape>', lambda x: self.h_btnCancel() )
         self.ent_atamount.bind('<Return>', lambda x: self.__evaluateAmountEntry() )
 
+        self.radioButtonSelection()    
+        self.badb=dbconn
+    
+        if self.id_transaction == None:
+            self.win_addtr.title('Add transaction')
+            self.btn_add.configure(text='Add')
+            today = dt.date.today().strftime(_dt_datefmt)
+            self.cal_tr.delete('0','end')
+            self.cal_tr.insert('0', today)
+            self.cal_tr.configure(state="readonly")
+            #pass
+        else:
+            self.win_addtr.title('Change transaction')
+            self.btn_add.configure(text='Accept')
+            row=self.badb.getTransaction_byid(self.id_transaction)[0]
+            date = row[1].strftime(_dt_datefmt)
+            self.cal_tr.delete('0','end')
+            self.cal_tr.insert('0', date)
+            self.cal_tr.configure(state="readonly")
+            
+            self.amount = abs(row[2])
+            
+            cat = row[3]
+            if not cat == None:
+                self.cmb_atcat.set(cat)
+            else:
+                pass
+            
+            cont = row[4]
+            if not cont == None:
+                self.cmb_atcontr.set(cont)
+            else:
+                pass
+            
+        
 
     def __setAmountEntryToDefault(self):
+        if self.id_transaction == None:
         # Delete all and set to zero.
-        self.__setAmountEntry('0.0')
-        self.ent_atamount.focus()
-        self.ent_atamount.select_range(0, tk.END)
+            self.__setAmountEntry('0.0')
+            self.ent_atamount.focus()
+            self.ent_atamount.select_range(0, tk.END)
+        else:
+            self.__setAmountEntry(self.amount)
         
     def __setAmountEntry(self, value):
         # Delete all and set to zero.
@@ -177,6 +210,8 @@ class AddTransaction:
         self.selection = self.var.get()
 
     def h_btnAdd(self):
+    #update fields to selected row    
+        
         #AMOUNT
         if not self.__evaluateAmountEntry() :
             return
@@ -196,9 +231,9 @@ class AddTransaction:
                                       parent=self.mainwindow)
             return
              
-        if self.selection == 2:
+        if self.selection == "outcome":
             self.amount= float(-amountABS)
-        elif self.selection == 1:
+        elif self.selection == "income":
             self.amount = amountABS
         else:
             print("Some internal error: radiobutton not selected.")
@@ -209,18 +244,18 @@ class AddTransaction:
         date = self.cal_tr.get_date()
         category = self.cmb_atcat.get()
         contractor = self.cmb_atcontr.get()
-        amount = self.amount  
-        
-        res = self.badb.addTransaction(date, amount, category, contractor)
-        print(res)
-        #listTransaction = list[date,amount,category,contractor]  
-        
+        amount = self.amount 
+            
+        if self.id_transaction == None:
+            self.badb.addTransaction(date, amount, category, contractor)
+        else:
+            self.badb.changeTransaction(self.id_transaction,date,amount, category, contractor)
+            self.id_transaction = None
+            self.mainwindow.destroy()
+            #if not destoyed - next option -add
         self.__setAmountEntryToDefault()
-        date2 = dt.datetime.now()
-        print("date2:",date2)
-        print("date:", date)
-      
-        self.badb.addTransaction(date2,amount,category,contractor)
+            
+  
      
     def viewCatergories(self):
         data = self.badb.getCategoriesList()

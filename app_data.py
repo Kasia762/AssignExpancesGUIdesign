@@ -213,6 +213,39 @@ class App_data:
         data = cur.fetchall()
         return data
     
+    def getTransaction_byid(self, id_value):
+        ## TODO: check database connection
+        cur = self.database.cursor()
+        sql = '''
+            SELECT tr.trans_id, tr.trans_date, tr.trans_amount, ct.cat_name , cr.cont_name
+            FROM transactions AS tr 
+            LEFT OUTER JOIN categories AS ct
+                ON tr.cat_id = ct.cat_id
+            LEFT OUTER JOIN contractors AS cr
+                ON tr.cont_id = cr.cont_id
+            WHERE tr.trans_id = ?
+            ;
+            '''
+        cur.execute(sql,(id_value,))
+        data = cur.fetchall()
+        return data
+    
+    #name!!!
+    def chartMonth(self,month):
+        cur = self.database.cursor()
+        sql ='''
+        SELECT SUM(tr.trans_amount),ct.cat_name
+        FROM  transactions AS tr
+        LEFT OUTER JOIN categories AS ct
+                ON tr.cat_id = ct.cat_id
+        WHERE  strftime('%m',tr.trans_date) IN (?)
+        GROUP BY ct.cat_name;
+        '''
+        cur.execute(sql,(month,))
+        data = cur.fetchall()
+        return data
+        
+    
     
     def getAllTransactionsPeriod(self,startDate, endDate):
                 
@@ -334,8 +367,28 @@ class App_data:
         except sqlite3.Error:
             self.database.rollback()
             return (False, "SQL error",)
+    
+    def changeTransaction(self,id_value, date, amount, category, contractor):
+        val = (date, amount, category, contractor, id_value)
+        cur = self.database.cursor()
+        sql='''UPDATE transactions
+        SET
+        trans_date=?, trans_amount=?,
+        cont_id = (SELECT ct.cat_id FROM categories ct WHERE ct.cat_name = ? ), 
+        cat_id=(SELECT cont_id FROM contractors WHERE cont_name = ? )
+        WHERE trans_id = ?;
+        '''
+        cur.execute(sql,val)
+        self.database.commit()
         
-        
+    def deleteTransaction(self,val):
+        cur = self.database.cursor()
+        sql= '''
+            DELETE FROM transactions AS tr
+            WHERE tr.trans_id = ?
+            '''   
+        cur.execute(sql,(val,))
+        self.database.commit()
         
 
     def addContractor(self,  contractor):
@@ -529,8 +582,7 @@ for row in data:
  
 
 
-#badb.saveDataBase()
+#badb.saveDataBase()'
 '''
-
 
 
