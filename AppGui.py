@@ -14,7 +14,8 @@ from app_data import App_data
 from addTransaction import AddTransaction
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 import matplotlib.pyplot as plt
-import lotto
+### ***
+#import lotto
 
 ## both format should match
 _dt_datefmt = "%d.%m.%Y"
@@ -377,21 +378,21 @@ class AppWin:
         self.scrb_trTableVert.grid(column='1', row='0', sticky='ns')
         self.scrb_trTableVert.configure(command=self.tbl_transactions.yview)
         
-        self.tbl_transactions_cols = ['#1', '#2', '#3', '#4','#5']
-        self.tbl_transactions_dcols = ['#1', '#2', '#3', '#4','#5']
+        self.tbl_transactions_cols = [ 'id','date', 'amount', 'cat','cont' ]
+        self.tbl_transactions_dcols = [ 'id','date', 'amount', 'cat','cont' ]
         self.tbl_transactions.configure(columns=self.tbl_transactions_cols, 
                                         displaycolumns=self.tbl_transactions_dcols,
                                         yscrollcommand=self.scrb_trTableVert.set)
-        self.tbl_transactions.column('#1', anchor='w',stretch='true',width='50',minwidth='20')
-        self.tbl_transactions.column('#2', anchor='w',stretch='true',width='180',minwidth='20')
-        self.tbl_transactions.column('#3', anchor='w',stretch='true',width='180',minwidth='20')
-        self.tbl_transactions.column('#4', anchor='w',stretch='true',width='200',minwidth='20')
-        self.tbl_transactions.column('#5', anchor='w',stretch='true',width='200',minwidth='20')
-        self.tbl_transactions.heading('#1', anchor='w',text='ID')
-        self.tbl_transactions.heading('#2', anchor='w',text='Date')
-        self.tbl_transactions.heading('#3', anchor='w',text='Amount')
-        self.tbl_transactions.heading('#4', anchor='w',text='Category')
-        self.tbl_transactions.heading('#5', anchor='w',text='Contractor')
+        self.tbl_transactions.column('id',      anchor='w',stretch='true',width='50',minwidth='20')
+        self.tbl_transactions.column('date',    anchor='w',stretch='true',width='180',minwidth='20')
+        self.tbl_transactions.column('amount',  anchor='w',stretch='true',width='180',minwidth='20')
+        self.tbl_transactions.column('cat',     anchor='w',stretch='true',width='200',minwidth='20')
+        self.tbl_transactions.column('cont',    anchor='w',stretch='true',width='200',minwidth='20')
+        self.tbl_transactions.heading('id',       anchor='w',text='ID')
+        self.tbl_transactions.heading('date',     anchor='w',text='Date')
+        self.tbl_transactions.heading('amount',   anchor='w',text='Amount')
+        self.tbl_transactions.heading('cat',      anchor='w',text='Category')
+        self.tbl_transactions.heading('cont',     anchor='w',text='Contractor')
         self.tbl_transactions['show'] = 'headings'
         self.tbl_transactions.grid(column='0', padx='3', pady='3', row='0', sticky='nsew')
         self.tbl_transactions.master.rowconfigure('0', weight=1)
@@ -540,6 +541,8 @@ class AppWin:
 
         # Main widget
         self.mainwindow = self.root_app
+
+
         
     def chartSpendingsMonth(self):
         mon = self.spn_month.get()
@@ -579,14 +582,15 @@ class AppWin:
         ax.bar(cat,height=am)
         ax.set_title('Spendings in '+ monthname)
         ax.set_xlabel("Categories");ax.set_ylabel("Spendings [Euros]")
+
+
         
     def updateTransactionTable(self):
-        self.display_balance()
+        # self.display_balance()
         #first clear the treeview
-        for item in  self.tbl_transactions.get_children():
-             self.tbl_transactions.delete(item)
+        self.tbl_transactions.delete(*self.tbl_transactions.get_children())
+             
         #then display data
-        count = 0
         datefr = self.cal_tr_From.get_date()
         dateto = self.cal_tr_To.get_date()
         
@@ -598,10 +602,8 @@ class AppWin:
             con = row[4] if row[4] else ""
             values = (idvalue,date, row[2], cat, con)
             self.tbl_transactions.insert('','end', values = values)
-            count+=1
-        self.mainwindow.after(5000, self.updateTransactionTable)  
-        #self.chartSpendingsMonth()
-        
+
+
 
     def updateCategoriesTable(self):
         #first clear the treeview
@@ -618,14 +620,15 @@ class AppWin:
 
 
     def h_btnTrAdd(self):
-        self.addTransactionWindow = AddTransaction(self.mainwindow, self.badb)
-        self.addTransactionWindow.run()
+        addTransactionWindow = AddTransaction(self.mainwindow, self)
+        addTransactionWindow.run()
         #self.mainwindow.wait_window(addTransactionWindow)
         #self.updateTransactionTable()
 
 
     def h_btnLogout(self):
         pass
+
 
     def treeSelection(self):
         line = self.tbl_transactions.selection()
@@ -636,8 +639,7 @@ class AppWin:
     def h_btnTrChange(self):
         id_value = str(self.treeSelection()[0])
         print(id_value)
-       # AddTransaction(self.mainwindow,self.badb).h_btnAdd(2,id_value)
-        AddTransaction(self.mainwindow,self.badb, id_value).run()
+        AddTransaction(self.mainwindow, self, id_value).run()
         self.updateTransactionTable()
         
 
@@ -647,14 +649,15 @@ class AppWin:
         print(id_value)
         self.badb.deleteTransaction(id_value)
         self.updateTransactionTable()
-       
-        pass
+
 
     def h_btnTrImport(self):
         pass
 
+
     def h_btnTrExport(self):
         pass
+
 
     def h_btnTrLotto(self):
         date = dt.date.today()
@@ -667,14 +670,15 @@ class AppWin:
         else:
             tk.messagebox.showwarning("LOTTO RESULTS!!!!","You won "+str(amount)+", yeay",
                                       parent=self.mainwindow)
-        pass
 
 
     def h_btnCatAdd(self):
         pass
 
+
     def h_btnCatChange(self):
         pass
+
 
     def h_btnCatDelete(self):
         pass
@@ -689,8 +693,6 @@ class AppWin:
         ## TODO: not by after
         val = self.badb.getBalance()
         self.var_CurrentBalance.set( value= f"{val:.2f}" )
-        #self.mainwindow.after(5000, self.display_time)     
-
     
 
     def run(self):
@@ -700,6 +702,7 @@ class AppWin:
         self.display_time()
         self.display_balance()
         self.mainwindow.mainloop()    
+
 
 if __name__ == '__main__':
     #app = LoginWin()
