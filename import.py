@@ -21,20 +21,12 @@ import collections
 
 class ImportApp:
     def __init__(self, master=None):
-        # build ui
-        self.root_import = tk.Tk() if master is None else tk.Toplevel(master)
-        self.GUI(self.root_import)
-        #self.root_import.configure(height='300', relief='flat', width='300')
-        self.root_import.geometry('800x400')
-        self.root_import.minsize(600, 300)
-        self.root_import.resizable(True, True)
-        self.root_import.title('Import transactions from CSV...')
-
         # Main widget
-        self.mainwindow = self.root_import
+        self.mainwindow = self.GUI(master)
         
         ## BINDs
         self.mainwindow.bind_class("TCombobox","<<ComboboxSelected>>", self.updatePreview)
+        self.mainwindow.bind_class("TCheckbox","<<Toggle>>", self.updatePreview)
         self.mainwindow.bind('<Escape>', lambda x: self.mainwindow.destroy() )
         
         self.__df = pd.DataFrame()
@@ -211,6 +203,7 @@ class ImportApp:
         self.mainwindow.mainloop()
 
     def GUI(self, master):
+        self.root_import = tk.Tk() if master is None else tk.Toplevel(master)
         self.frm_main = ttk.Frame(self.root_import)
         self.lbfr_Operations = ttk.Labelframe(self.frm_main)
         self.btn_Open = ttk.Button(self.lbfr_Operations)
@@ -283,23 +276,23 @@ class ImportApp:
         self.cmb_Contractor.grid(column='1', padx='10', row='3', sticky='ew')
         self.cmb_Contractor.master.rowconfigure('3', pad='5')
         self.cmb_Contractor.master.columnconfigure('1', pad='0', weight='1')
-        self.chk_dateToday = ttk.Checkbutton(self.lbfr_dataSelect)
+        self.chk_dateToday = ttk.Checkbutton(self.lbfr_dataSelect, command=self.processTable)
         self.set_dateToday = tk.IntVar(value=0)
         self.chk_dateToday.configure(text='Set date as today', variable=self.set_dateToday)
         self.chk_dateToday.grid(column='2', padx='10', row='0', sticky='w')
         self.chk_dateToday.master.rowconfigure('0', pad='5')
-        self.chb_WithdrawalOnly = ttk.Checkbutton(self.lbfr_dataSelect)
+        self.chb_WithdrawalOnly = ttk.Checkbutton(self.lbfr_dataSelect, command=self.processTable)
         self.set_WithdrawalOnly = tk.IntVar(value=0)
         self.chb_WithdrawalOnly.configure(text='All as withdrawal', variable=self.set_WithdrawalOnly)
         self.chb_WithdrawalOnly.grid(column='2', padx='10', row='1', sticky='w')
         self.chb_WithdrawalOnly.master.rowconfigure('1', pad='5')
-        self.chk_categoryAddNew = ttk.Checkbutton(self.lbfr_dataSelect)
+        self.chk_categoryAddNew = ttk.Checkbutton(self.lbfr_dataSelect, command=self.processTable)
         self.set_categoryAdd = tk.IntVar(value=0)
         self.chk_categoryAddNew.configure(text='Add new categories', variable=self.set_categoryAdd)
         self.chk_categoryAddNew.grid(column='2', padx='10', row='2', sticky='w')
         self.chk_categoryAddNew.master.rowconfigure('1', pad='10')
         self.chk_categoryAddNew.master.rowconfigure('2', pad='5')
-        self.chk_contractorAddNew = ttk.Checkbutton(self.lbfr_dataSelect)
+        self.chk_contractorAddNew = ttk.Checkbutton(self.lbfr_dataSelect, command=self.processTable)
         self.set_contractorAdd = tk.IntVar(value=0)
         self.chk_contractorAddNew.configure(text='Add new contractors', variable=self.set_contractorAdd)
         self.chk_contractorAddNew.grid(column='2', padx='10', row='3', sticky='w')
@@ -351,6 +344,13 @@ class ImportApp:
         self.frm_main.grid(column='0', padx='3', pady='10', row='0', sticky='nsew')
         self.frm_main.master.rowconfigure('0', weight='1')
         self.frm_main.master.columnconfigure('0', weight='1')
+        #self.root_import.configure(height='300', relief='flat', width='300')
+        self.root_import.geometry('800x400')
+        self.root_import.minsize(600, 300)
+        self.root_import.resizable(True, True)
+        self.root_import.title('Import transactions from CSV...')
+        
+        return self.root_import
         ### ====================================================
         ### END GUI        
 
