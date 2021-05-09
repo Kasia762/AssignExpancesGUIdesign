@@ -15,6 +15,7 @@ from addTransaction import AddTransaction
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 import matplotlib.pyplot as plt
 import lotto
+from weather import Weather
 
 ## both format should match
 _dt_datefmt = "%d.%m.%Y"
@@ -512,7 +513,14 @@ class AppWin:
         self.lbfr_weather.grid(column='0', row='0', sticky='nsew')
         self.labelframe5 = ttk.Labelframe(self.frm_lotto)
         self.label6 = ttk.Label(self.labelframe5)
-        self.label6.configure(justify='center', text='weather, icon, location')
+        
+        city = "Valkeakoski"
+        x = Weather(city)
+        self.label6.configure(justify='center', 
+                              text="Today in "+ city +" is "+ x.Type()+
+                              ".\nEven more specifically "+
+                              x.Describtion()+".\nThe temperature is "+
+                              x.Temperature()+" degrees.")
         self.label6.grid(column='0', row='0', 
                          columnspan='2', sticky='',
                          pady=20)
@@ -520,6 +528,7 @@ class AppWin:
         self.lbl_lt_time = ttk.Label(self.labelframe5)
         self.lbl_lt_time.configure(justify='center', text='Current time:')
         self.lbl_lt_time.grid(column='0', row='1', sticky='e')
+        
         self.label7 = ttk.Label(self.labelframe5)
         self.var_CurrentTime = tk.StringVar(value='eeef')
         self.label7.configure( font='{Arial} 16 {}', foreground='black', justify='center')
