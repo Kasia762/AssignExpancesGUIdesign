@@ -15,6 +15,7 @@ from addTransaction import AddTransaction
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 import matplotlib.pyplot as plt
 from weather import Weather
+
 ### ***
 #import lotto
 
@@ -525,12 +526,12 @@ class AppWin:
         self.lbl_temp_number.grid(column='1', pady='10', row='2')
         #tempreture label
         self.lbl_temperature = ttk.Label(self.lblfr_weather)
-        self.lbl_temperature.configure(text='temperature')
+        self.lbl_temperature.configure(text='Temperature')
         self.lbl_temperature.grid(column='1', padx='10', pady='10', row='1')
         #today's date label
         self.lbl_today = ttk.Label(self.lblfr_weather)
         self.lbl_today.configure(text='TODAY IS')
-        self.lbl_today.grid(column='2', row='1',sticky='e',padx='70')
+        self.lbl_today.grid(column='2', row='1',sticky='w',padx='70')
         #today's date number
         self.todayDate = ttk.Label(self.lblfr_weather)
         self.todayDate.configure(text=dt.date.today().strftime(_dt_datefmt))
@@ -539,13 +540,13 @@ class AppWin:
         #time is label
         self.lbl_lt_time = ttk.Label(self.lblfr_weather)
         self.lbl_lt_time.configure(justify='center', text='Current time:')
-        self.lbl_lt_time.grid(column='2', row='2', sticky='e',padx='70')
+        self.lbl_lt_time.grid(column='2', row='2', sticky='w',padx='70')
         #time label                       
         self.lbl_time = ttk.Label(self.lblfr_weather)
         self.var_CurrentTime = tk.StringVar(value='eeef')
         self.lbl_time.configure( font='{Arial} 16 {}', foreground='black', justify='center')
         self.lbl_time.configure(textvariable=self.var_CurrentTime, width='20')
-        self.lbl_time.grid(column='3', row='2', pady=10, sticky='w')
+        self.lbl_time.grid(column='3', row='2', pady=10, sticky='e')
         #selected date
         self.lbl_lt_date = ttk.Label(self.lblfr_weather)
         self.lbl_lt_date.configure(justify='center', text='Selected date:')
@@ -630,10 +631,10 @@ class AppWin:
             self.lbl_type.configure(text=x.Type())
             self.lbl_windVal.configure(text=x.WindSpeed())
             self.lbl_pressureVal.configure(text=x.Pressure())
+            self.lbl_tMinVal.configure(text=x.TempMin())
             self.lbl_tMaxVal.configure(text=x.TempMax())
             self.lbl_humidityVal.configure(text=x.Humidity())
-            self.lbl_tMinVal.configure(text=x.TempMin())
-            self.cv_icon.create_image(50,60,image=x.Icon(), anchor='nw')
+            #self.cv_icon.create_image(10,10,image=x.Icon(), anchor='center')
         except:
              tk.messagebox.showwarning("Wrong input city name!!",
                                       "This city name is incorrect.\n\nPlease, give correct city name.",

@@ -10,6 +10,12 @@ import io
 import base64
 import tkinter as tk
 from urllib.request import urlopen
+
+import requests
+from PIL import Image
+import requests
+from io import BytesIO
+
     
 class Weather:
     def __init__(self,city_name="Valkeakoski"):
@@ -37,9 +43,9 @@ class Weather:
         icon_id = self.Info()["weather"][0]['icon']
         url_icon = "http://openweathermap.org/img/wn/"+icon_id+"@2x.png"
         image_byt = urlopen(url_icon).read()
-        image_b64 = base64.encodestring(image_byt)
+        image_b64 = base64.encodebytes(image_byt)
         icon = tk.PhotoImage(data=image_b64)    
-        return icon
+        return url_icon
 
     def Describtion(self):   
         weather=self.Info()["weather"]
@@ -85,18 +91,34 @@ class Weather:
         humidity = str(hum)+' %'
         return humidity
   
-#Weather("Valkeakoski").Pressure()     
-'''
-tempreture_info = data["main"]
-    weather_type = weather[0]['main'] #rain
-     #light rain
-    icon_id = weather[0]['icon']
-    #city = input("enter city:")
-# create a white canvas
-cv = tk.Canvas(bg='white')
-cv.pack(side='top', fill='both', expand='yes')
+    
+# #print(Weather("Valkeakoski").Icon())    
 
-# put the image on the canvas with
-# create_image(xpos, ypos, image, anchor)
-cv.create_image(10, 10, image=photo, anchor='nw')
-'''
+# root = tk.Tk()
+# root.title("display a website image")
+# # a little more than width and height of image
+# w = 520
+# h = 320
+# x = 80
+# y = 100
+
+# root.geometry("%dx%d+%d+%d" % (w, h, x, y))
+
+# image_byt = urlopen(Weather("Valkeakoski").Icon()).read()
+# image_b64 = base64.encodebytes(image_byt)
+# photo = tk.PhotoImage(data=image_b64)
+
+
+# # im = Image.open(requests.get(Weather("Valkeakoski").Icon(), stream = True).raw)
+# # im.show()
+
+# #response = requests.get(Weather("Valkeakoski").Icon())
+# #img = Image.open(BytesIO(response.content))
+# #img.show()
+# photo = ".\cloud.png"
+# cv = tk.Canvas(bg='white')
+# cv.pack(side='top', fill='both', expand='yes')
+# cv.create_image(10, 10, image=photo, anchor='center')
+
+# root.mainloop()
+

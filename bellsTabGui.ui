@@ -1,0 +1,269 @@
+<?xml version='1.0' encoding='utf-8'?>
+<interface version="1.1">
+  <object class="ttk.Frame" id="frame1">
+    <property name="height">200</property>
+    <property name="width">200</property>
+    <layout manager="pack">
+      <property name="propagate">True</property>
+      <property name="side">top</property>
+    </layout>
+    <child>
+      <object class="ttk.Labelframe" id="lblfr_weather">
+        <property name="height">200</property>
+        <property name="text" translatable="yes">info</property>
+        <property name="width">200</property>
+        <layout manager="pack">
+          <property name="expand">true</property>
+          <property name="fill">both</property>
+          <property name="propagate">True</property>
+          <property name="side">top</property>
+        </layout>
+        <child>
+          <object class="ttk.Label" id="lbl_location">
+            <property name="text" translatable="yes">Walbrzych, Poland, Europe bla bla</property>
+            <layout manager="grid">
+              <property name="column">0</property>
+              <property name="columnspan">4</property>
+              <property name="pady">20</property>
+              <property name="propagate">True</property>
+              <property name="row">0</property>
+            </layout>
+          </object>
+        </child>
+        <child>
+          <object class="tk.Canvas" id="cv_icon">
+            <property name="background">#5363ee</property>
+            <property name="height">50</property>
+            <property name="width">50</property>
+            <layout manager="grid">
+              <property name="column">0</property>
+              <property name="pady">10</property>
+              <property name="propagate">True</property>
+              <property name="row">1</property>
+            </layout>
+          </object>
+        </child>
+        <child>
+          <object class="ttk.Label" id="lbl_tempnumber">
+            <property name="text" translatable="yes">12</property>
+            <layout manager="grid">
+              <property name="column">1</property>
+              <property name="pady">10</property>
+              <property name="propagate">True</property>
+              <property name="row">1</property>
+            </layout>
+          </object>
+        </child>
+        <child>
+          <object class="ttk.Label" id="lbl_today">
+            <property name="text" translatable="yes">today is</property>
+            <layout manager="grid">
+              <property name="column">2</property>
+              <property name="propagate">True</property>
+              <property name="row">1</property>
+            </layout>
+          </object>
+        </child>
+        <child>
+          <object class="ttk.Label" id="lbl_type">
+            <property name="text" translatable="yes">sunny</property>
+            <layout manager="grid">
+              <property name="column">0</property>
+              <property name="padx">15</property>
+              <property name="pady">10</property>
+              <property name="propagate">True</property>
+              <property name="row">2</property>
+            </layout>
+          </object>
+        </child>
+        <child>
+          <object class="ttk.Label" id="lbl_temperature">
+            <property name="text" translatable="yes">temperature</property>
+            <layout manager="grid">
+              <property name="column">1</property>
+              <property name="padx">10</property>
+              <property name="pady">10</property>
+              <property name="propagate">True</property>
+              <property name="row">2</property>
+            </layout>
+          </object>
+        </child>
+        <child>
+          <object class="pygubu.builder.widgets.calendarframe" id="cal">
+            <property name="firstweekday">6</property>
+            <property name="month">1</property>
+            <layout manager="grid">
+              <property name="column">2</property>
+              <property name="columnspan">2</property>
+              <property name="padx">20</property>
+              <property name="pady">20</property>
+              <property name="propagate">True</property>
+              <property name="row">3</property>
+              <property name="rowspan">5</property>
+            </layout>
+          </object>
+        </child>
+        <child>
+          <object class="ttk.Label" id="lbl_time">
+            <property name="text" translatable="yes">time is</property>
+            <layout manager="grid">
+              <property name="column">2</property>
+              <property name="propagate">True</property>
+              <property name="row">2</property>
+            </layout>
+          </object>
+        </child>
+        <child>
+          <object class="ttk.Label" id="lbl_time">
+            <property name="text" translatable="yes">12:45</property>
+            <layout manager="grid">
+              <property name="column">3</property>
+              <property name="propagate">True</property>
+              <property name="row">2</property>
+            </layout>
+          </object>
+        </child>
+        <child>
+          <object class="ttk.Label" id="seldate">
+            <property name="text" translatable="yes">selected</property>
+            <layout manager="grid">
+              <property name="column">2</property>
+              <property name="propagate">True</property>
+              <property name="row">8</property>
+            </layout>
+          </object>
+        </child>
+        <child>
+          <object class="ttk.Label" id="date">
+            <property name="text" translatable="yes">02.02.2021</property>
+            <layout manager="grid">
+              <property name="column">3</property>
+              <property name="propagate">True</property>
+              <property name="row">8</property>
+            </layout>
+          </object>
+        </child>
+        <child>
+          <object class="ttk.Label" id="label17">
+            <property name="text" translatable="yes">14.15</property>
+            <layout manager="grid">
+              <property name="column">3</property>
+              <property name="propagate">True</property>
+              <property name="row">1</property>
+            </layout>
+          </object>
+        </child>
+        <child>
+          <object class="ttk.Label" id="lbl_wind">
+            <property name="text" translatable="yes">Wind</property>
+            <layout manager="grid">
+              <property name="column">0</property>
+              <property name="padx">15</property>
+              <property name="propagate">True</property>
+              <property name="row">3</property>
+            </layout>
+          </object>
+        </child>
+        <child>
+          <object class="ttk.Label" id="lbl_wind_value">
+            <property name="text" translatable="yes">12km/h</property>
+            <layout manager="grid">
+              <property name="column">1</property>
+              <property name="padx">10</property>
+              <property name="propagate">True</property>
+              <property name="row">3</property>
+            </layout>
+          </object>
+        </child>
+        <child>
+          <object class="ttk.Label" id="lbl_pressure">
+            <property name="text" translatable="yes">pressure</property>
+            <layout manager="grid">
+              <property name="column">0</property>
+              <property name="padx">15</property>
+              <property name="propagate">True</property>
+              <property name="row">4</property>
+            </layout>
+          </object>
+        </child>
+        <child>
+          <object class="ttk.Label" id="lbl_pressue_val">
+            <property name="text" translatable="yes">1039 hPa</property>
+            <layout manager="grid">
+              <property name="column">1</property>
+              <property name="padx">10</property>
+              <property name="propagate">True</property>
+              <property name="row">4</property>
+            </layout>
+          </object>
+        </child>
+        <child>
+          <object class="ttk.Label" id="label22">
+            <property name="text" translatable="yes">12</property>
+            <layout manager="grid">
+              <property name="column">1</property>
+              <property name="padx">10</property>
+              <property name="propagate">True</property>
+              <property name="row">5</property>
+            </layout>
+          </object>
+        </child>
+        <child>
+          <object class="ttk.Label" id="lbl_max_tempo">
+            <property name="text" translatable="yes">temp.max</property>
+            <layout manager="grid">
+              <property name="column">0</property>
+              <property name="padx">15</property>
+              <property name="propagate">True</property>
+              <property name="row">5</property>
+            </layout>
+          </object>
+        </child>
+        <child>
+          <object class="ttk.Label" id="lbl_tmep_min">
+            <property name="text" translatable="yes">temp.min</property>
+            <layout manager="grid">
+              <property name="column">0</property>
+              <property name="padx">15</property>
+              <property name="propagate">True</property>
+              <property name="row">6</property>
+            </layout>
+          </object>
+        </child>
+        <child>
+          <object class="ttk.Label" id="label25">
+            <property name="text" translatable="yes">9</property>
+            <layout manager="grid">
+              <property name="column">1</property>
+              <property name="padx">10</property>
+              <property name="propagate">True</property>
+              <property name="row">6</property>
+            </layout>
+          </object>
+        </child>
+        <child>
+          <object class="ttk.Label" id="label26">
+            <property name="text" translatable="yes">humidity</property>
+            <layout manager="grid">
+              <property name="column">0</property>
+              <property name="padx">15</property>
+              <property name="propagate">True</property>
+              <property name="row">7</property>
+            </layout>
+          </object>
+        </child>
+        <child>
+          <object class="ttk.Label" id="label27">
+            <property name="text" translatable="yes">45</property>
+            <layout manager="grid">
+              <property name="column">1</property>
+              <property name="padx">10</property>
+              <property name="propagate">True</property>
+              <property name="row">7</property>
+            </layout>
+          </object>
+        </child>
+      </object>
+    </child>
+  </object>
+</interface>
