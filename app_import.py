@@ -19,17 +19,22 @@ import collections
 
 
 
-class ImportApp:
-    def __init__(self, master=None):
+class ImportTransactionDialog:
+    def __init__(self, master, controller):
+        ## 
+        self.controller = controller
+        self.__df = pd.DataFrame()
+        
         # Main widget
         self.mainwindow = self.GUI(master)
-        
+        self.mainwindow.grab_set()
+
         ## BINDs
         self.mainwindow.bind_class("TCombobox","<<ComboboxSelected>>", self.updatePreview)
         self.mainwindow.bind_class("TCheckbutton","<<Toggle>>", self.updatePreview)
         self.mainwindow.bind('<Escape>', lambda x: self.mainwindow.destroy() )
         
-        self.__df = pd.DataFrame()
+        self.btn_Open.focus_set()
         
     def detect_separator(self, filePath):
         """
@@ -69,7 +74,8 @@ class ImportApp:
         filePath = fd.askopenfilename(
                 title='Open a CSV file ...',
                 initialdir='./',
-                filetypes=filetypes)
+                filetypes=filetypes,
+                parent=self.mainwindow)
         
         if not os.path.isfile(filePath):
             print("No file selected. (or not ordinary file selected)")
@@ -92,7 +98,6 @@ class ImportApp:
             self.__df = pd.read_csv(filePath, sep=sep[0], decimal=dec)
         except:
             print("Some error happend during opening csv file")
-            # TODO: show some gui error message
             tk.messagebox.showwarning("CSV loading error",
                                   "Could not load csv file.\n\nPlease, select correct file.",
                                   parent=self.mainwindow)
@@ -109,14 +114,14 @@ class ImportApp:
             self.cmb_Contractor.set('')
         except:
             print("Some error happend during parsing csv file")
-            # TODO: show some gui error message
             tk.messagebox.showwarning("CSV loading error",
                                   "Could not parse csv file.\n\nPlease, select correct file.",
                                   parent=self.mainwindow)
             return
 
+
     def __parse_date(self, d):
-        if self.set_dateToday.get():
+        if self.var_dateToday.get():
             resdate = datetime.datetime.now().date()
         else:
             try:
@@ -124,6 +129,7 @@ class ImportApp:
             except:
                 resdate = datetime.datetime.now().date()
         return resdate
+
         
     def __parse_amount(self, a):
         if not ( isinstance(a, float) or isinstance(a, int) ):
@@ -131,28 +137,30 @@ class ImportApp:
         a = round(a, 2)
         if a == 0.0:
             return np.nan
-        if self.set_WithdrawalOnly.get():
+        if self.var_WithdrawalOnly.get():
             return ( - abs(a) )
         else:
             return a
 
+
     def processTable(self, mode='preview'):
-        self.progressbar['maximum'] = len(self.__df) // 100
         #first clear the treeview
-        self.tbl_transactions.delete(*self.tbl_transactions.get_children())
+        self.tbl_transactions.delete(*list(self.tbl_transactions.get_children()))
         
+        ## Get columns names to import
         date_col = self.cmb_Date.get()
         amount_col = self.cmb_Amount.get()
         cat_col = self.cmb_Category.get()
         cont_col = self.cmb_Contractor.get()
         cols = list([ date_col, "", amount_col, "", cat_col, cont_col])
+        ## Ugly code, but
+        ## since the same column could be selected, using numbers - not names
         date_n ,dateres_n ,amount_n , amountres_n ,cat_n ,cont_n = 1,2,3,4,5,6
         
-        ### Select data from all file
+        ### Select choosen data columns from file
         subdf = pd.DataFrame()
-        subdf.insert(0, "0" , str('') )
-        for i, col in enumerate(cols):
-            i += 1
+        subdf.insert(0, "0" , str("") )
+        for i, col in enumerate(cols,  start=1):
             if col :
                 if mode == 'preview':
                     subdf.insert(len(subdf.columns), "", self.__df.loc[:,col].head(20) , allow_duplicates=True)
@@ -160,8 +168,6 @@ class ImportApp:
                     subdf.insert(len(subdf.columns), "", self.__df.loc[:,col] , allow_duplicates=True)
             else:
                 subdf.insert(i, str(i) , ''  )
-
-        ### Process data: 
         if mode in ['check', 'import']:
             if amount_col == '':
                 tk.messagebox.showwarning("CSV column selection",
@@ -170,23 +176,34 @@ class ImportApp:
                 return
         ### Check  data
         self.progressbar.start()
-        subdf.iloc[:,dateres_n] = subdf.iloc[:,date_n].apply(self.__parse_date)
-        subdf.iloc[:,amountres_n] = subdf.iloc[:,amount_n].apply(self.__parse_amount)
+        try:
+            subdf.iloc[:,dateres_n] = subdf.iloc[:,date_n].apply(self.__parse_date)
+            subdf.iloc[:,amountres_n] = subdf.iloc[:,amount_n].apply(self.__parse_amount)
+        except:
+            print("Error parsing data. ")
+            return
+        ### Process data: 
         for index, row in subdf.iterrows():
             if index % 100 == 0:
                 self.progressbar.update()
             iid = self.tbl_transactions.insert('','end', values = ( list(row))  )
-        
-        ### Do import after all checks
-        if mode == 'import':
-            subdf.dropna(subset=list([amountres_n,]), inplace=True)
-            # TODO: import into database
+            self.tbl_transactions.set(iid, column='result', value='')
+            ### Do real import 
+            if mode == 'import':
+                if not pd.isnull( row[amountres_n] ):
+                    cat = row[cat_n]
+                    print("Category ", cat, " ", self.controller.badb.isExistsCategory(cat))
+                    cont = row[cont_n]
+                    print("Category ", cont, " ", self.controller.badb.isExistsContractor(cont))
+                    pass
+                # TODO: import into database
         self.progressbar.stop()
         pass
 
 
     def updatePreview(self, event):
         self.processTable(mode='preview')
+
     
     def h_btnCheck(self):
         self.processTable(mode='check')
@@ -196,14 +213,26 @@ class ImportApp:
         self.processTable(mode='import')
         pass
 
+
     def tbl_transactions(self, mode=None, value=None, units=None):
         pass
 
+
     def run(self):
-        self.mainwindow.mainloop()
+        #### self.mainwindow.mainloop()
+        pass
+
 
     def GUI(self, master):
-        self.root_import = tk.Tk() if master is None else tk.Toplevel(master)
+        if master == None:
+            print("Cannot run independently. Pass master attribute")
+            return None
+        
+        self.root_import = tk.Toplevel(master)
+        ## Hide window 
+        ## DO NOT forget to show at the end of init!!!
+        self.root_import.withdraw()     
+        
         self.frm_main = ttk.Frame(self.root_import)
         self.lbfr_Operations = ttk.Labelframe(self.frm_main)
         self.btn_Open = ttk.Button(self.lbfr_Operations)
@@ -277,24 +306,24 @@ class ImportApp:
         self.cmb_Contractor.master.rowconfigure('3', pad='5')
         self.cmb_Contractor.master.columnconfigure('1', pad='0', weight='1')
         self.chk_dateToday = ttk.Checkbutton(self.lbfr_dataSelect, command=self.processTable)
-        self.set_dateToday = tk.IntVar(value=0)
-        self.chk_dateToday.configure(text='Set date as today', variable=self.set_dateToday)
+        self.var_dateToday = tk.IntVar(value=0)
+        self.chk_dateToday.configure(text='Set date as today', variable=self.var_dateToday)
         self.chk_dateToday.grid(column='2', padx='10', row='0', sticky='w')
         self.chk_dateToday.master.rowconfigure('0', pad='5')
         self.chb_WithdrawalOnly = ttk.Checkbutton(self.lbfr_dataSelect, command=self.processTable)
-        self.set_WithdrawalOnly = tk.IntVar(value=0)
-        self.chb_WithdrawalOnly.configure(text='All as withdrawal', variable=self.set_WithdrawalOnly)
+        self.var_WithdrawalOnly = tk.IntVar(value=0)
+        self.chb_WithdrawalOnly.configure(text='All as withdrawal', variable=self.var_WithdrawalOnly)
         self.chb_WithdrawalOnly.grid(column='2', padx='10', row='1', sticky='w')
         self.chb_WithdrawalOnly.master.rowconfigure('1', pad='5')
         self.chk_categoryAddNew = ttk.Checkbutton(self.lbfr_dataSelect, command=self.processTable)
-        self.set_categoryAdd = tk.IntVar(value=0)
-        self.chk_categoryAddNew.configure(text='Add new categories', variable=self.set_categoryAdd)
+        self.var_categoryAdd = tk.IntVar(value=0)
+        self.chk_categoryAddNew.configure(text='Add new categories', variable=self.var_categoryAdd)
         self.chk_categoryAddNew.grid(column='2', padx='10', row='2', sticky='w')
         self.chk_categoryAddNew.master.rowconfigure('1', pad='10')
         self.chk_categoryAddNew.master.rowconfigure('2', pad='5')
         self.chk_contractorAddNew = ttk.Checkbutton(self.lbfr_dataSelect, command=self.processTable)
-        self.set_contractorAdd = tk.IntVar(value=0)
-        self.chk_contractorAddNew.configure(text='Add new contractors', variable=self.set_contractorAdd)
+        self.var_contractorAdd = tk.IntVar(value=0)
+        self.chk_contractorAddNew.configure(text='Add new contractors', variable=self.var_contractorAdd)
         self.chk_contractorAddNew.grid(column='2', padx='10', row='3', sticky='w')
         self.chk_contractorAddNew.master.rowconfigure('3', pad='5')
         self.lbfr_dataSelect.configure(height='0', padding='10 10', text='Select CSV columns correspond to... ', width='150')
@@ -349,12 +378,12 @@ class ImportApp:
         self.root_import.minsize(600, 300)
         self.root_import.resizable(True, True)
         self.root_import.title('Import transactions from CSV...')
+
+        # SHOW window, fully constructed
+        self.root_import.deiconify()
+
         
         return self.root_import
         ### ====================================================
         ### END GUI        
-
-if __name__ == '__main__':
-    app = ImportApp()
-    app.run()
 

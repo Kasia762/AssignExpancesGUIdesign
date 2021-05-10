@@ -4,19 +4,6 @@ Created on Sat Apr 24 15:53:00 2021
 
 @author: ilia
 """
-"""
-learn the function __initCreateTables
-
-after that, understand how works:
-__tableExists
-testPrintAllTables
-getContractorsList
-getAllTransactions
-
-and finally, write correct SQL query for 
- getAllTransactionsPeriod
-getTransactionsPeriod
-"""
 
 import sqlite3
 import datetime as dt
@@ -61,7 +48,7 @@ class App_data:
                         detect_types=sqlite3.PARSE_DECLTYPES|sqlite3.PARSE_COLNAMES)
         print("Loading db")
        # self.__loadDB(self.database, self.databaseFilename)
-        if not self.__tableExists(self.database, "transactions"):
+        if not self.__tableExists("transactions"):
             print("Creating tables in database...")
             self.__initCreateTables()
         else:
@@ -102,11 +89,11 @@ class App_data:
         return self.__saveDB(self.database, self.databaseFilename)
 
 
-    def __tableExists(self, db, tablename):
-        if ( tablename == None ) or ( db == None ):
-            print("--- no names, tab:", tablename, " , db:", db)
+    def __tableExists(self, tablename):
+        if ( tablename == None ):
+            print("--- no name, tab:", tablename)
             return False
-        cur = db.cursor()
+        cur = self.database.cursor()
         sql = 'SELECT COUNT(*) FROM sqlite_master WHERE type = ? AND name = ?'
         cur.execute(sql, ("table", tablename,) )
         data = cur.fetchone()
@@ -115,6 +102,33 @@ class App_data:
         
         
         
+    def isExistsCategory(self, name):
+        name = self.__parse_name(name)
+        if ( name == "" ):
+            return None
+        cur = self.database.cursor()
+        sql = 'SELECT COUNT(*) FROM categories WHERE  cat_name = ?'
+        cur.execute(sql, (name,) )
+        data = cur.fetchone()
+        count = data[0]
+        return ( count > 0 )
+
+        
+        
+        
+    def isExistsContractor(self, name):
+        name = self.__parse_name(name)
+        if ( name == "" ):
+            return None
+        cur = self.database.cursor()
+        sql = 'SELECT COUNT(*) FROM contractors WHERE  cont_name = ?'
+        cur.execute(sql, (name,) )
+        data = cur.fetchone()
+        count = data[0]
+        return ( count > 0 )
+
+        
+
     def __initCreateTables(self):        
         self.cur = self.database.cursor()
         ## Creating tables
@@ -122,14 +136,14 @@ class App_data:
             self.cur.execute(''' 
                         CREATE TABLE categories (
                             cat_id INTEGER NOT NULL  PRIMARY KEY,
-                            cat_name TEXT NOT NULL,
+                            cat_name TEXT NOT NULL COLLATE NOCASE,
                             cat_limit FLOAT
                             );
                         ''')
             self.cur.execute('''
                         CREATE TABLE contractors (
                             cont_id INTEGER NOT NULL  PRIMARY KEY,
-                            cont_name TEXT NOT NULL
+                            cont_name TEXT NOT NULL COLLATE NOCASE
                             );
                         ''')
             self.cur.execute('''
@@ -195,19 +209,22 @@ class App_data:
         return None
 
 
-    def __get_date(self, date):
+    def __parse_date(self, date):
         if  self.__is_date(date) == True:
-            print("date")
             return date
         if  self.__is_date(date) == False:
-            print("datetime")
             date = date.date()
         if  self.__is_date(date) == True:
-            print("now date")
             return date
         else:            
-            print("...none")
             return None
+
+
+    def __parse_name(self, name):
+        ## # Remove the first and end spaces
+        ## return "".join(name.rstrip().lstrip())
+        # Remove all extra spaces
+        return " ".join(name.split())
 
                 
     def testPrintAllTables(self):
@@ -360,7 +377,9 @@ class App_data:
         
     
     def addTransaction(self, date, amount, category, contractor):
-        date = self.__get_date(date)
+        date = self.__parse_date(date)
+        category = self.__parse_name(category)
+        contractor = self.__parse_name(contractor)
         if  self.__is_date(date) != True:
             return (False, "date is not datetime either date type parametr")
         if not ( isinstance(amount, float) or isinstance(amount, int) ):
@@ -387,7 +406,9 @@ class App_data:
 
     
     def changeTransaction(self, id_value, date, amount, category, contractor):
-        date = self.__get_date(date)
+        date = self.__parse_date(date)
+        category = self.__parse_name(category)
+        contractor = self.__parse_name(contractor)
         if  self.__is_date(date) != True:
             return (False, "date is not datetime either date type parametr")
         if not ( isinstance(amount, float) or isinstance(amount, int) ):
@@ -423,7 +444,7 @@ class App_data:
 
     def addContractor(self,  contractor):
         ## TODO: 1. data types checking
-        
+        contractor = self.__parse_name(contractor)
         cur = self.database.cursor()
         sql= '''
                 INSERT INTO contractors
@@ -440,6 +461,7 @@ class App_data:
 
 
     def addCategory(self, category):
+        category = self.__parse_name(category)
         ## TODO: 1. data types checking
         cur = self.database.cursor()
         sql= '''
