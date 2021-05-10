@@ -6,6 +6,7 @@
 !root_app.ui
 !root_login.ui
 !addTransaction.py
-!import.py
+!app_import.py
+!app_login.py
 !lotto.py
 !bellsTabGui.ui
