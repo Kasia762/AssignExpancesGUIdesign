@@ -179,6 +179,36 @@ class App_data:
                 print(row)
                 
 
+    def __is_date(self, dtchck):
+        import datetime
+        """
+        Returns True if is date
+        Returns False if is datetime
+        Returns None if it is neither of these things
+        """
+        try:
+            dtchck.date()
+            return False
+        except:
+            if isinstance(dtchck, datetime.date):
+                return True
+        return None
+
+
+    def __get_date(self, date):
+        if  self.__is_date(date) == True:
+            print("date")
+            return date
+        if  self.__is_date(date) == False:
+            print("datetime")
+            date = date.date()
+        if  self.__is_date(date) == True:
+            print("now date")
+            return date
+        else:            
+            print("...none")
+            return None
+
                 
     def testPrintAllTables(self):
         db = self.database
@@ -227,7 +257,7 @@ class App_data:
             ;
             '''
         cur.execute(sql,(id_value,))
-        data = cur.fetchall()
+        data = cur.fetchone()
         return data
     
     #name!!!
@@ -330,27 +360,8 @@ class App_data:
         
     
     def addTransaction(self, date, amount, category, contractor):
-        
-        ## TODO: 2. select category and contractor not by name, but ID
-
-        def is_date(dtchck):
-            import datetime
-            """
-            Returns True if is date
-            Returns False if is datetime
-            Returns None if it is neither of these things
-            """
-            try:
-                dtchck.date()
-                return False
-            except:
-                if isinstance(dtchck, datetime.date):
-                    return True
-            return None
-        
-        if  is_date(date) == False:
-            date = date.date()
-        if  is_date(date) != True:
+        date = self.__get_date(date)
+        if  self.__is_date(date) != True:
             return (False, "date is not datetime either date type parametr")
         if not ( isinstance(amount, float) or isinstance(amount, int) ):
             return (False, "Amount is not real either integer number")
@@ -375,8 +386,13 @@ class App_data:
             return (False, "SQL error: %s"% err,)
 
     
-    def changeTransaction(self,id_value, date, amount, category, contractor):
-        val = (date, amount, category, contractor, id_value)
+    def changeTransaction(self, id_value, date, amount, category, contractor):
+        date = self.__get_date(date)
+        if  self.__is_date(date) != True:
+            return (False, "date is not datetime either date type parametr")
+        if not ( isinstance(amount, float) or isinstance(amount, int) ):
+            return (False, "Amount is not real either integer number")
+        
         cur = self.database.cursor()
         sql='''UPDATE transactions
         SET
@@ -385,8 +401,14 @@ class App_data:
         cat_id=(SELECT cont_id FROM contractors WHERE cont_name = ? )
         WHERE trans_id = ?;
         '''
-        cur.execute(sql,val)
-        self.database.commit()
+        val = (date, amount, category, contractor, id_value)
+        try:
+            cur.execute(sql,val)
+            self.database.commit()
+            return (True, "OK",)
+        except sqlite3.Error as err:
+            self.database.rollback()
+            return (False, "SQL error: %s"% err,)
 
         
     def deleteTransaction(self,val):

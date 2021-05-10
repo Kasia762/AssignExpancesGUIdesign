@@ -378,8 +378,8 @@ class AppWin:
         self.scrb_trTableVert.grid(column='1', row='0', sticky='ns')
         self.scrb_trTableVert.configure(command=self.tbl_transactions.yview)
         
-        self.tbl_transactions_cols = [ 'id','date', 'amount', 'cat','cont' ]
-        self.tbl_transactions_dcols = [ 'id','date', 'amount', 'cat','cont' ]
+        self.tbl_transactions_cols = [ 'id', 'date', 'amount', 'cat', 'cont' ]
+        self.tbl_transactions_dcols = [      'date', 'amount', 'cat', 'cont' ]
         self.tbl_transactions.configure(columns=self.tbl_transactions_cols, 
                                         displaycolumns=self.tbl_transactions_dcols,
                                         yscrollcommand=self.scrb_trTableVert.set)
@@ -416,15 +416,15 @@ class AppWin:
         self.scrb_catTableVert.configure(orient='vertical', takefocus=False)
         self.scrb_catTableVert.grid(column='1', row='0', sticky='ns')
         self.scrb_catTableVert.configure(command=self.tbl_categories.yview)
-        self.tbl_categories_cols = ['#1', '#2']
-        self.tbl_categories_dcols = ['#1', '#2']
+        self.tbl_categories_cols = ['id', 'name']
+        self.tbl_categories_dcols = [     'name']
         self.tbl_categories.configure(columns=self.tbl_categories_cols, 
                                       displaycolumns=self.tbl_categories_dcols,
                                       yscrollcommand=self.scrb_catTableVert.set)
-        self.tbl_categories.column('#1', anchor='w',stretch='false',width='40',minwidth='40')
-        self.tbl_categories.column('#2', anchor='w',stretch='true',width='200',minwidth='200')
-        self.tbl_categories.heading('#1', anchor='w',text='ID')
-        self.tbl_categories.heading('#2', anchor='w',text='Name')
+        self.tbl_categories.column('id', anchor='w',stretch='false',width='40',minwidth='40')
+        self.tbl_categories.column('name', anchor='w',stretch='true',width='200',minwidth='200')
+        self.tbl_categories.heading('id', anchor='w',text='ID')
+        self.tbl_categories.heading('name', anchor='w',text='Name')
         self.tbl_categories['show'] = 'headings'
         self.tbl_categories.grid(column='0', padx='3', pady='3', row='0', sticky='nsew')
         self.tbl_categories.master.rowconfigure('0', weight='1')
@@ -644,11 +644,17 @@ class AppWin:
         
 
     def h_btnTrDelete(self):
-        print(self.treeSelection())
-        id_value = str(self.treeSelection()[0])
-        print(id_value)
-        self.badb.deleteTransaction(id_value)
-        self.updateTransactionTable()
+        try:
+            id_value = str(self.treeSelection()[0])
+        except:
+            print("Nothing selected. Cannot delete.")
+            return
+        reply =  tk.messagebox.askyesno(title="Delete...", 
+                       message="You going to delete transaction.\n\n" + 
+                               "Are you sure?")
+        if reply == True:
+            self.badb.deleteTransaction(id_value)
+            self.updateTransactionTable()
 
 
     def h_btnTrImport(self):
