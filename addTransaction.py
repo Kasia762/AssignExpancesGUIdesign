@@ -10,7 +10,6 @@ import tkcalendar as tkcal
 import time
 import datetime as dt
 import tkinter as tk
-from app_data import App_data 
 
 
 ## both format should match
@@ -19,19 +18,22 @@ _cal_datefmt = "dd.mm.yyyy"
 
 
 class AddTransaction:
-    def __init__(self, master, dbconn,id_value=None):
+    def __init__(self, master, controller, id_value=None ):
+        
+        ## DB-connection
+        self.controller = controller
+        ## ID of transaction to change
         self.id_transaction = id_value
+
         # build ui
         if master == None:
             print("Cannot run independently. Pass master attribute")
             return
-        
         self.win_addtr = tk.Toplevel(master)
         ## Hide window 
         ## DO NOT forget to show at the end of init!!!
         self.win_addtr.withdraw()     
         
-        #apparently radiobuttons are not compatibile with tk.Tk
         self.win_addtr.grab_set()
         self.fr_addtr = ttk.Frame(self.win_addtr)
         
@@ -41,8 +43,8 @@ class AddTransaction:
         self.lbl_atdate.grid(column='0', padx='40', pady='10', row='0')
         
         self.cal_tr = tkcal.DateEntry(self.lbfr_atdate, 
-                                      date_pattern=_cal_datefmt)
-        #state="readonly"   
+                                      date_pattern=_cal_datefmt,
+                                      state="readonly")
         self.cal_tr.grid(column='1', pady='0', row='0')
         
         #TODO: make nicer gui?? calendar?? seems too on the left?
@@ -59,34 +61,31 @@ class AddTransaction:
         self.lbl_atcat.configure(text='Category')
         self.lbl_atcat.grid(column='0', padx='20', pady='10', row='0')
         
-        self.cmb_atcat = ttk.Combobox(self.lbfr_atinfo)
+        self.cmb_atcat = ttk.Combobox(self.lbfr_atinfo,
+                                      state="readonly")
         self.cmb_atcat.grid(column='1', pady='10', row='0')
         
         self.lbl_atcontr = ttk.Label(self.lbfr_atinfo)
         self.lbl_atcontr.configure(text='Contractor')
         self.lbl_atcontr.grid(column='0', padx='20', pady='10', row='1')
-        self.cmb_atcontr = ttk.Combobox(self.lbfr_atinfo)
+        self.cmb_atcontr = ttk.Combobox(self.lbfr_atinfo,
+                                        state="readonly")
         self.cmb_atcontr.grid(column='1', pady='10', row='1')
         self.lbfr_atinfo.configure(height='200', text='Add information', width='200')
         self.lbfr_atinfo.pack(anchor='center', expand='true', fill='x', padx='20', side='top')
         self.lbfr_attype = ttk.Labelframe(self.fr_addtr)
         
         #radiobox stuff
-        #TODO: add option to control wheter amount is positive or negative
-        self.var = tk.StringVar()
-        #self.var.set("2")
+        self.transactionType = tk.StringVar()
         self.rbt_with = ttk.Radiobutton(self.lbfr_attype,
-                                        variable=self.var,
-                                        value="outcome",#string - dep, income
-                                        command=self.radioButtonSelection)
+                                        variable=self.transactionType,
+                                        value="outcome")
         self.rbt_with.configure(text='Withdrawal\n(Outcome)')
         self.rbt_with.grid(column='0', padx='40', pady='10', row='0')
-        
-        
         self.rbt_depo = ttk.Radiobutton(self.lbfr_attype,
-                                        variable=self.var,
-                                        value="income",
-                                        command=self.radioButtonSelection)
+                                        variable=self.transactionType,
+                                        value="income")
+                                        ##command=self.radioButtonSelection)
         self.rbt_depo.configure(text='Deposit\n(Income)')
         self.rbt_depo.grid(column='1', pady='10', row='0')
         self.rbt_with.invoke()
@@ -129,6 +128,13 @@ class AddTransaction:
         y = master.winfo_rooty() + (y_parent - y_modal) // 2
         self.win_addtr.geometry('{}x{}+{}+{}'.format(x_modal, y_modal, x, y))
         
+        if self.id_transaction == None:
+            self.win_addtr.title('Add transaction')
+            self.btn_add.configure(text='Add')
+        else:
+            self.win_addtr.title('Change transaction')
+            self.btn_add.configure(text='Change')
+
         # SHOW window, fully constructed
         self.win_addtr.deiconify()
         # Main widget
@@ -139,56 +145,42 @@ class AddTransaction:
         self.mainwindow.bind('<Escape>', lambda x: self.h_btnCancel() )
         self.ent_atamount.bind('<Return>', lambda x: self.__evaluateAmountEntry() )
 
-        self.radioButtonSelection()    
-        self.badb=dbconn
-    #    self.run()
-    
+            
+
+    def __initLoadTransactionData(self):
         if self.id_transaction == None:
-            self.win_addtr.title('Add transaction')
-            self.btn_add.configure(text='Add')
-            today = dt.date.today().strftime(_dt_datefmt)
-            self.cal_tr.delete('0','end')
-            self.cal_tr.insert('0', today)
-            self.cal_tr.configure(state="readonly")
-            #pass
+            today = dt.date.today()
+            self.cal_tr.set_date(today)
+            self.__setAmountEntryToDefault()
         else:
-            self.win_addtr.title('Change transaction')
-            self.btn_add.configure(text='Accept')
-            row=self.badb.getTransaction_byid(self.id_transaction)[0]
-            date = row[1].strftime(_dt_datefmt)
-            self.cal_tr.delete('0','end')
-            self.cal_tr.insert('0', date)
-            self.cal_tr.configure(state="readonly")
-            
-            self.amount = abs(row[2])
-            
-            cat = row[3]
-            if not cat == None:
+            trans_data = self.controller.badb.getTransaction_byid(self.id_transaction)
+            date = trans_data[1]
+            self.cal_tr.set_date(date)
+            amount = trans_data[2]
+            if amount < 0:
+                self.transactionType.set('outcome')
+            else:
+                self.transactionType.set('income')
+            self.__setAmountEntry(abs(amount))
+            cat = trans_data[3]
+            if cat:
                 self.cmb_atcat.set(cat)
-            else:
-                pass
-            
-            cont = row[4]
-            if not cont == None:
+            cont = trans_data[4]
+            if cont:
                 self.cmb_atcontr.set(cont)
-            else:
-                pass
-            
+        pass
         
 
     def __setAmountEntryToDefault(self):
-        if self.id_transaction == None:
-        # Delete all and set to zero.
-            self.__setAmountEntry('0.0')
-            self.ent_atamount.focus()
-            self.ent_atamount.select_range(0, tk.END)
-        else:
-            self.__setAmountEntry(self.amount)
+        self.__setAmountEntry('0.0')
+        self.ent_atamount.focus()
+        self.ent_atamount.select_range(0, tk.END)
+
         
     def __setAmountEntry(self, value):
-        # Delete all and set to zero.
         self.ent_atamount.delete(0, tk.END)
         self.ent_atamount.insert(0, value)
+
         
     def __evaluateAmountEntry(self):
         # Try to evaluate string in Entry as python:
@@ -203,12 +195,11 @@ class AddTransaction:
             self.ent_atamount.focus()
             self.ent_atamount.select_range(0, tk.END)
             return False
+
         
     def h_btnCancel(self):
         self.mainwindow.destroy()
-    
-    def radioButtonSelection(self):
-        self.selection = self.var.get()
+
 
     def h_btnAdd(self):
     #update fields to selected row    
@@ -231,55 +222,57 @@ class AddTransaction:
                                       "Amount cannot be  equal zero.\n\nPlease, enter positive amount.",
                                       parent=self.mainwindow)
             return
-             
-        if self.selection == "outcome":
-            self.amount= float(-amountABS)
-        elif self.selection == "income":
-            self.amount = amountABS
+
+        if self.transactionType.get() == "outcome":
+            amount= float(-amountABS)
+        elif self.transactionType.get() == "income":
+            amount = amountABS
         else:
             print("Some internal error: radiobutton not selected.")
-            raise("Radiobutton not selected")
+            tk.messagebox.showwarning("Enter valid data",
+                                      "Transaction type not selected.\n\nPlease, select type of transaction.",
+                                      parent=self.mainwindow)
             return
         
         #TODO: add if else statements to check if values are correct
         date = self.cal_tr.get_date()
         category = self.cmb_atcat.get()
         contractor = self.cmb_atcontr.get()
-        amount = self.amount 
             
         if self.id_transaction == None:
-            self.badb.addTransaction(date, amount, category, contractor)
-            
+            res = self.controller.badb.addTransaction(date, amount, category, contractor)
+            print(res)
+            self.__setAmountEntryToDefault()
+            self.controller.updateTransactionTable()
         else:
-            self.badb.changeTransaction(self.id_transaction,date,amount, category, contractor)
-            #self.id_transaction = None
-            self.mainwindow.destroy()
+            res = self.controller.badb.changeTransaction(self.id_transaction, date, amount, category, contractor)
+            print(res)
+            self.id_transaction = None
+            self.__setAmountEntryToDefault()
+            self.controller.updateTransactionTable()
             #if not destoyed - next option -add
-            
-        self.__setAmountEntryToDefault()
-            
-  
-     
+            ## MUST BE LAST line in function
+            self.mainwindow.destroy()
+
+
     def viewCatergories(self):
-        data = self.badb.getCategoriesList()
+        data = self.controller.badb.getCategoriesList()
         ind_cat = 0
         tr=[i[ind_cat]for i in data]
         self.cmb_atcat['values']= tr
+
           
     def viewContractors(self):
-        data = self.badb.getContractorList()
+        data = self.controller.badb.getContractorList()
         ind_contr = 0
         tr=[i[ind_contr]for i in data]
         self.cmb_atcontr['values']= tr   
        
             
         
-#amount no 0
-
     def run(self):
-        #self.convertToNegative()
-        #self.radioButtonSelection()
-        self.__setAmountEntryToDefault()
         self.viewContractors()
         self.viewCatergories()
+        self.__initLoadTransactionData()
         self.mainwindow.mainloop()
+
