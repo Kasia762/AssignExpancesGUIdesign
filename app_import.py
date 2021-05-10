@@ -190,13 +190,27 @@ class ImportTransactionDialog:
             self.tbl_transactions.set(iid, column='result', value='')
             ### Do real import 
             if mode == 'import':
-                if not pd.isnull( row[amountres_n] ):
-                    cat = row[cat_n]
-                    print("Category ", cat, " ", self.controller.badb.isExistsCategory(cat))
-                    cont = row[cont_n]
-                    print("Category ", cont, " ", self.controller.badb.isExistsContractor(cont))
+                date = row[dateres_n]
+                amount = row[amountres_n]
+                category = row[cat_n]
+                contractor = row[cont_n]
+                if not pd.isnull( amount ):
+                    if self.controller.badb.isExistsCategory(category) == False:
+                        # TODO: checkbox add new...
+                        res = self.controller.badb.addCategory(category)
+                        print('New category creating: "', category, '" :', res[1])
+                        
+                    if self.controller.badb.isExistsContractor(contractor) == False:
+                        # TODO: checkbox add new...
+                        res = self.controller.badb.addContractor(contractor)
+                        print('New contractor creating: "', contractor, '" :', res[1])
+                    
+                    res = self.controller.badb.addTransaction(date, amount, category, contractor)
+                    print('Transaction import: "', str(date), str(amount), '" :', res[1])
                     pass
-                # TODO: import into database
+                ## TODO: show message OK
+                ## TODO: clear widgets, 
+            ## --------- end import
         self.progressbar.stop()
         pass
 
