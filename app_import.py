@@ -195,23 +195,38 @@ class ImportTransactionDialog:
                 category = row[cat_n]
                 contractor = row[cont_n]
                 if not pd.isnull( amount ):
-                    if self.controller.badb.isExistsCategory(category) == False:
-                        # TODO: checkbox add new...
-                        res = self.controller.badb.addCategory(category)
-                        print('New category creating: "', category, '" :', res[1])
+                    if self.var_categoryAdd == 1:
+                        if self.controller.badb.isExistsCategory(category) == False:
+                            res = self.controller.badb.addCategory(category)
+                            print('New category creating: "', category, '" :', res[1])
                         
-                    if self.controller.badb.isExistsContractor(contractor) == False:
-                        # TODO: checkbox add new...
-                        res = self.controller.badb.addContractor(contractor)
-                        print('New contractor creating: "', contractor, '" :', res[1])
+                    if self.var_contractorAdd == 1:
+                        if self.controller.badb.isExistsContractor(contractor) == False:
+                            # TODO: checkbox add new...
+                            res = self.controller.badb.addContractor(contractor)
+                            print('New contractor creating: "', contractor, '" :', res[1])
                     
                     res = self.controller.badb.addTransaction(date, amount, category, contractor)
                     print('Transaction import: "', str(date), str(amount), '" :', res[1])
+                    self.tbl_transactions.set(iid, column='result', value=("" + str(res[1])) )
                     pass
-                ## TODO: show message OK
-                ## TODO: clear widgets, 
             ## --------- end import
+        ## ==== end for
         self.progressbar.stop()
+        if mode == 'import':
+            ## TODO: clear widgets, 
+            self.cmb_Date['values'] = ()
+            self.cmb_Amount['values'] = ()
+            self.cmb_Category['values'] = ()
+            self.cmb_Contractor['values'] = ()
+            self.cmb_Date.set('')
+            self.cmb_Amount.set('')
+            self.cmb_Category.set('')
+            self.cmb_Contractor.set('')
+            ## TODO: show message OK
+            tk.messagebox.showinfo("CSV import",
+                                  "Import complete.\n\nSee results in table.",
+                                  parent=self.mainwindow)
         pass
 
 
@@ -330,13 +345,13 @@ class ImportTransactionDialog:
         self.chb_WithdrawalOnly.grid(column='2', padx='10', row='1', sticky='w')
         self.chb_WithdrawalOnly.master.rowconfigure('1', pad='5')
         self.chk_categoryAddNew = ttk.Checkbutton(self.lbfr_dataSelect, command=self.processTable)
-        self.var_categoryAdd = tk.IntVar(value=0)
+        self.var_categoryAdd = tk.IntVar(value=1)
         self.chk_categoryAddNew.configure(text='Add new categories', variable=self.var_categoryAdd)
         self.chk_categoryAddNew.grid(column='2', padx='10', row='2', sticky='w')
         self.chk_categoryAddNew.master.rowconfigure('1', pad='10')
         self.chk_categoryAddNew.master.rowconfigure('2', pad='5')
         self.chk_contractorAddNew = ttk.Checkbutton(self.lbfr_dataSelect, command=self.processTable)
-        self.var_contractorAdd = tk.IntVar(value=0)
+        self.var_contractorAdd = tk.IntVar(value=1)
         self.chk_contractorAddNew.configure(text='Add new contractors', variable=self.var_contractorAdd)
         self.chk_contractorAddNew.grid(column='2', padx='10', row='3', sticky='w')
         self.chk_contractorAddNew.master.rowconfigure('3', pad='5')
