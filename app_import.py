@@ -92,7 +92,7 @@ class ImportTransactionDialog:
                 dec = '.'
         except:
             sep = ','
-        print ("sep:", sep, "decimal:", dec)
+        print ("Detected separator: '", sep, "' , decimal point: '", dec, "'")
         try:
             del self.__df
             self.__df = pd.read_csv(filePath, sep=sep[0], decimal=dec)
@@ -121,26 +121,32 @@ class ImportTransactionDialog:
 
 
     def __parse_date(self, d):
-        if self.var_dateToday.get():
-            resdate = datetime.datetime.now().date()
-        else:
+        resdate = datetime.datetime.now().date()
+        if not self.var_dateToday.get() == 1:
             try:
-                resdate = dateutil.parser.parse( d )
+                resdate = dateutil.parser.parse( d ).date()
             except:
-                resdate = datetime.datetime.now().date()
+                pass
         return resdate
 
         
     def __parse_amount(self, a):
         if not ( isinstance(a, float) or isinstance(a, int) ):
             return np.nan
-        a = round(a, 2)
+        a = round(float(a), 2)
         if a == 0.0:
             return np.nan
         if self.var_WithdrawalOnly.get():
             return ( - abs(a) )
         else:
             return a
+        
+        
+    def __parse_name(self, name):
+        if pd.isnull( name ):
+            return ''
+        return str(name)
+
 
 
     def processTable(self, mode='preview'):
@@ -167,7 +173,7 @@ class ImportTransactionDialog:
                 else:
                     subdf.insert(len(subdf.columns), "", self.__df.loc[:,col] , allow_duplicates=True)
             else:
-                subdf.insert(i, str(i) , ''  )
+                subdf.insert(len(subdf.columns), "" , ''  , allow_duplicates=True)
         if mode in ['check', 'import']:
             if amount_col == '':
                 tk.messagebox.showwarning("CSV column selection",
@@ -179,6 +185,8 @@ class ImportTransactionDialog:
         try:
             subdf.iloc[:,dateres_n] = subdf.iloc[:,date_n].apply(self.__parse_date)
             subdf.iloc[:,amountres_n] = subdf.iloc[:,amount_n].apply(self.__parse_amount)
+            subdf.iloc[:,cat_n] = subdf.iloc[:,cat_n].apply(self.__parse_name)
+            subdf.iloc[:,cont_n] = subdf.iloc[:,cont_n].apply(self.__parse_name)
         except:
             print("Error parsing data. ")
             return
@@ -188,21 +196,20 @@ class ImportTransactionDialog:
                 self.progressbar.update()
             iid = self.tbl_transactions.insert('','end', values = ( list(row))  )
             self.tbl_transactions.set(iid, column='result', value='')
-            ### Do real import 
-            if mode == 'import':
-                date = row[dateres_n]
-                amount = row[amountres_n]
-                category = row[cat_n]
-                contractor = row[cont_n]
-                if not pd.isnull( amount ):
-                    if self.var_categoryAdd == 1:
+            date = row[dateres_n]
+            amount = row[amountres_n]
+            category = row[cat_n]
+            contractor = row[cont_n]
+            if not pd.isnull( amount ):
+                ### Do real import 
+                if mode == 'import':
+                    if self.var_categoryAdd.get() == 1:
                         if self.controller.badb.isExistsCategory(category) == False:
                             res = self.controller.badb.addCategory(category)
                             print('New category creating: "', category, '" :', res[1])
                         
-                    if self.var_contractorAdd == 1:
+                    if self.var_contractorAdd.get() == 1:
                         if self.controller.badb.isExistsContractor(contractor) == False:
-                            # TODO: checkbox add new...
                             res = self.controller.badb.addContractor(contractor)
                             print('New contractor creating: "', contractor, '" :', res[1])
                     
@@ -210,9 +217,12 @@ class ImportTransactionDialog:
                     print('Transaction import: "', str(date), str(amount), '" :', res[1])
                     self.tbl_transactions.set(iid, column='result', value=("" + str(res[1])) )
                     pass
-            ## --------- end import
+                ## --------- end import
+            else: # null amount
+                self.tbl_transactions.set(iid, column='result', value="--SKIPPED--" )
         ## ==== end for
         self.progressbar.stop()
+        ## After importing clear combos, so new import is impossible
         if mode == 'import':
             ## TODO: clear widgets, 
             self.cmb_Date['values'] = ()
@@ -360,7 +370,7 @@ class ImportTransactionDialog:
         self.lbfr_dataSelect.master.rowconfigure('0', pad='0', weight='0')
         self.lbfr_dataSelect.master.columnconfigure('0', pad='0', weight='1')
         self.lbfr_dataSelect.master.columnconfigure('1', weight='1')
-        ## subFrame
+        ## subFrame table
         self.lbfr_tableTransactions = ttk.Labelframe(self.frm_main)
         self.tbl_transactions = ttk.Treeview(self.lbfr_tableTransactions)
         self.scrb_TableVert = ttk.Scrollbar(self.lbfr_tableTransactions)

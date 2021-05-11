@@ -155,6 +155,8 @@ class AppWin:
             id_value = str(self.treeSelection()[0])
         except:
             print("Nothing selected. Cannot delete.")
+            tk.messagebox.showinfo("Delete transaction","Select transaction in table to delete.",
+                                      parent=self.mainwindow)
             return
         reply =  tk.messagebox.askyesno(title="Delete...", 
                        message="You going to delete transaction.\n\n" + 
@@ -180,7 +182,8 @@ class AppWin:
 
     def h_btnTrLotto(self):
         date = dt.date.today()
-        amount = lotto.check()
+        #amount = lotto.check()
+        amount = -5.00
         self.badb.addTransaction(date, amount, "Lotto", None)
         self.updateTransactionTable()
         if amount < 0:
@@ -538,6 +541,7 @@ class AppWin:
         self.root_app.deiconify()
         ### 
         return self.root_app
+
 
 if __name__ == '__main__':
     
