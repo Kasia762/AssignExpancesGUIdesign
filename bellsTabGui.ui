@@ -1,6 +1,6 @@
 <?xml version='1.0' encoding='utf-8'?>
 <interface version="1.1">
-  <object class="ttk.Frame" id="frame1">
+  <object class="ttk.Frame" id="frm_bells">
     <property name="height">200</property>
     <property name="width">200</property>
     <layout manager="pack">
@@ -10,17 +10,21 @@
     <child>
       <object class="ttk.Labelframe" id="lblfr_weather">
         <property name="height">200</property>
-        <property name="text" translatable="yes">info</property>
+        <property name="text" translatable="yes">Weather</property>
         <property name="width">200</property>
-        <layout manager="pack">
-          <property name="expand">true</property>
-          <property name="fill">both</property>
+        <layout manager="grid">
+          <property name="column">0</property>
+          <property name="ipadx">10</property>
+          <property name="padx">5</property>
+          <property name="pady">5</property>
           <property name="propagate">True</property>
-          <property name="side">top</property>
+          <property name="row">1</property>
         </layout>
         <child>
-          <object class="ttk.Label" id="lbl_location">
-            <property name="text" translatable="yes">Walbrzych, Poland, Europe bla bla</property>
+          <object class="ttk.Label" id="var_location">
+            <property name="font">{Arial} 16 {}</property>
+            <property name="text" translatable="yes">Please, enter the city name above</property>
+            <property name="textvariable">string:location</property>
             <layout manager="grid">
               <property name="column">0</property>
               <property name="columnspan">4</property>
@@ -37,66 +41,70 @@
             <property name="width">50</property>
             <layout manager="grid">
               <property name="column">0</property>
-              <property name="pady">10</property>
+              <property name="padx">40</property>
               <property name="propagate">True</property>
-              <property name="row">1</property>
+              <property name="row">2</property>
             </layout>
           </object>
         </child>
         <child>
-          <object class="ttk.Label" id="lbl_tempnumber">
-            <property name="text" translatable="yes">12</property>
+          <object class="ttk.Label" id="lbl_temp_number">
+            <property name="text" translatable="yes">UNKNOWN</property>
+            <property name="textvariable">string:default</property>
             <layout manager="grid">
               <property name="column">1</property>
-              <property name="pady">10</property>
               <property name="propagate">True</property>
-              <property name="row">1</property>
+              <property name="row">2</property>
             </layout>
           </object>
         </child>
         <child>
           <object class="ttk.Label" id="lbl_today">
-            <property name="text" translatable="yes">today is</property>
+            <property name="font">{Arial} 12 {}</property>
+            <property name="text" translatable="yes">Today is</property>
+            <property name="textvariable">string:lab</property>
             <layout manager="grid">
               <property name="column">2</property>
+              <property name="padx">50</property>
+              <property name="propagate">True</property>
+              <property name="row">1</property>
+              <property name="sticky">w</property>
+            </layout>
+          </object>
+        </child>
+        <child>
+          <object class="ttk.Label" id="lbl_type">
+            <property name="text" translatable="yes">UNKNOWN</property>
+            <property name="textvariable">string:default</property>
+            <layout manager="grid">
+              <property name="column">0</property>
+              <property name="padx">40</property>
+              <property name="pady">10</property>
               <property name="propagate">True</property>
               <property name="row">1</property>
             </layout>
           </object>
         </child>
         <child>
-          <object class="ttk.Label" id="lbl_type">
-            <property name="text" translatable="yes">sunny</property>
-            <layout manager="grid">
-              <property name="column">0</property>
-              <property name="padx">15</property>
-              <property name="pady">10</property>
-              <property name="propagate">True</property>
-              <property name="row">2</property>
-            </layout>
-          </object>
-        </child>
-        <child>
           <object class="ttk.Label" id="lbl_temperature">
-            <property name="text" translatable="yes">temperature</property>
+            <property name="text" translatable="yes">Temperature</property>
             <layout manager="grid">
               <property name="column">1</property>
               <property name="padx">10</property>
               <property name="pady">10</property>
               <property name="propagate">True</property>
-              <property name="row">2</property>
+              <property name="row">1</property>
             </layout>
           </object>
         </child>
         <child>
-          <object class="pygubu.builder.widgets.calendarframe" id="cal">
+          <object class="pygubu.builder.widgets.calendarframe" id="cal_Bells">
             <property name="firstweekday">6</property>
             <property name="month">1</property>
             <layout manager="grid">
               <property name="column">2</property>
-              <property name="columnspan">2</property>
-              <property name="padx">20</property>
-              <property name="pady">20</property>
+              <property name="columnspan">3</property>
+              <property name="padx">50</property>
               <property name="propagate">True</property>
               <property name="row">3</property>
               <property name="rowspan">5</property>
@@ -105,51 +113,67 @@
         </child>
         <child>
           <object class="ttk.Label" id="lbl_time">
-            <property name="text" translatable="yes">time is</property>
+            <property name="font">{Arial} 12 {}</property>
+            <property name="text" translatable="yes">Time is</property>
             <layout manager="grid">
               <property name="column">2</property>
+              <property name="padx">50</property>
               <property name="propagate">True</property>
               <property name="row">2</property>
+              <property name="sticky">w</property>
             </layout>
           </object>
         </child>
         <child>
-          <object class="ttk.Label" id="lbl_time">
-            <property name="text" translatable="yes">12:45</property>
+          <object class="ttk.Label" id="var_time">
+            <property name="font">{Arial} 12 {}</property>
+            <property name="text" translatable="yes">&lt;time&gt;</property>
+            <property name="textvariable">string:time</property>
             <layout manager="grid">
               <property name="column">3</property>
               <property name="propagate">True</property>
               <property name="row">2</property>
+              <property name="sticky">w</property>
             </layout>
           </object>
         </child>
         <child>
-          <object class="ttk.Label" id="seldate">
-            <property name="text" translatable="yes">selected</property>
+          <object class="ttk.Label" id="lbl_lt_date">
+            <property name="font">{Arial} 12 {}</property>
+            <property name="text" translatable="yes">Selected date:</property>
             <layout manager="grid">
               <property name="column">2</property>
+              <property name="padx">50</property>
+              <property name="pady">20</property>
               <property name="propagate">True</property>
               <property name="row">8</property>
+              <property name="sticky">w</property>
             </layout>
           </object>
         </child>
         <child>
-          <object class="ttk.Label" id="date">
-            <property name="text" translatable="yes">02.02.2021</property>
+          <object class="ttk.Label" id="var_lt_cal">
+            <property name="font">{Arial} 12 {}</property>
+            <property name="text" translatable="yes">&lt;Selected date&gt;</property>
+            <property name="textvariable">string:selection</property>
             <layout manager="grid">
               <property name="column">3</property>
               <property name="propagate">True</property>
               <property name="row">8</property>
+              <property name="sticky">w</property>
             </layout>
           </object>
         </child>
         <child>
-          <object class="ttk.Label" id="label17">
-            <property name="text" translatable="yes">14.15</property>
+          <object class="ttk.Label" id="var_todayDate">
+            <property name="font">{Arial} 12 {}</property>
+            <property name="text" translatable="yes">&lt;todays date&gt;</property>
+            <property name="textvariable">string:today</property>
             <layout manager="grid">
               <property name="column">3</property>
               <property name="propagate">True</property>
               <property name="row">1</property>
+              <property name="sticky">w</property>
             </layout>
           </object>
         </child>
@@ -158,108 +182,173 @@
             <property name="text" translatable="yes">Wind</property>
             <layout manager="grid">
               <property name="column">0</property>
-              <property name="padx">15</property>
+              <property name="padx">40</property>
               <property name="propagate">True</property>
               <property name="row">3</property>
+              <property name="sticky">e</property>
             </layout>
           </object>
         </child>
         <child>
-          <object class="ttk.Label" id="lbl_wind_value">
-            <property name="text" translatable="yes">12km/h</property>
+          <object class="ttk.Label" id="var_wt_Wind">
+            <property name="text" translatable="yes">UNKNOWN</property>
+            <property name="textvariable">string:default</property>
             <layout manager="grid">
               <property name="column">1</property>
               <property name="padx">10</property>
               <property name="propagate">True</property>
               <property name="row">3</property>
+              <property name="sticky">w</property>
             </layout>
           </object>
         </child>
         <child>
           <object class="ttk.Label" id="lbl_pressure">
-            <property name="text" translatable="yes">pressure</property>
+            <property name="text" translatable="yes">Pressure</property>
             <layout manager="grid">
               <property name="column">0</property>
-              <property name="padx">15</property>
+              <property name="padx">40</property>
               <property name="propagate">True</property>
               <property name="row">4</property>
+              <property name="sticky">e</property>
             </layout>
           </object>
         </child>
         <child>
-          <object class="ttk.Label" id="lbl_pressue_val">
-            <property name="text" translatable="yes">1039 hPa</property>
+          <object class="ttk.Label" id="var_wt_Pressure">
+            <property name="text" translatable="yes">UNKNOWN</property>
+            <property name="textvariable">string:default</property>
             <layout manager="grid">
               <property name="column">1</property>
               <property name="padx">10</property>
               <property name="propagate">True</property>
               <property name="row">4</property>
+              <property name="sticky">w</property>
             </layout>
           </object>
         </child>
         <child>
-          <object class="ttk.Label" id="label22">
-            <property name="text" translatable="yes">12</property>
+          <object class="ttk.Label" id="var_wt_tMax">
+            <property name="text" translatable="yes">UNKNOWN</property>
+            <property name="textvariable">string:default</property>
             <layout manager="grid">
               <property name="column">1</property>
               <property name="padx">10</property>
               <property name="propagate">True</property>
               <property name="row">5</property>
+              <property name="sticky">w</property>
             </layout>
           </object>
         </child>
         <child>
           <object class="ttk.Label" id="lbl_max_tempo">
-            <property name="text" translatable="yes">temp.max</property>
+            <property name="text" translatable="yes">Temp.max</property>
             <layout manager="grid">
               <property name="column">0</property>
-              <property name="padx">15</property>
+              <property name="padx">40</property>
               <property name="propagate">True</property>
               <property name="row">5</property>
+              <property name="sticky">e</property>
             </layout>
           </object>
         </child>
         <child>
           <object class="ttk.Label" id="lbl_tmep_min">
-            <property name="text" translatable="yes">temp.min</property>
+            <property name="text" translatable="yes">Temp.min</property>
             <layout manager="grid">
               <property name="column">0</property>
-              <property name="padx">15</property>
+              <property name="padx">40</property>
               <property name="propagate">True</property>
               <property name="row">6</property>
+              <property name="sticky">e</property>
             </layout>
           </object>
         </child>
         <child>
-          <object class="ttk.Label" id="label25">
-            <property name="text" translatable="yes">9</property>
+          <object class="ttk.Label" id="var_wt_tMin">
+            <property name="text" translatable="yes">UNKNOWN</property>
+            <property name="textvariable">string:default</property>
             <layout manager="grid">
               <property name="column">1</property>
               <property name="padx">10</property>
               <property name="propagate">True</property>
               <property name="row">6</property>
+              <property name="sticky">w</property>
             </layout>
           </object>
         </child>
         <child>
           <object class="ttk.Label" id="label26">
-            <property name="text" translatable="yes">humidity</property>
+            <property name="text" translatable="yes">Humidity</property>
             <layout manager="grid">
               <property name="column">0</property>
-              <property name="padx">15</property>
+              <property name="padx">40</property>
               <property name="propagate">True</property>
               <property name="row">7</property>
+              <property name="sticky">e</property>
             </layout>
           </object>
         </child>
         <child>
-          <object class="ttk.Label" id="label27">
-            <property name="text" translatable="yes">45</property>
+          <object class="ttk.Label" id="var_wt_Humidity">
+            <property name="text" translatable="yes">UNKNOWN</property>
+            <property name="textvariable">string:default</property>
             <layout manager="grid">
               <property name="column">1</property>
               <property name="padx">10</property>
               <property name="propagate">True</property>
               <property name="row">7</property>
+              <property name="sticky">w</property>
+            </layout>
+          </object>
+        </child>
+      </object>
+    </child>
+    <child>
+      <object class="ttk.Labelframe" id="lbfr_choose">
+        <property name="height">200</property>
+        <property name="text" translatable="yes">Choose city for which you want to have information displayed</property>
+        <property name="width">200</property>
+        <layout manager="grid">
+          <property name="column">0</property>
+          <property name="padx">5</property>
+          <property name="pady">5</property>
+          <property name="propagate">True</property>
+          <property name="row">0</property>
+        </layout>
+        <child>
+          <object class="ttk.Label" id="lbl_city">
+            <property name="text" translatable="yes">Please, write the city name in the box</property>
+            <layout manager="grid">
+              <property name="column">0</property>
+              <property name="padx">50</property>
+              <property name="pady">10</property>
+              <property name="propagate">True</property>
+              <property name="row">0</property>
+              <property name="sticky">e</property>
+            </layout>
+          </object>
+        </child>
+        <child>
+          <object class="ttk.Entry" id="ent_city">
+            <layout manager="grid">
+              <property name="column">1</property>
+              <property name="ipadx">20</property>
+              <property name="propagate">True</property>
+              <property name="row">0</property>
+            </layout>
+          </object>
+        </child>
+        <child>
+          <object class="ttk.Button" id="btn_city">
+            <property name="text" translatable="yes">Confirm</property>
+            <layout manager="grid">
+              <property name="column">2</property>
+              <property name="padx">50</property>
+              <property name="pady">10</property>
+              <property name="propagate">True</property>
+              <property name="row">0</property>
+              <property name="sticky">w</property>
             </layout>
           </object>
         </child>
