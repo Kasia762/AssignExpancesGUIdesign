@@ -204,7 +204,7 @@ class AppWin:
     def h_btnTrExport(self):
         filetypes = (
             ('CSV files', '*.csv'),
-#            ('Excel files', '*.xlsx'),
+            #('Excel files', '*.xlsx'),
             ('All files', '*.*'))
         exportFileName = "_".join(
                         ("Export",
@@ -230,8 +230,9 @@ class AppWin:
             export_df = export_df[self.tbl_transactions_dcols]
         except:
             print("Unexpected error: cannot retrieve data from table.")
-            tk.messagebox.showwarning("CSV export","Could not export: internal error",
-                                      parent=self.mainwindow)
+            tk.messagebox.showerror("CSV export",
+                                    "Could not export: internal error",
+                                    parent=self.mainwindow)
             return
         try:
             ## apply datetime format
@@ -239,11 +240,13 @@ class AppWin:
             export_df.to_csv(exportFileName, index = False)
         except:
             print("Unexpected error: cannot save data to csv.")
-            tk.messagebox.showwarning("CSV export","Could not export: file writing error.\n\nPlease check filename...",
-                                      parent=self.mainwindow)
+            tk.messagebox.showerror("CSV export",
+                        "Could not export: file writing error.\n\nPlease check file not used in other program",
+                        parent=self.mainwindow)
             return
-        tk.messagebox.showinfo("CSV export","Export complete.",
-                                  parent=self.mainwindow)
+        tk.messagebox.showinfo("CSV export",
+                               "Export complete.",
+                               parent=self.mainwindow)
         pass
 
 
@@ -278,6 +281,7 @@ class AppWin:
         self.var_CurrentTime.set( value= time.strftime('%H:%M:%S') )
         self.mainwindow.after(1000, self.display_time)     
 
+
     def display_balance(self):
         ## TODO: not by after
         val = self.badb.getBalance()
@@ -290,6 +294,7 @@ class AppWin:
         self.display_time()
         self.display_balance()
         self.mainwindow.mainloop()    
+
 
 
     def GUI(self, master):
