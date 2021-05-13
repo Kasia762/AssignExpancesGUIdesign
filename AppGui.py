@@ -107,8 +107,6 @@ class AppWin:
         amount = [abs(i[0]) for i in data] 
         date = [i[1].strftime('%d' '%a') for i in data]
         
-        print(date)
-        
         fig = plt.figure(dpi=100)
         ax = fig.add_subplot(111)
         chart = FigureCanvasTkAgg(fig, self.lbfr_Acc_Chart)
@@ -609,29 +607,36 @@ class AppWin:
         self.frm_categories.master.columnconfigure('0', weight=1)
         self.ntb_app.add(self.frm_categories, text='Categories	')
         
-       ### LOTTO TAB
+        ### LOTTO TAB
         self.frm_bells = ttk.Frame(self.ntb_app)
+        
         self.lbfr_bells_choose = ttk.Labelframe(self.frm_bells)
+        
         self.lbl_ch_city = ttk.Label(self.lbfr_bells_choose)
         self.lbl_ch_city.configure(text='Please, write the city name in the box')
         self.lbl_ch_city.grid(column='0', padx='5', pady='10', row='0', sticky='e')
         self.lbl_ch_city.rowconfigure('0', pad='0', weight='0')
         self.lbl_ch_city.columnconfigure('0', pad='0')
+        
         self.ent_ch_city = ttk.Entry(self.lbfr_bells_choose)
         self.ent_ch_city.grid(column='1', ipadx='20', row='0', sticky='ew')
         self.ent_ch_city.rowconfigure('0', pad='0', weight='0')
         self.ent_ch_city.columnconfigure('1', weight='1')
+        
         self.btn_ch_city = ttk.Button(self.lbfr_bells_choose)
         self.btn_ch_city.configure(takefocus=False, text='Confirm', width='15')
         self.btn_ch_city.grid(column='2', row='0')
         self.btn_ch_city.rowconfigure('0', pad='0', weight='0')
         self.btn_ch_city.columnconfigure('2', pad='20', weight='0')
         self.btn_ch_city.configure(command=self.getWeatherInfo)
+        
         self.lbfr_bells_choose.configure(height='200', padding='30 0', text='Choose city for which you want to have information displayed', width='200')
         self.lbfr_bells_choose.grid(column='0', padx='5', pady='0', row='0', sticky='n')
         self.lbfr_bells_choose.rowconfigure('0', pad='0', weight='0')
         self.lbfr_bells_choose.columnconfigure('0', pad='0', weight='1')
+        
         self.lblfr_bells_weather = ttk.Labelframe(self.frm_bells)
+        
         self.frm_wt_location = ttk.Frame(self.lblfr_bells_weather)
         self.lbl_wt_location = ttk.Label(self.frm_wt_location)
         self.var_wt_location = tk.StringVar(value='Please, enter the city name above')
@@ -641,41 +646,52 @@ class AppWin:
         self.frm_wt_location.configure(height='200', width='200')
         self.frm_wt_location.grid(column='0', columnspan='2', row='0', sticky='n')
         self.frm_wt_location.columnconfigure('0', weight='1')
+        
         self.frm_wt_values = ttk.Frame(self.lblfr_bells_weather)
+        
         self.lbl_wt_type = ttk.Label(self.frm_wt_values)
         self.var_wt_type = tk.StringVar(value='UNKNOWN')
         self.lbl_wt_type.configure(text='UNKNOWN', textvariable=self.var_wt_type)
         self.lbl_wt_type.grid(column='0', padx='20', pady='10', row='1', sticky='sew')
         self.lbl_wt_type.columnconfigure('0', weight='0')
+        
         self.lbl_wt_temperature = ttk.Label(self.frm_wt_values)
         self.lbl_wt_temperature.configure(text='Temperature')
         self.lbl_wt_temperature.grid(column='1', padx='10', pady='10', row='1', sticky='sew')
+        
         self.cv_wt_icon = tk.Canvas(self.frm_wt_values)
         self.cv_wt_icon.configure(background='#5363ee', height='50', width='50')
         self.cv_wt_icon.grid(column='0', padx='20', row='2')
         self.cv_wt_icon.columnconfigure('0', weight='0')
+        
         self.lbl_wt_tempNum = ttk.Label(self.frm_wt_values)
+        
         self.var_wt_tempNum = tk.StringVar(value='UNKNOWN')
         self.lbl_wt_tempNum.configure(text='UNKNOWN', textvariable=self.var_wt_tempNum)
         self.lbl_wt_tempNum.grid(column='1', row='2')
+        
         self.lbl_wt_wind = ttk.Label(self.frm_wt_values)
         self.lbl_wt_wind.configure(text='Wind')
         self.lbl_wt_wind.grid(column='0', padx='20', pady='5', row='3', sticky='se')
         self.lbl_wt_wind.rowconfigure('3', minsize='0', pad='40')
         self.lbl_wt_wind.columnconfigure('0', weight='0')
+        
         self.lbl_wt_windVal = ttk.Label(self.frm_wt_values)
         self.var_wt_windVal = tk.StringVar(value='UNKNOWN')
         self.lbl_wt_windVal.configure(text='UNKNOWN', textvariable=self.var_wt_windVal)
         self.lbl_wt_windVal.grid(column='1', padx='10', pady='5', row='3', sticky='sw')
         self.lbl_wt_windVal.rowconfigure('3', minsize='0', pad='40')
+        
         self.lbl_wt_pressure = ttk.Label(self.frm_wt_values)
         self.lbl_wt_pressure.configure(text='Pressure')
         self.lbl_wt_pressure.grid(column='0', padx='20', pady='5', row='4', sticky='e')
         self.lbl_wt_pressure.columnconfigure('0', weight='0')
-        self.lbl_wt_pressureVal = ttk.Label(self.frm_wt_values)
+        
+        self.lbl_wt_pressureVal = ttk.Label(self.frm_wt_values)        
         self.var_wt_pressureVal = tk.StringVar(value='UNKNOWN')
         self.lbl_wt_pressureVal.configure(text='UNKNOWN', textvariable=self.var_wt_pressureVal)
         self.lbl_wt_pressureVal.grid(column='1', padx='10', pady='5', row='4', sticky='w')
+        
         self.lbl_wt_tMax = ttk.Label(self.frm_wt_values)
         self.lbl_wt_tMax.configure(text='Temp.max')
         self.lbl_wt_tMax.grid(column='0', padx='20', pady='5', row='5', sticky='e')
@@ -686,6 +702,7 @@ class AppWin:
         self.lbl_wt_tMaxVal.configure(text='UNKNOWN', textvariable=self.var_wt_tMaxVal)
         self.lbl_wt_tMaxVal.grid(column='1', padx='10', pady='5', row='5', sticky='w')
         self.lbl_wt_tMaxVal.rowconfigure('5', minsize='0')
+        
         self.lbl_wt_tMin = ttk.Label(self.frm_wt_values)
         self.lbl_wt_tMin.configure(text='Temp.min')
         self.lbl_wt_tMin.grid(column='0', padx='20', pady='5', row='6', sticky='e')
@@ -694,18 +711,23 @@ class AppWin:
         self.var_wt_tMinVal = tk.StringVar(value='UNKNOWN')
         self.lbl_wt_tMinVal.configure(text='UNKNOWN', textvariable=self.var_wt_tMinVal)
         self.lbl_wt_tMinVal.grid(column='1', padx='10', pady='5', row='6', sticky='w')
+        
         self.lbl_wt_humidity = ttk.Label(self.frm_wt_values)
         self.lbl_wt_humidity.configure(text='Humidity')
         self.lbl_wt_humidity.grid(column='0', padx='20', pady='5', row='7', sticky='e')
         self.lbl_wt_humidity.columnconfigure('0', weight='0')
+        
         self.lbl_wt_humidityVal = ttk.Label(self.frm_wt_values)
         self.var_wt_humidityVal = tk.StringVar(value='UNKNOWN')
         self.lbl_wt_humidityVal.configure(text='UNKNOWN', textvariable=self.var_wt_humidityVal)
         self.lbl_wt_humidityVal.grid(column='1', padx='10', pady='5', row='7', sticky='w')
+        
         self.frm_wt_values.configure(height='200', width='200')
         self.frm_wt_values.grid(column='0', row='1', sticky='nsw')
         self.frm_wt_values.columnconfigure('0', weight='1')
+        
         self.frm_wt_calendar = ttk.Frame(self.lblfr_bells_weather)
+        
         self.lbl_wt_today = ttk.Label(self.frm_wt_calendar)
         self.lbl_wt_today.configure(font='{Arial} 12 {}', text='Today is')
         self.lbl_wt_today.grid(column='0', padx='50', pady='10', row='0', sticky='nsw')
@@ -740,21 +762,25 @@ class AppWin:
         self.lbl_wt_date.configure(font='{Arial} 12 {}', text='Selected date:')
         self.lbl_wt_date.grid(column='0', padx='50', pady='10', row='3', sticky='nsw')
         self.lbl_wt_date.rowconfigure('3', pad='10')
+        
         self.lbl_wt_selection = ttk.Label(self.frm_wt_calendar)
         self.var_wt_selection = tk.StringVar(value='<Selected date>')
         self.lbl_wt_selection.configure(font='{Arial} 12 {}', text='<Selected date>', textvariable=self.var_Calendar)
         self.lbl_wt_selection.grid(column='1', row='3', sticky='nsw')
         self.lbl_wt_selection.rowconfigure('3', pad='10')
+        
         self.frm_wt_calendar.configure(height='200', width='200')
         self.frm_wt_calendar.grid(column='1', row='1', sticky='n')
         self.frm_wt_calendar.columnconfigure('1', weight='1')
+        
         self.lblfr_bells_weather.configure(height='200', padding='30 0', text='Weather', width='200')
         self.lblfr_bells_weather.grid(column='0', ipadx='10', padx='5', pady='5', row='1', sticky='n')
         self.lblfr_bells_weather.rowconfigure('1', weight='1')
         self.lblfr_bells_weather.columnconfigure('0', pad='0', weight='1')
+        
         self.frm_bells.configure(height='200', width='200')
         self.frm_bells.grid(column='0', row='0', sticky='nsew')
-        self.frm_bells.rowconfigure('0', weight='1')
+        self.frm_bells.rowconfigure('0', weight='0')
         self.frm_bells.columnconfigure('0', weight='1')
 
         self.ntb_app.add(self.frm_bells, text='Bells and whistlers')
