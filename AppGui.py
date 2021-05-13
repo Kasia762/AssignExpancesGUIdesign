@@ -95,14 +95,34 @@ class AppWin:
         fig = plt.figure(dpi=100)
         ax = fig.add_subplot(111)
         chart = FigureCanvasTkAgg(fig, self.frm_categories)
-        chart.get_tk_widget().grid(padx=5, pady=5,
+        chart.get_tk_widget().grid(padx=5, pady=5,sticky = 'nsew',
                                          column="1",row="1",columnspan="2")
         ax.bar(cat,height=am)
         ax.set_title('Spendings in '+ monthname)
         ax.set_xlabel("Categories");ax.set_ylabel("Spendings [Euros]")
     
     def chartOverallSpendings(self):
-        data = self.badb.data_chartOverallSpendings('05')
+        mon = self.account_spn_month.get()
+        def getmonth():
+            if mon == "January": return "01"
+            elif mon =="February": return "02"
+            elif mon == "March": return "03"
+            elif mon == "April": return "04"
+            elif mon == "May": return "05"
+            elif mon == "June": return "06"
+            elif mon == "July": return "07"
+            elif mon == "August": return "08"
+            elif mon == "September": return "09"
+            elif mon == "October": return "10"
+            elif mon == "December": return "12"
+            elif mon == "November": return "11"
+            else: 
+              tk.messagebox.showwarning("Spinbox!!!!","put correct month",
+                                      parent=self.mainwindow)
+        
+        monthname = str(mon)
+        month=str(getmonth())
+        data = self.badb.data_chartOverallSpendings(month)
         #print(i[0] for i in amount)
         amount = [abs(i[0]) for i in data] 
         date = [i[1].strftime('%d' '%a') for i in data]
@@ -113,7 +133,7 @@ class AppWin:
         chart.get_tk_widget().grid(padx=5, pady=5,
                                          column="0",row="1",columnspan="2")
         ax.plot(date, amount)
-        
+        print(monthname)
 
         
     def updateTransactionTable(self):
@@ -403,19 +423,19 @@ class AppWin:
         
         #GET TODAYS MONTH NAME
         monthname=dt.datetime.now().strftime("%B")
-        self.spn_month = ttk.Spinbox(self.lbfr_Acc_Chart,
+        self.account_spn_month = ttk.Spinbox(self.lbfr_Acc_Chart,
                                      values =("January","February","March",
                                               "April","May", "June",
                                               "July","August","September",
                                               "October","November","December"))
         
-        self.spn_month.delete('0','end')
-        self.spn_month.insert('0',monthname)
-        self.spn_month.grid(column='0',row='0')
+        self.account_spn_month.delete('0','end')
+        self.account_spn_month.insert('0',monthname)
+        self.account_spn_month.grid(column='0',row='0')
         
         self.btn_Update = ttk.Button(self.lbfr_Acc_Chart)
         self.btn_Update.configure(text='Update', width='15')
-        self.btn_Update.configure(command=self.chartCategorySpendings)
+        self.btn_Update.configure(command=self.chartOverallSpendings)
         self.btn_Update.grid(column='1',row='0')
         
         ### TRANSACTIONS TAB
@@ -562,10 +582,10 @@ class AppWin:
         self.tbl_categories['show'] = 'headings'
         self.tbl_categories.grid(column='0', padx='3', pady='3', row='0', sticky='nsew')
         self.tbl_categories.master.rowconfigure('0', weight='1')
-        self.tbl_categories.master.columnconfigure('0', weight='1')
+        self.tbl_categories.master.columnconfigure('0', weight='0')
         self.lbfr_tableCategories.grid(column='0', 
                                        #columnspan='2', 
-                                       padx='5', row='0', rowspan='2', sticky='nsew')
+                                       padx='5', row='1', sticky='nsw')
         self.lbfr_tableCategories.master.rowconfigure('1', weight='1')
         self.lbfr_tableCategories.master.columnconfigure('0', pad='0', weight='1')
         self.lbfr_cat_Commands = ttk.Labelframe(self.frm_categories)
@@ -581,28 +601,45 @@ class AppWin:
         self.btn_catChange.master.rowconfigure('1', pad='10')
         self.btn_catChange.master.columnconfigure('0', pad='10')
         self.btn_catChange.configure(command=self.h_btnCatChange)
-        self.btn_catDelete = ttk.Button(self.lbfr_cat_Commands)
-        self.btn_catDelete.configure(text='Delete', width='20')
-        self.btn_catDelete.grid(column='0', row='2')
-        self.btn_catDelete.master.rowconfigure('2', pad='10')
-        self.btn_catDelete.master.columnconfigure('0', pad='10')
-        self.btn_catDelete.configure(command=self.h_btnCatDelete)
+        # self.btn_catDelete = ttk.Button(self.lbfr_cat_Commands)
+        # self.btn_catDelete.configure(text='Delete', width='20')
+        # self.btn_catDelete.grid(column='0', row='2')
+        # self.btn_catDelete.master.rowconfigure('2', pad='10')
+        # self.btn_catDelete.master.columnconfigure('0', pad='10')
+        # self.btn_catDelete.configure(command=self.h_btnCatDelete)
         self.lbfr_cat_Commands.configure(height='0', text='Commands', width='200')
-        self.lbfr_cat_Commands.grid(column='2', padx='5', row='0', sticky='ns')
+        self.lbfr_cat_Commands.grid(column='0', padx='5', row='0', sticky='nsw')
         self.lbfr_cat_Commands.master.rowconfigure('0', pad='10', weight=0)
         self.lbfr_cat_data = ttk.Labelframe(self.frm_categories)
-        self.label8 = ttk.Label(self.lbfr_cat_data)
-        self.label8.configure(text='Name:')
-        self.label8.grid(column='0', padx='10', pady='10', row='0', sticky='e')
-        self.label8.master.rowconfigure('0', pad='10')
-        self.label8.master.columnconfigure('0', pad='10')
-        self.txt_cat_Name = ttk.Entry(self.lbfr_cat_data)
-        _text_ = ''
-        self.txt_cat_Name.delete('0', 'end')
-        self.txt_cat_Name.insert('0', _text_)
-        self.txt_cat_Name.grid(column='1', padx='0', row='0', sticky='w')
-        self.txt_cat_Name.master.rowconfigure('0', pad='10')
-        self.txt_cat_Name.master.columnconfigure('1', pad='20', weight=1)
+        
+        self.cat_monthname=dt.datetime.now().strftime("%B")
+        self.spn_month = ttk.Spinbox(self.lbfr_cat_data,
+                                     values =("January","February","March",
+                                              "April","May", "June",
+                                              "July","August","September",
+                                              "October","November","December"))
+        
+        self.spn_month.delete('0','end')
+        self.spn_month.insert('0',self.cat_monthname)
+        self.spn_month.grid(column='0',row='0')
+        
+        self.btn_Update = ttk.Button(self.lbfr_cat_data)
+        self.btn_Update.configure(text='Update', width='15')
+        self.btn_Update.configure(command=self.chartCategorySpendings)
+        self.btn_Update.grid(column='1',row='0')
+        
+        # self.label8 = ttk.Label(self.lbfr_cat_data)
+        # self.label8.configure(text='Name:')
+        # self.label8.grid(column='0', padx='10', pady='10', row='0', sticky='e')
+        # self.label8.master.rowconfigure('0', pad='10')
+        # self.label8.master.columnconfigure('0', pad='10')
+        # self.txt_cat_Name = ttk.Entry(self.lbfr_cat_data)
+        # _text_ = ''
+        # self.txt_cat_Name.delete('0', 'end')
+        # self.txt_cat_Name.insert('0', _text_)
+        # self.txt_cat_Name.grid(column='1', padx='0', row='0', sticky='w')
+        # self.txt_cat_Name.master.rowconfigure('0', pad='10')
+        # self.txt_cat_Name.master.columnconfigure('1', pad='20', weight=1)
         
         self.lbfr_cat_data.configure(height='0', text='Data for operations')
         self.lbfr_cat_data.grid(column='1', ipadx='0', ipady='0', padx='5', pady='0', row='0', sticky='nsew')
@@ -798,7 +835,7 @@ class AppWin:
         self.ntb_app.master.rowconfigure('0', weight=1)
         self.ntb_app.master.columnconfigure('0', weight=1)
         self.root_app.configure(relief='flat')
-        self.root_app.geometry('800x500')
+        self.root_app.geometry('800x600')
         self.root_app.minsize(700, 400)
         self.root_app.resizable(True, True)
         self.root_app.title('Python cash')
