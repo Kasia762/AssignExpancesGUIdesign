@@ -202,6 +202,21 @@ class AppWin:
 
 
     def h_btnTrExport(self):
+        exportingitems = self.tbl_transactions.get_children()
+        ## Export choose: selected or all
+        selected = self.tbl_transactions.selection()
+        if len(selected) > 1:
+            print("Multi selection in table. Choose dialog pop-up.")
+            reply =  tk.messagebox.askyesno(title="Export...", 
+                           message=f"There are {len(selected)} transactions selected in table." + 
+                           "Choose what should be exported:\n\n" + 
+                           "\tPress YES to export only selected.\n"
+                           "\tPress NO to export whole table.")
+            if reply == True:
+                exportingitems = selected
+        else:
+            print("Nothing selected or only one line. Intend to export whole table.")
+        
         filetypes = (
             ('CSV files', '*.csv'),
             #('Excel files', '*.xlsx'),
@@ -210,18 +225,27 @@ class AppWin:
                         ("Export",
                         self.cal_tr_From.get_date().strftime(_dt_datefmt),
                         self.cal_tr_To.get_date().strftime(_dt_datefmt) ))
-                        
-        exportFileName = tk.filedialog.asksaveasfile(
-                        title="Export current table view as...",
-                        initialdir='./',
-                        filetypes=filetypes,
-                        defaultextension='.csv',
-                        initialfile=exportFileName,
-                        parent=self.mainwindow  )
+        try:
+            exportFileName = tk.filedialog.asksaveasfile(
+                            title="Export current table view as...",
+                            initialdir='./',
+                            filetypes=filetypes,
+                            defaultextension='.csv',
+                            initialfile=exportFileName,
+                            parent=self.mainwindow  )
+        except PermissionError as err:
+            print("Error: %s" %err)
+            tk.messagebox.showerror("CSV export",
+                        "Could not export: file writing error.\n\nPlease check file not used in other program.",
+                        parent=self.mainwindow)
+            return
+        except:
+            print("Some problem selecting file.")
+            return
         print("Selected filename for export: ", exportFileName.name )
         try:
             export_df = pd.DataFrame(None, columns=self.tbl_transactions_cols)
-            for row in self.tbl_transactions.get_children():
+            for row in exportingitems:
                 ## each row will come as a list under name "values" 
                 rowvals = pd.DataFrame([self.tbl_transactions.item(row)['values']], 
                             columns=self.tbl_transactions_cols)
