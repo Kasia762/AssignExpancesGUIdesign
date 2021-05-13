@@ -94,9 +94,9 @@ class AppWin:
         #fig = plt.figure(dpi=dpi)
         fig = plt.figure(dpi=100)
         ax = fig.add_subplot(111)
-        chart = FigureCanvasTkAgg(fig, self.lbfr_Acc_Chart)
+        chart = FigureCanvasTkAgg(fig, self.frm_categories)
         chart.get_tk_widget().grid(padx=5, pady=5,
-                                         column="0",row="1",columnspan="2")
+                                         column="1",row="1",columnspan="2")
         ax.bar(cat,height=am)
         ax.set_title('Spendings in '+ monthname)
         ax.set_xlabel("Categories");ax.set_ylabel("Spendings [Euros]")
@@ -111,7 +111,7 @@ class AppWin:
         ax = fig.add_subplot(111)
         chart = FigureCanvasTkAgg(fig, self.lbfr_Acc_Chart)
         chart.get_tk_widget().grid(padx=5, pady=5,
-                                         column="2",row="1",columnspan="2")
+                                         column="0",row="1",columnspan="2")
         ax.plot(date, amount)
         
 
@@ -429,9 +429,13 @@ class AppWin:
         self.cal_tr_From = tkcal.DateEntry(self.lbfr_drTransactions, 
                                            date_pattern=_cal_datefmt,
                                            state="readonly")
-        _text_ = dt.date.today().strftime(_dt_datefmt)
-        self.cal_tr_From.delete('0', 'end')
-        self.cal_tr_From.insert('0', _text_)
+        #_text_ = dt.date.today().replace(day=1).strftime(_dt_datefmt)
+        firstDay = dt.date.today().replace(day=1)
+        date = firstDay.strftime(_dt_datefmt)
+        # self.cal_tr_From.delete('0', 'end')
+        # self.cal_tr_From.insert('0', date)
+        self.cal_tr_From.set_date(date)
+        
         self.cal_tr_From.grid(column='1', padx='0', row='0', sticky='w')
         self.cal_tr_From.master.rowconfigure('0', pad='10')
         self.cal_tr_From.master.columnconfigure('1', pad='10', weight=1)
@@ -443,9 +447,9 @@ class AppWin:
         self.cal_tr_To = tkcal.DateEntry(self.lbfr_drTransactions, 
                                          date_pattern=_cal_datefmt,
                                          state='readonly')
-        _text_ =  dt.date.today().strftime(_dt_datefmt)
+        today =  dt.date.today().strftime(_dt_datefmt)
         self.cal_tr_To.delete('0', 'end')
-        self.cal_tr_To.insert('0', _text_)
+        self.cal_tr_To.insert('0', today)
         self.cal_tr_To.grid(column='1', row='1', sticky='w')
         self.cal_tr_To.master.rowconfigure('1', pad='10')
         self.cal_tr_To.master.columnconfigure('1', pad='10', weight=1)
@@ -559,7 +563,9 @@ class AppWin:
         self.tbl_categories.grid(column='0', padx='3', pady='3', row='0', sticky='nsew')
         self.tbl_categories.master.rowconfigure('0', weight='1')
         self.tbl_categories.master.columnconfigure('0', weight='1')
-        self.lbfr_tableCategories.grid(column='0', columnspan='2', padx='5', row='1', sticky='nsew')
+        self.lbfr_tableCategories.grid(column='0', 
+                                       #columnspan='2', 
+                                       padx='5', row='0', rowspan='2', sticky='nsew')
         self.lbfr_tableCategories.master.rowconfigure('1', weight='1')
         self.lbfr_tableCategories.master.columnconfigure('0', pad='0', weight='1')
         self.lbfr_cat_Commands = ttk.Labelframe(self.frm_categories)
@@ -582,7 +588,7 @@ class AppWin:
         self.btn_catDelete.master.columnconfigure('0', pad='10')
         self.btn_catDelete.configure(command=self.h_btnCatDelete)
         self.lbfr_cat_Commands.configure(height='0', text='Commands', width='200')
-        self.lbfr_cat_Commands.grid(column='1', padx='5', row='0', sticky='ns')
+        self.lbfr_cat_Commands.grid(column='2', padx='5', row='0', sticky='ns')
         self.lbfr_cat_Commands.master.rowconfigure('0', pad='10', weight=0)
         self.lbfr_cat_data = ttk.Labelframe(self.frm_categories)
         self.label8 = ttk.Label(self.lbfr_cat_data)
@@ -599,7 +605,7 @@ class AppWin:
         self.txt_cat_Name.master.columnconfigure('1', pad='20', weight=1)
         
         self.lbfr_cat_data.configure(height='0', text='Data for operations')
-        self.lbfr_cat_data.grid(column='0', ipadx='0', ipady='0', padx='5', pady='0', row='0', sticky='nsew')
+        self.lbfr_cat_data.grid(column='1', ipadx='0', ipady='0', padx='5', pady='0', row='0', sticky='nsew')
         self.lbfr_cat_data.master.rowconfigure('0', pad='10', weight=0)
         self.lbfr_cat_data.master.columnconfigure('0', pad='0', weight=1)
         self.frm_categories.grid(column='0', padx='3', pady='10', row='0', sticky='nsew')
