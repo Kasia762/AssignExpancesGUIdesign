@@ -221,8 +221,8 @@ class App_data:
 
 
     def __parse_name(self, name):
-        ## # Remove the first and end spaces
-        ## return "".join(name.rstrip().lstrip())
+        if pd.isnull( name ):
+            return ''
         # Remove all extra spaces
         return " ".join(name.split())
 
