@@ -291,7 +291,18 @@ class App_data:
         cur.execute(sql,(month,))
         data = cur.fetchall()
         return data
-        
+    
+    def data_chartOverallSpendings(self,month):
+        cur = self.database.cursor()
+        sql = '''
+        SELECT SUM(tr.trans_amount), tr.trans_date
+        FROM transactions AS tr
+        WHERE strftime('%m', tr.trans_date) IN (?)
+        GROUP BY tr.trans_date
+        '''
+        cur.execute(sql,(month,))
+        data = cur.fetchall()
+        return data
     
     
     def getAllTransactionsPeriod(self,startDate, endDate):
@@ -480,6 +491,8 @@ class App_data:
 #####
 ##### Some stuff for CSV import
 ##### DO NOT DELETE YET
+
+#print(App_data().data_chartOverallSpendings('05'))
 
 """
 

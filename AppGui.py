@@ -62,7 +62,7 @@ class AppWin:
                                       parent=self.mainwindow)    
 
         
-    def chartSpendingsMonth(self):
+    def chartCategorySpendings(self):
         mon = self.spn_month.get()
         
         def getmonth():
@@ -89,7 +89,7 @@ class AppWin:
         
         am = [-i[amount] for i in self.badb.chartMonth(month)]
         cat=[i[category] for i in self.badb.chartMonth(month)]
-        print(i for i in self.badb.chartMonth(month))
+        #print(i for i in self.badb.chartMonth(month))
     
         #fig = plt.figure(dpi=dpi)
         fig = plt.figure(dpi=100)
@@ -100,11 +100,27 @@ class AppWin:
         ax.bar(cat,height=am)
         ax.set_title('Spendings in '+ monthname)
         ax.set_xlabel("Categories");ax.set_ylabel("Spendings [Euros]")
-
+    
+    def chartOverallSpendings(self):
+        data = self.badb.data_chartOverallSpendings('05')
+        #print(i[0] for i in amount)
+        amount = [abs(i[0]) for i in data] 
+        date = [i[1].strftime('%d' '%a') for i in data]
+        
+        print(date)
+        
+        fig = plt.figure(dpi=100)
+        ax = fig.add_subplot(111)
+        chart = FigureCanvasTkAgg(fig, self.lbfr_Acc_Chart)
+        chart.get_tk_widget().grid(padx=5, pady=5,
+                                         column="2",row="1",columnspan="2")
+        ax.plot(date, amount)
+        
 
         
     def updateTransactionTable(self):
-        # self.display_balance()
+        self.display_balance()
+        
         #first clear the treeview
         for i in self.tbl_transactions.get_children():
             self.tbl_transactions.delete(i)
@@ -121,8 +137,8 @@ class AppWin:
             con = row[4] if row[4] else ""
             values = (idvalue, date, row[2], cat, con)
             self.tbl_transactions.insert('','end', values = values)
-
-
+        self.chartCategorySpendings()
+        self.chartOverallSpendings()
 
     def updateCategoriesTable(self):
         #first clear the treeview
@@ -401,7 +417,7 @@ class AppWin:
         
         self.btn_Update = ttk.Button(self.lbfr_Acc_Chart)
         self.btn_Update.configure(text='Update', width='15')
-        self.btn_Update.configure(command=self.chartSpendingsMonth)
+        self.btn_Update.configure(command=self.chartCategorySpendings)
         self.btn_Update.grid(column='1',row='0')
         
         ### TRANSACTIONS TAB
