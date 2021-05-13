@@ -10,6 +10,7 @@ import tkinter.ttk as ttk
 import tkcalendar as tkcal
 import time
 import datetime as dt
+import pandas as pd
 from app_data import App_data 
 from addTransaction import AddTransaction
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
@@ -40,7 +41,7 @@ class AppWin:
         ### BINDs
         self.cal_tr_To.bind('<<DateEntrySelected>>', lambda x: self.updateTransactionTable() )
         self.cal_tr_From.bind('<<DateEntrySelected>>', lambda x: self.updateTransactionTable() )
-        
+        self.tbl_transactions.bind("<Double-1>", self.h_tblTr_OnDoubleClick)
         
 
 
@@ -102,7 +103,7 @@ class AppWin:
             date = row[1].strftime(_dt_datefmt)
             cat = row[3] if row[3] else ""
             con = row[4] if row[4] else ""
-            values = (idvalue,date, row[2], cat, con)
+            values = (idvalue, date, row[2], cat, con)
             self.tbl_transactions.insert('','end', values = values)
 
 
@@ -131,52 +132,118 @@ class AppWin:
         pass
 
 
-    def treeSelection(self):
-        line = self.tbl_transactions.selection()
-        value = self.tbl_transactions.item(line)['values']
-        return value
-        
+    
+    def h_tblTr_OnDoubleClick(self, event):
+        ### Detect only item, on which was double clicked
+        print("Double-clicked in table ", end='')
+        clicked = self.tbl_transactions.identify('item',event.x,event.y)
+        selected = self.tbl_transactions.selection()
+        if len(selected) == 1:
+            print("element.")
+            id_value = str( self.tbl_transactions.item(clicked, 'values')[0] )
+            print('Opening addTransaction window in "change" mode, id: ', id_value)
+            AddTransaction(self.mainwindow, self, id_value)
+            self.updateTransactionTable()
+        else:
+                print("somewhere. Not olnly one element selected or other area clicked.")
+
         
     def h_btnTrChange(self):
-        try:
-            id_value = str(self.treeSelection()[0])
-        except:
-            print("Nothing selected in table. Cannot change.")
-            tk.messagebox.showinfo("Change transaction","Select transaction in table to change.",
+        selected = self.tbl_transactions.selection()
+        if len(selected) > 1:
+            print("Multi selection in table. Cannot change several transactions yet.")
+            tk.messagebox.showwarning("Change transaction",
+                                   "Multi selection in table.\n\n Cannot change several transactions at once yet.",
                                       parent=self.mainwindow)
             return
-        print(id_value)
-        AddTransaction(self.mainwindow, self, id_value)
-        self.updateTransactionTable()
+        elif len(selected) == 1:
+            print("One-line selection.")
+            id_value = str(self.tbl_transactions.item(selected, 'values')[0])
+            print('Opening addTransaction window in "change" mode, id: ', id_value)
+            AddTransaction(self.mainwindow, self, id_value)
+            self.updateTransactionTable()
+        else:
+            print("Nothing selected in table. Cannot change.")
+            tk.messagebox.showwarning("Change transaction","Select transaction in table to change.",
+                                      parent=self.mainwindow)
+
         
 
     def h_btnTrDelete(self):
-        try:
-            id_value = str(self.treeSelection()[0])
-        except:
+        selected = self.tbl_transactions.selection()
+        
+        if len(selected) > 0:
+            print("Some selection in table...")
+            reply =  tk.messagebox.askyesno(title="Delete...", 
+                           message=f"You going to delete {len(selected)} transactions.\n\n" + 
+                                   "Are you sure?")
+            if reply == True:
+                for sel in selected:
+                    id_value = self.tbl_transactions.item(sel, 'values')[0]
+                    self.badb.deleteTransaction(id_value)
+                self.updateTransactionTable()
+            
+        else:
             print("Nothing selected. Cannot delete.")
-            tk.messagebox.showinfo("Delete transaction","Select transaction in table to delete.",
+            tk.messagebox.showwarning("Delete transaction","Select transaction in table to delete.",
                                       parent=self.mainwindow)
-            return
-        reply =  tk.messagebox.askyesno(title="Delete...", 
-                       message="You going to delete transaction.\n\n" + 
-                               "Are you sure?")
-        if reply == True:
-            self.badb.deleteTransaction(id_value)
-            self.updateTransactionTable()
+
+        
 
 
     def h_btnTrImport(self):
         importWindow = app_import.ImportTransactionDialog(self.mainwindow, self)
         importWindow.run()
-        print("Import dialog is opened. waiting...")
+        print("Import dialog is opened...")
         self.mainwindow.wait_window(importWindow.mainwindow)
-        print(".....end wait. Import dialog closed.")
+        print("... Import dialog closed.")
         self.updateTransactionTable()
         pass
 
 
     def h_btnTrExport(self):
+        filetypes = (
+            ('CSV files', '*.csv'),
+#            ('Excel files', '*.xlsx'),
+            ('All files', '*.*'))
+        exportFileName = "_".join(
+                        ("Export",
+                        self.cal_tr_From.get_date().strftime(_dt_datefmt),
+                        self.cal_tr_To.get_date().strftime(_dt_datefmt) ))
+                        
+        exportFileName = tk.filedialog.asksaveasfile(
+                        title="Export current table view as...",
+                        initialdir='./',
+                        filetypes=filetypes,
+                        defaultextension='.csv',
+                        initialfile=exportFileName,
+                        parent=self.mainwindow  )
+        print("Selected filename for export: ", exportFileName.name )
+        try:
+            export_df = pd.DataFrame(None, columns=self.tbl_transactions_cols)
+            for row in self.tbl_transactions.get_children():
+                ## each row will come as a list under name "values" 
+                rowvals = pd.DataFrame([self.tbl_transactions.item(row)['values']], 
+                            columns=self.tbl_transactions_cols)
+                export_df = export_df.append(rowvals)
+            ## shrink dataframe to visible columns (no id of transaction)
+            export_df = export_df[self.tbl_transactions_dcols]
+        except:
+            print("Unexpected error: cannot retrieve data from table.")
+            tk.messagebox.showwarning("CSV export","Could not export: internal error",
+                                      parent=self.mainwindow)
+            return
+        try:
+            ## apply datetime format
+            export_df.loc[:,'date'] = export_df.loc[:,'date'].apply(lambda x: dt.datetime.strptime(x, _dt_datefmt))
+            export_df.to_csv(exportFileName, index = False)
+        except:
+            print("Unexpected error: cannot save data to csv.")
+            tk.messagebox.showwarning("CSV export","Could not export: file writing error.\n\nPlease check filename...",
+                                      parent=self.mainwindow)
+            return
+        tk.messagebox.showinfo("CSV export","Export complete.",
+                                  parent=self.mainwindow)
         pass
 
 
@@ -218,7 +285,6 @@ class AppWin:
     
 
     def run(self):
-        self.treeSelection()
         self.updateTransactionTable()
         self.updateCategoriesTable()
         self.display_time()

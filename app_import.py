@@ -10,7 +10,6 @@ import tkinter.ttk as ttk
 import os.path
 import pandas as pd
 import numpy as np
-import tkinter.filedialog as fd
 import datetime
 import dateutil.parser 
 import collections
@@ -71,7 +70,7 @@ class ImportTransactionDialog:
             ('CSV files', '*.csv'),
             ('All files', '*.*'))
 
-        filePath = fd.askopenfilename(
+        filePath = tk.filedialog.askopenfilename(
                 title='Open a CSV file ...',
                 initialdir='./',
                 filetypes=filetypes,
@@ -82,7 +81,7 @@ class ImportTransactionDialog:
             ### GUI message
             # ...
             return
-            
+        print("Selected file to import: ", filePath)
         sep = self.detect_separator(filePath)
         try:
             sep = sep[0]
