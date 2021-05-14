@@ -675,7 +675,7 @@ class AppWin:
         
         self.lbfr_bells_choose.configure(height='200', padding='30 0', text='Choose city for which you want to have information displayed', width='200')
         self.lbfr_bells_choose.grid(column='0', padx='5', pady='0', row='0', sticky='n')
-        self.lbfr_bells_choose.rowconfigure('0', pad='0', weight='0')
+        self.lbfr_bells_choose.rowconfigure('0', pad='0', weight='1')
         self.lbfr_bells_choose.columnconfigure('0', pad='0', weight='1')
         
         self.lblfr_bells_weather = ttk.Labelframe(self.frm_bells)
@@ -825,6 +825,8 @@ class AppWin:
         self.frm_bells.grid(column='0', row='0', sticky='nsew')
         self.frm_bells.rowconfigure('0', weight='0')
         self.frm_bells.columnconfigure('0', weight='1')
+        
+        self.frm_bells.rowconfigure('1', weight='1')        
 
         self.ntb_app.add(self.frm_bells, text='Bells and whistlers')
         
