@@ -823,6 +823,7 @@ class AppWin:
         
         self.frm_bells.configure(height='200', width='200')
         self.frm_bells.grid(column='0', row='0', sticky='nsew')
+        # weight = 0, chose lblfr wont resize the row
         self.frm_bells.rowconfigure('0', weight='0')
         self.frm_bells.columnconfigure('0', weight='1')
         

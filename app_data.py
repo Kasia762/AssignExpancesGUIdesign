@@ -285,7 +285,7 @@ class App_data:
         FROM  transactions AS tr
         LEFT OUTER JOIN categories AS ct
                 ON tr.cat_id = ct.cat_id
-        WHERE  strftime('%m',tr.trans_date) IN (?)
+        WHERE  strftime('%m',tr.trans_date) IN (?) AND tr.trans_amount < 0
         GROUP BY ct.cat_name;
         '''
         cur.execute(sql,(month,))
@@ -297,7 +297,7 @@ class App_data:
         sql = '''
         SELECT SUM(tr.trans_amount), tr.trans_date
         FROM transactions AS tr
-        WHERE strftime('%m', tr.trans_date) IN (?)
+        WHERE strftime('%m', tr.trans_date) IN (?) AND tr.trans_amount < 0
         GROUP BY tr.trans_date
         '''
         cur.execute(sql,(month,))
