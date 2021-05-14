@@ -64,7 +64,6 @@ class AppWin:
         
     def chartCategorySpendings(self):
         mon = self.spn_month.get()
-        
         def getmonth():
             if mon == "January": return "01"
             elif mon =="February": return "02"
@@ -86,17 +85,16 @@ class AppWin:
         month=str(getmonth())
         amount = 0
         category = 1
-        
-        am = [-i[amount] for i in self.badb.chartMonth(month)]
+
+        am = [abs(i[amount]) for i in self.badb.chartMonth(month)]
         cat=[i[category] for i in self.badb.chartMonth(month)]
-        #print(i for i in self.badb.chartMonth(month))
-    
+        print(i for i in self.badb.chartMonth(month))
+        cat[cat.index(None)] = "Undefined"
         #fig = plt.figure(dpi=dpi)
         fig = plt.figure(dpi=100)
         ax = fig.add_subplot(111)
-        chart = FigureCanvasTkAgg(fig, self.frm_categories)
-        chart.get_tk_widget().grid(padx=5, pady=5,sticky = 'nsew',
-                                         column="1",row="1",columnspan="2")
+        chart = FigureCanvasTkAgg(fig, self.frm_cat_chart)
+        chart.get_tk_widget().grid(sticky='nsew', column="0",row="0")
         ax.bar(cat,height=am)
         ax.set_title('Spendings in '+ monthname)
         ax.set_xlabel("Categories");ax.set_ylabel("Spendings [Euros]")
@@ -122,18 +120,36 @@ class AppWin:
         
         monthname = str(mon)
         month=str(getmonth())
-        data = self.badb.data_chartOverallSpendings(month)
+        income = self.badb.data_chartIncome(month)
+        outcome = self.badb.data_chartOutcome(month)
+        balance = self.badb.data_chartBalance(month)
         #print(i[0] for i in amount)
-        amount = [abs(i[0]) for i in data] 
-        date = [i[1].strftime('%d' '%a') for i in data]
-        
+        am_income = [i[0] for i in income] 
+        am_outcome = [abs(i[0]) for i in outcome ]
+        am_balance = [i[0] for i in balance]
+        date_income = [int(i[1].strftime('%d')) for i in income]
+        date_outcome = [int(i[1].strftime('%d')) for i in outcome]
+        date_balance = [int(i[1].strftime('%d')) for i in balance]
+                
         fig = plt.figure(dpi=100)
         ax = fig.add_subplot(111)
         chart = FigureCanvasTkAgg(fig, self.lbfr_Acc_Chart)
-        chart.get_tk_widget().grid(padx=5, pady=5,
-                                         column="0",row="1",columnspan="2")
-        ax.plot(date, amount)
-        print(monthname)
+        chart.get_tk_widget().grid(padx=20, pady=5,
+                                   column="0", row="1", columnspan="2", sticky = 'nsew')
+        
+        ax.plot(date_income, am_income, color='green', label='income', marker='+', linestyle=":")
+        ax.plot(date_outcome, am_outcome, color = 'red',label='outcome', marker = '.')
+        plt.legend(loc=0)
+        
+        ax1 = ax.twinx()
+        ax1.bar(date_balance, am_balance, color = 'PaleGreen', label="balance", alpha = 0.5)
+        plt.legend(loc=9)
+        
+        monthname=dt.datetime.now().strftime("%d")
+        end_date = int(monthname)+1
+        step = 1 
+        plt.xticks(range(1,end_date,step))
+        #print(monthname)
 
         
     def updateTransactionTable(self):
@@ -413,15 +429,15 @@ class AppWin:
         #self.lbfr_Acc_Chart.configure(height='200', width='200')
         self.lbfr_Acc_Chart.grid(column='0', ipadx='10', ipady='10', row='1', sticky='nsew')
         self.lbfr_Acc_Chart.master.rowconfigure('1', weight=1)
-        self.lbfr_Acc_Chart.master.columnconfigure('0', weight=1)
-        self.lbfr_Acc_Chart.master.columnconfigure('1', weight=0)
+        self.lbfr_Acc_Chart.columnconfigure('0', weight=1)
+        self.lbfr_Acc_Chart.columnconfigure('1', weight=1)
+        self.lbfr_Acc_Chart.rowconfigure('1', weight=1)
         #self.frm_account.configure(height='200', width='200')
         self.frm_account.grid(column='0', row='0', sticky='nsew')
         self.frm_account.master.rowconfigure('0', weight=1)
         self.frm_account.master.columnconfigure('0', weight=1)
         self.ntb_app.add(self.frm_account, sticky='nsew', text='Account')
-        
-        #GET TODAYS MONTH NAME
+    
         monthname=dt.datetime.now().strftime("%B")
         self.account_spn_month = ttk.Spinbox(self.lbfr_Acc_Chart,
                                      values =("January","February","March",
@@ -431,12 +447,12 @@ class AppWin:
         
         self.account_spn_month.delete('0','end')
         self.account_spn_month.insert('0',monthname)
-        self.account_spn_month.grid(column='0',row='0')
+        self.account_spn_month.grid(column='0',row='0', sticky='e', padx = 20)
         
         self.btn_Update = ttk.Button(self.lbfr_Acc_Chart)
         self.btn_Update.configure(text='Update', width='15')
         self.btn_Update.configure(command=self.chartOverallSpendings)
-        self.btn_Update.grid(column='1',row='0')
+        self.btn_Update.grid(column='1',row='0', sticky = 'w', padx = 20)
         
         ### TRANSACTIONS TAB
         self.frm_transactions = ttk.Frame(self.ntb_app)
@@ -576,7 +592,7 @@ class AppWin:
                                       displaycolumns=self.tbl_categories_dcols,
                                       yscrollcommand=self.scrb_catTableVert.set)
         self.tbl_categories.column('id', anchor='w',stretch='false',width='40',minwidth='40')
-        self.tbl_categories.column('name', anchor='w',stretch='true',width='200',minwidth='200')
+        self.tbl_categories.column('name', anchor='w',stretch='true',width='200',minwidth='150')
         self.tbl_categories.heading('id', anchor='w',text='ID')
         self.tbl_categories.heading('name', anchor='w',text='Name')
         self.tbl_categories['show'] = 'headings'
@@ -598,8 +614,8 @@ class AppWin:
         self.btn_catChange = ttk.Button(self.lbfr_cat_Commands)
         self.btn_catChange.configure(text='Change', width='20')
         self.btn_catChange.grid(column='0', row='1')
-        self.btn_catChange.master.rowconfigure('1', pad='10')
-        self.btn_catChange.master.columnconfigure('0', pad='10')
+        # self.btn_catChange.master.rowconfigure('1', pad='10')
+        # self.btn_catChange.master.columnconfigure('0', pad='10')
         self.btn_catChange.configure(command=self.h_btnCatChange)
         # self.btn_catDelete = ttk.Button(self.lbfr_cat_Commands)
         # self.btn_catDelete.configure(text='Delete', width='20')
@@ -608,8 +624,13 @@ class AppWin:
         # self.btn_catDelete.master.columnconfigure('0', pad='10')
         # self.btn_catDelete.configure(command=self.h_btnCatDelete)
         self.lbfr_cat_Commands.configure(height='0', text='Commands', width='200')
-        self.lbfr_cat_Commands.grid(column='0', padx='5', row='0', sticky='nsw')
+        self.lbfr_cat_Commands.grid(column='0', padx='5', row='0', sticky='nsew')
         self.lbfr_cat_Commands.master.rowconfigure('0', pad='10', weight=0)
+        
+        self.lbfr_cat_Commands.columnconfigure('0', weight = 1)
+        self.lbfr_cat_Commands.rowconfigure('0', weight = 1)
+        self.lbfr_cat_Commands.rowconfigure('1', weight = 1)
+        
         self.lbfr_cat_data = ttk.Labelframe(self.frm_categories)
         
         self.cat_monthname=dt.datetime.now().strftime("%B")
@@ -621,13 +642,18 @@ class AppWin:
         
         self.spn_month.delete('0','end')
         self.spn_month.insert('0',self.cat_monthname)
-        self.spn_month.grid(column='0',row='0')
+        self.spn_month.grid(column='0',row='0', padx=40, sticky='w')
         
         self.btn_Update = ttk.Button(self.lbfr_cat_data)
         self.btn_Update.configure(text='Update', width='15')
         self.btn_Update.configure(command=self.chartCategorySpendings)
-        self.btn_Update.grid(column='1',row='0')
+        self.btn_Update.grid(column='1',row='0', sticky ='w')
         
+        self.frm_cat_chart = ttk.Frame(self.frm_categories)
+        self.frm_cat_chart.grid(column = '1', row = '1', sticky = 'nsew',padx=10, pady=10)
+        self.frm_cat_chart.columnconfigure('0', weight=1)
+        self.frm_cat_chart.rowconfigure('0', weight=1)
+    
         # self.label8 = ttk.Label(self.lbfr_cat_data)
         # self.label8.configure(text='Name:')
         # self.label8.grid(column='0', padx='10', pady='10', row='0', sticky='e')
@@ -643,11 +669,17 @@ class AppWin:
         
         self.lbfr_cat_data.configure(height='0', text='Data for operations')
         self.lbfr_cat_data.grid(column='1', ipadx='0', ipady='0', padx='5', pady='0', row='0', sticky='nsew')
-        self.lbfr_cat_data.master.rowconfigure('0', pad='10', weight=0)
-        self.lbfr_cat_data.master.columnconfigure('0', pad='0', weight=1)
+        self.lbfr_cat_data.rowconfigure('0', pad='10', weight=1)
+        #self.lbfr_cat_data.columnconfigure('0', pad='0', weight=1)
+        #self.lbfr_cat_data.rowconfigure('1', pad='10', weight=1)
+        #self.lbfr_cat_data.columnconfigure('1', pad='0', weight=0)
         self.frm_categories.grid(column='0', padx='3', pady='10', row='0', sticky='nsew')
-        self.frm_categories.master.rowconfigure('0', weight=1)
-        self.frm_categories.master.columnconfigure('0', weight=1)
+        
+        self.frm_categories.rowconfigure('0', weight=0)
+        self.frm_categories.columnconfigure('0', weight=0)
+        self.frm_categories.rowconfigure('1', weight = 1)
+        self.frm_categories.columnconfigure('1', weight=1)
+        
         self.ntb_app.add(self.frm_categories, text='Categories	')
         
         ### LOTTO TAB

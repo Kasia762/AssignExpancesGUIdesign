@@ -292,7 +292,19 @@ class App_data:
         data = cur.fetchall()
         return data
     
-    def data_chartOverallSpendings(self,month):
+    def data_chartIncome(self,month):
+        cur = self.database.cursor()
+        sql = '''
+        SELECT SUM(tr.trans_amount), tr.trans_date
+        FROM transactions AS tr
+        WHERE strftime('%m', tr.trans_date) IN (?) AND tr.trans_amount > 0
+        GROUP BY tr.trans_date
+        '''
+        cur.execute(sql,(month,))
+        data = cur.fetchall()
+        return data
+    
+    def data_chartOutcome(self,month):
         cur = self.database.cursor()
         sql = '''
         SELECT SUM(tr.trans_amount), tr.trans_date
@@ -304,6 +316,17 @@ class App_data:
         data = cur.fetchall()
         return data
     
+    def data_chartBalance(self, month):
+        cur = self.database.cursor()
+        sql = '''
+        SELECT SUM(tr.trans_amount), tr.trans_date
+        FROM transactions AS tr
+        WHERE strftime('%m', tr.trans_date) IN (?)
+        GROUP BY tr.trans_date
+        '''
+        cur.execute(sql,(month,))
+        data = cur.fetchall()
+        return data
     
     def getAllTransactionsPeriod(self,startDate, endDate):
                 
