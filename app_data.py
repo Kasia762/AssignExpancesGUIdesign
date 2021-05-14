@@ -19,7 +19,7 @@ class App_data:
         self.__debug = True
         if type(self)._class_counter > 0:
             print("One instance of class",type(self), " already exist.")
-            print("For now only one instance is allowed.")
+            print("Only one instance is allowed.")
             raise ValueError
             
         type(self)._class_counter += 1
@@ -259,6 +259,7 @@ class App_data:
         cur.execute(sql)
         data = cur.fetchall()
         return data
+
     
     def getTransaction_byid(self, id_value):
         ## TODO: check database connection
@@ -276,6 +277,7 @@ class App_data:
         cur.execute(sql,(id_value,))
         data = cur.fetchone()
         return data
+
     
     #name!!!
     def chartMonth(self,month):
@@ -476,165 +478,5 @@ class App_data:
         except sqlite3.Error:
             self.database.rollback()
             return (False, "SQL error",)
-
-#####
-##### Some stuff for CSV import
-##### DO NOT DELETE YET
-
-"""
-
-## Generate list of tuples with contractor names
-## could be used in CSV importer
-## but should be checked is there item already
-ind_cont = 1
-contr_list = list()
-for a in val:
-    contr_list.append(  (a[  ind_cont  ],)  )
-contr_list = (list(set(contr_list)))
-# print(contr_list)
-
-sql = 'INSERT INTO contractors ( cont_name ) values (?)'
-cur.executemany(sql,contr_list)
-database.commit()
-
-
-
-## Generate list of tuples with categories names
-## could be used in CSV importer
-## but should be checked is there item already
-ind_cat = 3
-contr_list = list()
-for a in val:
-    contr_list.append(  (a[  ind_cat  ],)  )
-contr_list = (list(set(contr_list)))
-# print(contr_list)
-
-sql = 'INSERT INTO categories ( cat_name ) values (?)'
-cur.executemany(sql,contr_list)
-database.commit()
-
-
-
-## Generate list of tuples with date and amount names
-## could be used in CSV importer
-## but should be checked is there item already
-ind_date = 0
-ind_amount = 2
-contr_list = list()
-for a in val:
-    contr_list.append(  (a[  ind_date  ], a[ ind_amount ] ,
-                      a[ ind_cont ] , a[ ind_cat ] ) )
-contr_list = (list(set(contr_list)))
-# print(contr_list)
-            
-sql= '''
-        INSERT INTO transactions
-        ( trans_date, trans_amount,
-          cont_id,
-          cat_id ) VALUES 
-        ( ?, ?,
-             (SELECT cont_id FROM contractors WHERE cont_name = ? ),
-             (SELECT cat_id FROM categories WHERE cat_name = ? )
-        )
-     '''   
-cur.executemany(sql,contr_list)
-database.commit()
-
-"""
-'''
-#
-#================================================================
-#================================================================
-#  TESTING
-badb = App_data()
-date2 = dt.datetime.now()          
-res = badb.addTransaction( 
-    date2, 
-    72.56,
-    "Groceries",
-    "K-Market")
-
-
-val =[
-      ("01-01-2020","Lidl","12.34","Lotto"),
-      ("03-02-2020","S-Market","12.24","Rent"),
-      ("05-03-2020","McDonald","10.65","Groceries"),
-      ("08-04-2020","Obi","12.35","Subscribtions"),
-      ("12-05-2020","S-Market","189.65","Travel"),
-      ("15-06-2020","Lidl","156.32","Groceries"),
-      ("19-07-2019","rent","1200.65","Rent"),
-      ("20-08-2020","Lidl","126.68","Rent"),
-      ("20-09-2020","K-Market","652.21","Food"),
-      ("23-10-2019","S-Market","1200.65","Rent"),
-      ("25-11-2020","electricity","126.68","Rent"),
-      ("30-12-2020","Lidl","652.21","Rent")
-      ]
- 
-
-print("\n\n\n Select all transactions and also names of category from other tables")
-
-## Fill transactions from val list
-ind_date = 0
-ind_cont = 1
-ind_amount = 2
-ind_cat = 3
-for a in val:
-    res = "---"
-    ## convert string date into object
-    date =  dt.datetime.strptime( a[  ind_date  ] , '%d-%m-%Y')
-    #data time lib - dt
-    ## convert number into number
-    amount = float( a[ ind_amount ] )
-    res = badb.addTransaction( date , amount ,  a[ ind_cat  ] , a[ ind_cont ] )
-    print(res)
-
-   
-#------------  
-
-date2 = dt.datetime.now()          
-res = badb.addTransaction( 
-    date2, 
-    72.56,
-    "Groceries",
-    "K-Market")
-print(res)
-
-    
-
-badb.testPrintAllTables()
-
-print("\n\n")
-print("All transactions\n")
-data = badb.getAllTransactions()
-for row in data:
-    print("A", row)
-
-print("\n")
-print("All transactions period\n")
-data=badb.getAllTransactionsPeriod('2020-03-06', '2021-04-31')
-for row in data:
-    print("B", row)
-print("\n")
-
-print("\n")
-print("All transactions period category\n")
-data=badb.getTransactionsPeriod('2020-03-06', '2021-04-31', 'Groceries', 'K-Market')
-for row in data:
-    print("B", row)
-print("\n")
-
-data = badb.getCategoriesList()
-for row in data:
-    print(row)
-print("\n")
-
-data = badb.getContractorList()
-for row in data:
-    print(row)
- 
-
-
-#badb.saveDataBase()'
-'''
 
 
