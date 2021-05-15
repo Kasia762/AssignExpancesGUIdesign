@@ -457,11 +457,13 @@ class App_data:
         sql='''UPDATE transactions
         SET
         trans_date=?, trans_amount=?,
-        cont_id = (SELECT ct.cat_id FROM categories ct WHERE ct.cat_name = ? ), 
-        cat_id=(SELECT cont_id FROM contractors WHERE cont_name = ? )
+        cont_id = (SELECT contractors.cont_id 
+                   FROM contractors WHERE contractors.cont_name = ? ), 
+        cat_id= (SELECT categories.cat_id
+                 FROM categories WHERE categories.cat_name = ? )
         WHERE trans_id = ?;
         '''
-        val = (date, amount, category, contractor, id_value)
+        val = (date, amount, contractor, category, id_value)
         try:
             cur.execute(sql,val)
             self.database.commit()
