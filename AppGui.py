@@ -21,6 +21,12 @@ import app_import
 from weather import Weather
 import lotto
 
+
+import base64
+import tkinter as tk
+from urllib.request import urlopen
+from PIL import ImageTk,Image
+
 ## both format should match
 _dt_datefmt = "%d.%m.%Y"
 _cal_datefmt = "dd.mm.yyyy"
@@ -58,13 +64,16 @@ class AppWin:
             self.var_wt_tMinVal.set(x.TempMin())
             self.var_wt_tMaxVal.set(x.TempMax())
             self.var_wt_humidityVal.set(x.Humidity())
-            self.lbl_wt_icon.configure(image=x.Icon())
+            
+            img = tk.PhotoImage(data=x.Icon())
+            self.lbl_wt_icon.configure(image=img)
+            self.lbl_wt_icon.image= img
         except:
              tk.messagebox.showwarning("Wrong input city name!!",
                                       "This city name is incorrect.\n\nPlease, give correct city name.",
                                       parent=self.mainwindow)    
-    
-    
+        
+        
     def cat_spn_chooseMonth(self):
         mon =self.spn_month.get()
         def getmonth():
@@ -488,7 +497,6 @@ class AppWin:
         self.mainwindow.mainloop()    
 
 
-
     def GUI(self, master):
         # build ui
         if master == None:
@@ -873,21 +881,21 @@ class AppWin:
         self.lbl_wt_type = ttk.Label(self.frm_wt_values)
         self.var_wt_type = tk.StringVar(value='UNKNOWN')
         self.lbl_wt_type.configure(text='UNKNOWN', textvariable=self.var_wt_type)
-        self.lbl_wt_type.grid(column='0', padx='20', pady='10', row='1', sticky='sew')
+        self.lbl_wt_type.grid(column='0', padx='20', pady='5', row='1')
         self.lbl_wt_type.columnconfigure('0', weight='0')
         
         self.lbl_wt_temperature = ttk.Label(self.frm_wt_values)
         self.lbl_wt_temperature.configure(text='Temperature')
-        self.lbl_wt_temperature.grid(column='1', padx='10', pady='10', row='1', sticky='sew')
+        self.lbl_wt_temperature.grid(column='1', padx='10', pady='5', row='1', sticky='sew')
         
         self.lbl_wt_icon = ttk.Label(self.frm_wt_values)
         self.lbl_wt_icon.configure(text='Icon')
-        self.lbl_wt_icon.grid(column='0', ipady = '20', padx='20', row='2', sticky='nsew')
+        self.lbl_wt_icon.grid(column='0', ipady = '10', padx='20', row='2', sticky='nsew')
                 
         self.lbl_wt_tempNum = ttk.Label(self.frm_wt_values)
         
-        self.var_wt_tempNum = tk.StringVar(value='UNKNOWN')
-        self.lbl_wt_tempNum.configure(text='UNKNOWN', textvariable=self.var_wt_tempNum)
+        self.var_wt_tempNum = tk.StringVar(value='???')
+        self.lbl_wt_tempNum.configure(font='{Arial} 16 {}', textvariable=self.var_wt_tempNum)
         self.lbl_wt_tempNum.grid(column='1', row='2')
         
         self.lbl_wt_wind = ttk.Label(self.frm_wt_values)
@@ -944,7 +952,7 @@ class AppWin:
         
         self.frm_wt_values.configure(height='200', width='200')
         self.frm_wt_values.grid(column='0', row='1', sticky='nsw')
-        self.frm_wt_values.columnconfigure('0', weight='1')
+        #self.frm_wt_values.columnconfigure('0', weight='1')
         
         self.frm_wt_calendar = ttk.Frame(self.lblfr_bells_weather)
         

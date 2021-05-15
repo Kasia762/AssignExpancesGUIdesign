@@ -45,16 +45,7 @@ class Weather:
         url_icon = "http://openweathermap.org/img/wn/"+icon_id+"@2x.png"
         image_byt = urlopen(url_icon).read()
         image_b64 = base64.encodebytes(image_byt)
-        icon = tk.PhotoImage(data=image_b64) 
-        
-        #img = tk.PhotoImage(file="cloud.png")
-        #img = img.resize(10,10)
-        #image = ImageTk.PhotoImage(img)
-        
-        img1 = Image.open("cloud.png")
-        #imgage =ImageTk.PhotoImage(img1)
-        img1 = img1.resize((100,100))
-        return img1
+        return image_b64
 
     def Describtion(self):   
         weather=self.Info()["weather"]
@@ -102,14 +93,14 @@ class Weather:
   
     
 # #print(Weather("Valkeakoski").Icon())  
-
+'''
 root = tk.Tk()
 imgage =ImageTk.PhotoImage(Weather("Valkeakoski").Icon())
 label = tk.Label(root, image=imgage)
 label.pack()
 
 root.mainloop()  
-
+'''
 # root = tk.Tk()
 # root.title("display a website image")
 # # a little more than width and height of image
