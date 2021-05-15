@@ -782,27 +782,28 @@ class AppWin:
         
         self.spn_month.delete('0','end')
         self.spn_month.insert('0',self.cat_monthname)
-        self.spn_month.grid(column='4',row='0', padx=40, sticky='w')
+        self.spn_month.grid(column='0',row='0', columnspan = "4",
+                            ipady='7')
         
         self.btn_prevMonth = ttk.Button(self.lbfr_cat_data)
         self.btn_prevMonth.configure(text='<< Previous Month', width='15')
         self.btn_prevMonth.configure(command=self.cat_btn_previousMonth)
-        self.btn_prevMonth.grid(column='0',row='0')
+        self.btn_prevMonth.grid(column='0',row='1', sticky='we')
         
         self.btn_currentMonth = ttk.Button(self.lbfr_cat_data)
         self.btn_currentMonth.configure(text='Current Month', width='15')
         self.btn_currentMonth.configure(command=self.cat_btn_currentMonth)
-        self.btn_currentMonth.grid(column='1',row='0')
+        self.btn_currentMonth.grid(column='1',row='1', sticky='we')
         
         self.btn_currentWeek = ttk.Button(self.lbfr_cat_data)
         self.btn_currentWeek.configure(text='Current Week', width='15')
         self.btn_currentWeek.configure(command=self.cat_btn_currentWeek)
-        self.btn_currentWeek.grid(column='2',row='0')
+        self.btn_currentWeek.grid(column='3',row='1', sticky='we')
         
         self.btn_previousWeek = ttk.Button(self.lbfr_cat_data)
         self.btn_previousWeek.configure(text='<<Previous Week', width='15')
         self.btn_previousWeek.configure(command=self.cat_btn_previousWeek)
-        self.btn_previousWeek.grid(column='3',row='0')
+        self.btn_previousWeek.grid(column='2',row='1', sticky='we')
     
         self.frm_cat_chart = ttk.Frame(self.frm_categories)
         self.frm_cat_chart.grid(column = '1', row = '1', sticky = 'nsew',
@@ -810,26 +811,15 @@ class AppWin:
         self.frm_cat_chart.columnconfigure('0', weight=1)
         self.frm_cat_chart.rowconfigure('0', weight=1)
     
-        # self.label8 = ttk.Label(self.lbfr_cat_data)
-        # self.label8.configure(text='Name:')
-        # self.label8.grid(column='0', padx='10', pady='10', row='0', sticky='e')
-        # self.label8.master.rowconfigure('0', pad='10')
-        # self.label8.master.columnconfigure('0', pad='10')
-        # self.txt_cat_Name = ttk.Entry(self.lbfr_cat_data)
-        # _text_ = ''
-        # self.txt_cat_Name.delete('0', 'end')
-        # self.txt_cat_Name.insert('0', _text_)
-        # self.txt_cat_Name.grid(column='1', padx='0', row='0', sticky='w')
-        # self.txt_cat_Name.master.rowconfigure('0', pad='10')
-        # self.txt_cat_Name.master.columnconfigure('1', pad='20', weight=1)
-        
         self.lbfr_cat_data.configure(height='0', text='Data for operations')
-        self.lbfr_cat_data.grid(column='1', ipadx='0', ipady='0', padx='5', pady='0', row='0', sticky='nsew')
-        self.lbfr_cat_data.rowconfigure('0', pad='10', weight=1)
-        #self.lbfr_cat_data.columnconfigure('0', pad='0', weight=1)
-        #self.lbfr_cat_data.rowconfigure('1', pad='10', weight=1)
-        #self.lbfr_cat_data.columnconfigure('1', pad='0', weight=0)
-        self.frm_categories.grid(column='0', padx='3', pady='10', row='0', sticky='nsew')
+        self.lbfr_cat_data.grid(column='1',padx='5',row='0', sticky='nsew')
+        self.lbfr_cat_data.rowconfigure('0', pad='5', weight=1)
+        self.lbfr_cat_data.rowconfigure('1', pad='5', weight=1)       
+        self.lbfr_cat_data.columnconfigure('0', pad='5', weight=1)        
+        self.lbfr_cat_data.columnconfigure('1', pad='5', weight=1)
+        self.lbfr_cat_data.columnconfigure('2', pad='5', weight=1)
+        self.lbfr_cat_data.columnconfigure('3', pad='5', weight=1)
+        self.frm_categories.grid(column='0', padx='5', pady='10', row='0', sticky='nsew')
         
         self.frm_categories.rowconfigure('0', weight=0, pad="10")
         self.frm_categories.columnconfigure('0', weight=0)
