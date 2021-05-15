@@ -13,6 +13,7 @@ import datetime as dt
 import pandas as pd
 from app_data import App_data 
 from addTransaction import AddTransaction
+from addCategory import AddCategory
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 import matplotlib.pyplot as plt
 import app_import
@@ -62,6 +63,7 @@ class AppWin:
                                       "This city name is incorrect.\n\nPlease, give correct city name.",
                                       parent=self.mainwindow)    
     
+    
     def cat_spn_chooseMonth(self):
         mon =self.spn_month.get()
         def getmonth():
@@ -86,12 +88,14 @@ class AppWin:
         end = end - dt.timedelta(days = end.day)
         self.chartCategorySpendings(start, end)
         
+        
     def cat_btn_previousWeek(self):
         today = dt.date.today() - \
             dt.timedelta(weeks=1)
         start = today - dt.timedelta(days=today.weekday())
         end = start + dt.timedelta(days=6)
         self.chartCategorySpendings(start, end)
+    
     
     def cat_btn_currentWeek(self):
         today = dt.date.today()
@@ -235,7 +239,6 @@ class AppWin:
             self.tbl_categories.insert('','end', values = values)
         
 
-
     def h_btnTrAdd(self):
         addTransactionWindow = AddTransaction(self.mainwindow, self)
         #self.mainwindow.wait_window(addTransactionWindow)
@@ -244,7 +247,6 @@ class AppWin:
 
     def h_btnLogout(self):
         pass
-
 
     
     def h_tblTr_OnDoubleClick(self, event):
@@ -403,11 +405,28 @@ class AppWin:
 
 
     def h_btnCatAdd(self):
-        pass
+        AddCategory(self.mainwindow, self)        
 
 
     def h_btnCatChange(self):
-        pass
+        selected = self.tbl_categories.selection()
+        print(selected)
+        if len(selected) > 1:
+            print("Multi selection in table. Cannot change several transactions yet.")
+            tk.messagebox.showwarning("Change transaction",
+                                   "Multi selection in table.\n\n Cannot change several transactions at once yet.",
+                                      parent=self.mainwindow)
+            return
+        elif len(selected) == 1:
+            print("One-line selection.")
+            id_value = str(self.tbl_categories.item(selected, 'values')[0])
+            print('Opening addTransaction window in "change" mode, id: ', id_value)
+            AddCategory(self.mainwindow, self, id_value)
+            self.updateCategoriesTable()
+        else:
+            print("Nothing selected in table. Cannot change.")
+            tk.messagebox.showwarning("Change transaction","Select transaction in table to change.",
+                                      parent=self.mainwindow)
 
 
     def h_btnCatDelete(self):

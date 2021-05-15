@@ -515,6 +515,37 @@ class App_data:
         except sqlite3.Error:
             self.database.rollback()
             return (False, "SQL error",)
+        
+        
+    def getCategory_byId(self, id_category):
+        ## TODO: check database connection
+        cur = self.database.cursor()
+        sql = '''
+            SELECT ct.cat_name, ct.cat_id
+            FROM categories AS ct
+            WHERE ct.cat_id = ?;
+            '''
+        cur.execute(sql,(id_category,))
+        data = cur.fetchone()
+        return data 
+    
+    def changeCategory(self, id_value, category):
+        category = self.__parse_name(category)
+        cur = self.database.cursor()
+        sql='''
+        UPDATE categories
+        SET cat_name= ?
+        WHERE cat_id = ?;
+        '''
+        val = (category, id_value)
+        try:
+            cur.execute(sql,val)
+            self.database.commit()
+            return (True, "OK",)
+        except sqlite3.Error as err:
+            self.database.rollback()
+            return (False, "SQL error: %s"% err,)
+
 
 #####
 ##### Some stuff for CSV import
