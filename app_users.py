@@ -6,6 +6,13 @@ Created on Sat Apr 24 15:53:00 2021
 """
 
 import sqlite3
+import bcrypt
+from app_data import App_data
+import tempfile
+import os
+import zlib
+import base64
+
 import datetime as dt
 import numpy as np
 import pandas as pd
@@ -23,112 +30,101 @@ class UsersHandler:
             raise ValueError
             
         type(self)._class_counter += 1
-        self.usersDatabaseFilename = "users.database.db"
+        
+        ### Database filename
+        self.__usersDatabaseFilename = 'users.database.db'
          
         
         ### Open connection immideally when running
         ### if no database exist, create it
-        self.usersDatabase = sqlite3.connect(":memory:")
-        # self.usersDatabase = sqlite3.connect(self.usersDatabaseFilename, 
-        #                 detect_types=sqlite3.PARSE_DECLTYPES|sqlite3.PARSE_COLNAMES)
-        print("Loading db")
-        self.__loadDB(self.usersDatabase, self.usersDatabaseFilename)
+        print("Loading users database..")
+        self.usersDatabase = sqlite3.connect( self.__usersDatabaseFilename )
         if not self.__tableExists("users"):
             print("Creating tables in database...")
             self.__initCreateTables()
         else:
-            print("Tables are exists. Skip")
-
+            print("Tables in database are exists.")
+            
+        ### Current user name
+        self.__currentUser = ''
         
-    def __loadDB(self, db, dbfn):
-        try:
-            databaseInFile = sqlite3.connect(dbfn)
-            databaseInFile.backup(db)
-            databaseInFile.close()
-        except:
-            ## error to create db
-            return False
-            pass
-
-    
-    def __saveDB(self, db, dbfn):
-    ### DO NOT DELETE, 
-    ### DO NOT MERGE into saveDataBase()
-        """
-        usage:
-            __saveDB(self.usersDatabase, self.usersDatabaseFilename)
-
-        """
-        try:
-            databaseInFile = sqlite3.connect(dbfn)
-            db.backup(databaseInFile)
-            databaseInFile.commit()
-            databaseInFile.close()
-        except:
-            ## error to create db
-            return False
-            pass
-
-
-    def saveDataBase(self):
-        return self.__saveDB(self.usersDatabase, self.usersDatabaseFilename)
-
-
-    def __tableExists(self, tablename):
-        if ( tablename == None ):
-            print("--- no name, tab:", tablename)
-            return False
-        cur = self.usersDatabase.cursor()
-        sql = 'SELECT COUNT(*) FROM sqlite_master WHERE type = ? AND name = ?'
-        cur.execute(sql, ("table", tablename,) )
-        data = cur.fetchone()
-        count = data[0]
-        return ( count > 0 )
-        
-        
+        ### Transaction database instance
         
         
 
     def __initCreateTables(self):        
-        self.cur = self.usersDatabase.cursor()
+        cur = self.usersDatabase.cursor()
         ## Creating tables
         try:
-            self.cur.execute('''
-                        CREATE TABLE databases (
-                            db_id INTEGER NOT NULL  PRIMARY KEY,
-                            data BLOB
-                            );
-                        ''')
-            self.cur.execute('''
+            cur.execute('''
                         CREATE TABLE users (
                             id INTEGER NOT NULL  PRIMARY KEY,
                             login TEXT NOT NULL COLLATE NOCASE,
                             passhash TEXT,
-                            db_id INTEGER,
-                            CONSTRAINT databases_id_fk
-                                FOREIGN KEY (db_id)
-                                REFERENCES databases (db_id)
+                            openkey TEXT,
+                            data BLOB
                             );
                         ''')
             self.usersDatabase.commit()
         except sqlite3.OperationalError as err:
             print("error creating tables")
             print(err)
+        finally:
+            cur.close()
+
+
+
+    def __tableExists(self, tablename):
+        if ( tablename == None ):
+            print("--- no name, tab:", tablename)
+            return False
+        
+        sql = '''SELECT COUNT(*) FROM sqlite_master WHERE type = ? AND name = ?'''
+        cur = self.usersDatabase.cursor()
+        cur.execute(sql, ("table", tablename,) )
+        data = cur.fetchone()
+        cur.close()
+        count = data[0]
+        return ( count > 0 )
         
 
 
+    def __parse_username(self, name):
+        if pd.isnull( name ):
+            return ''
+        name = str(name)
+        return name
+
+
+    def __getUserPasshash(self, username):
+        username = self.__parse_username(username)
+        if ( username == '' ):
+            return ''
+        
+        sql = '''
+            SELECT  us.passhash
+            FROM  users AS us
+            WHERE us.login = ? ;
+            '''
+        cur = self.usersDatabase.cursor()
+        cur.execute(sql, (username,) )
+        data = cur.fetchone()[0]
+        cur.close()
+        return data
+        
+        
+
 
     def isExistsUser(self, name):
-        print('us exsts 1:  "', name, '"', sep='')
-        name = self.__parse_name(name)
-        print('us exsts 2:  "', name, '"', sep='')
+        name = self.__parse_username(name)
         if ( name == '' ):
-            print('us exsts 3:  none')
             return None
+        
+        sql = '''SELECT COUNT(*) FROM users WHERE  login = ?'''
         cur = self.usersDatabase.cursor()
-        sql = 'SELECT COUNT(*) FROM users WHERE  login = ?'
         cur.execute(sql, (name,) )
         data = cur.fetchone()
+        cur.close()
         count = data[0]
         return ( count > 0 )
         
@@ -136,75 +132,234 @@ class UsersHandler:
 
     def __testPrintTable(self, tablename):
         if self.__tableExists(tablename):
-            cur = self.usersDatabase.cursor()
             # print out all tables
             hello = "DEBUG: Table: " + str(tablename)
             print("\n\n", hello)
             print("-" * len(hello) )
+            
             sql = 'SELECT * FROM ' + str(tablename)
+            cur = self.usersDatabase.cursor()
             cur.execute(sql)
             data = cur.fetchall()
+            cur.close()
             for row in data:
                 print(row)
 
 
-    def __parse_name(self, name):
-        if pd.isnull( name ):
-            return ''
-        name = str(name)
-        # Remove all spaces
-        return "".join(name.split())
 
-                
     def testPrintAllTables(self):
         hello = "Debug: printing all tables in database:"
         print(hello)
         print("=" * len(hello) )
+        sql = '''SELECT name FROM sqlite_master WHERE type = "table";'''
         cur = self.usersDatabase.cursor()
-        sql = 'SELECT name FROM sqlite_master WHERE type = "table";'
         cur.execute(sql )
         data = cur.fetchall()
+        cur.close()
         print("Founded tables: ")
         print(data)
         # print out all tables
         for row in data:
             self.__testPrintTable(row[0] )
-            
+
 
 
     def getUsersList(self):
         ## TODO: check database connection
-        cur = self.usersDatabase.cursor()
         sql = '''
             SELECT  us.login , us.id
             FROM  users AS us
             ORDER BY us.login ASC ;
             '''
+        cur = self.usersDatabase.cursor()
         cur.execute(sql)
         data = cur.fetchall()
+        cur.close()
         return data
-        
-        
-    
-    def addUser(self, userName, password):
-        userName = self.__parse_name(userName)
-        if ( userName == '' ):
+
+
+    def addUser(self, username, password):
+        ## Check username
+        username = self.__parse_username(username)
+        if ( username == '' ):
             return (False, 'Empty user name')
-        if self.isExistsUser(userName) == True:
+        if self.isExistsUser(username) == True:
             return (False, 'User already exists')
-        cur = self.usersDatabase.cursor()
+        ## Check password
+        if ( password == '' ):
+            return (False, 'Empty password')
+        ## Encrypt password
+        passhash = bcrypt.hashpw(password.encode(), bcrypt.gensalt())
+        
         sql= '''
                 INSERT INTO users
                 ( login, passhash ) VALUES
                 ( ? , ? ) ;
              '''   
         try:
-            cur.execute(sql, (userName, password, ) )
+            cur = self.usersDatabase.cursor()
+            cur.execute(sql, (username, passhash, ) )
             self.usersDatabase.commit()
+            cur.close()
             return (True, "OK",)
         except sqlite3.Error as err:
             self.usersDatabase.rollback()
-            return (False, "SQL error: %s"% err,)
+            cur.close()
+            return (False, "UserSQL error: %s"% err,)
+
+
+    def getCurrentUser(self):
+        return self.__currentUser
+        ### ======
+
+
+    def __isPasswordCorrect(self, username, password):
+        username = self.__parse_username(username)
+        if ( username == '' ):
+            return False
+        if ( password == '' ):
+            return False
+        if self.isExistsUser(username) != True:
+            return False
+        hashAndSalt = self.__getUserPasshash(username)
+        passvalid = bcrypt.checkpw(password.encode(), hashAndSalt)
+        # print ("pwdcheck result:", passvalid)
+        return passvalid
+
+        
+
+    def loginUser(self, username, password):
+        self.logoutCurrentUser()
+
+        username = self.__parse_username(username)
+        print('Login attempt, username:"', username,'"', sep='')
+        if ( username == '' ):
+            return (False, 'Empty user name')
+        if ( password == '' ):
+            return (False, 'Empty password')
+        if self.isExistsUser(username) != True:
+            return (False, 'User do not exists')
+        
+        print("login: pass check...", end='')
+        passcheck = self.__isPasswordCorrect(username, password)
+        if passcheck == False:
+            print("incorrect password!")
+            return (False, 'Incorrect password')
+        
+        if passcheck == True:
+            print("OK")
+            self.__currentUser = username
+            ### Do real stuff
+            ### load transaction database and so on...
+            pass
+            return (True, 'OK')
+        else:
+            print("problem!!!")
+            return (False, 'Some problem')
+
+
+
+    def logoutCurrentUser(self):
+        if self.__currentUser != '':
+            ## ***
+            # TODO: close transactions database
+            pass
+        self.__currentUser = ''
+
+
+
+    def writeStuff(self, data):
+        if self.__currentUser == '':
+            return (False, 'No user logged in')
+        
+        sql= '''
+                UPDATE  users
+                SET openkey = ?
+                WHERE login = ?;
+             '''   
+        try:
+            cur = self.usersDatabase.cursor()
+            cur.execute(sql, (data, self.__currentUser, ) )
+            self.usersDatabase.commit()
+            cur.close()
+            return (True, "OK",)
+        except sqlite3.Error as err:
+            cur.close()
+            return (False, "UserSQL stuff error: %s"% err,)
+
+        
+    def saveTransactionDB(self, db):
+        if self.__currentUser == '':
+            return (False, 'No user logged in')
+        
+        tempfn = os.path.join(tempfile.gettempdir(), os.urandom(32).hex())
+        ## dump transaction DB
+        try:
+            databaseInFile = sqlite3.connect( tempfn )
+            self.database.backup(databaseInFile)
+            databaseInFile.commit()
+            databaseInFile.close()
+        except sqlite3.Error as err:
+            ## error to create db
+            print("SAVE DB ERROR")
+            return (False, "UserSQL save error: %s"% err,)
+            pass
+        
+        with open(tempfn, 'rb') as file:
+            blobData = file.read()
+        os.remove(tempfn)
+        blobData = zlib.compress(blobData)
+        
+        sql= '''
+                UPDATE  users
+                SET data = ?
+                WHERE login = ?;
+             '''   
+        try:
+            cur = self.usersDatabase.cursor()
+            cur.execute(sql, ( blobData, self.__currentUser, ) )
+            self.usersDatabase.commit()
+            cur.close()
+            return (True, "OK",)
+        except sqlite3.Error as err:
+            cur.close()
+            return (False, "UserSQL stuff error: %s"% err,)
+        
+        
+
+    def loadTransactionDB(self):
+        if self.__currentUser == '':
+            return (False, 'No user logged in')
+        
+        sql= '''
+                SELECT data
+                FROM users
+                WHERE login = ?;
+             '''   
+        try:
+            cur = self.usersDatabase.cursor()
+            cur.execute(sql, ( self.__currentUser, ) )
+            blobData = cur.fetchone()[0]
+            cur.close()
+        except sqlite3.Error as err:
+            cur.close()
+            return (False, "UserSQL stuff error: %s"% err,)
+        
+        tempfn = os.path.join(tempfile.gettempdir(), os.urandom(32).hex())
+        with open(tempfn, 'wb') as file:
+             file.write(blobData)
+        os.remove(tempfn)
+        blobData = zlib.decompress(blobData)
+        
+        try:
+            databaseInFile = sqlite3.connect(tempfn)
+            databaseInFile.backup(self.database)
+            databaseInFile.close()
+        except:
+            ## error to create db
+            print("LOAD DB ERROR")
+            return False
+            pass
 
 
 
@@ -213,41 +368,40 @@ class UsersHandler:
 #================================================================
 #  TESTING
 userdb = UsersHandler()
+emptydb = App_data()
 
 
 val =[
-      ("user_01","password_01"),
-      ("",""),
-      ("user_03","password_03"),
-      ("",""),
-      ("",""),
-      ("",""),
-      ("user_07","password_07"),
-      ("",""),
-      ("",""),
-      ("",""),
-      ("",""),
-      ("","")
+      ("user_01","password_01","stuff_01"),
+      ("user_03","password_03","stuff_03"),
+      ("user_07","password_07","stuff_07"),
+      ("","","")
       ]
  
 
-print("\n\n\n Select all transactions and also names of category from other tables")
 
-## Fill transactions from val list
+## Fill values from val list
 ind_user = 0
 ind_pass = 1
+ind_stuf = 2
 
-for a in val:
-    res = "---"
-    ## convert string date into object
-    print("trying to add", a[ ind_user ] , a[ ind_pass ])
-    res = userdb.addUser(   a[ ind_user ] , a[ ind_pass ] )
-    print(res)
+# for a in val:
+#     res = "---"
+#     ## convert string date into object
+#     print("trying to add", a[ ind_user ] , a[ ind_pass ])
+#     res = userdb.addUser(   a[ ind_user ] , a[ ind_pass ] )
+#     print(res)
+#     userdb.loginUser(   a[ ind_user ] , a[ ind_pass ]  )
+#     res = userdb.writeStuff( a[ ind_stuf ])
+#     print("Write", res)
 
    
 #------------  
 
-    
+res = userdb.loginUser("user_07", "password_07")
+print (res)
+
+userdb.saveTransactionDB(emptydb)    
 
 userdb.testPrintAllTables()
 
@@ -257,5 +411,7 @@ data = userdb.getUsersList()
 for row in data:
     print("Ul:", row)
 
+# res = userdb.loginUser("user_07", "password_07")
+# print (res)
 
 userdb.saveDataBase()

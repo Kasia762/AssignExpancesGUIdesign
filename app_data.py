@@ -9,11 +9,15 @@ import sqlite3
 import datetime as dt
 import numpy as np
 import pandas as pd
-import matplotlib.pyplot as plt
+
 
 class App_data:
     _class_counter = 0
     
+    def __del__(self):
+        type(self)._class_counter -= 1
+
+
             
     def __init__(self):
         self.__debug = True
@@ -21,8 +25,9 @@ class App_data:
             print("One instance of class",type(self), " already exist.")
             print("Only one instance is allowed.")
             raise ValueError
-            
         type(self)._class_counter += 1
+        print("OBJECT #", type(self)._class_counter)
+
         self.databaseFilename = "app.database.db"
          
         self.default_categories = (
@@ -42,10 +47,10 @@ class App_data:
         
         ### Open connection immideally when running
         ### if no database exist, create it
-       # self.database = sqlite3.connect(':memory:', 
-       #                 detect_types=sqlite3.PARSE_DECLTYPES|sqlite3.PARSE_COLNAMES)
-        self.database = sqlite3.connect(self.databaseFilename, 
+        self.database = sqlite3.connect(':memory:', 
                         detect_types=sqlite3.PARSE_DECLTYPES|sqlite3.PARSE_COLNAMES)
+        # self.database = sqlite3.connect(self.databaseFilename, 
+        #                 detect_types=sqlite3.PARSE_DECLTYPES|sqlite3.PARSE_COLNAMES)
         print("Loading db")
        # self.__loadDB(self.database, self.databaseFilename)
         if not self.__tableExists("transactions"):
@@ -54,39 +59,6 @@ class App_data:
         else:
             print("Tables are exists. Skip")
 
-        
-    def __loadDB(self, db, dbfn):
-        try:
-            databasef = sqlite3.connect(dbfn)
-            databasef.backup(db)
-            databasef.close()
-        except:
-            ## error to create db
-            return False
-            pass
-
-    
-    def __saveDB(self, db, dbfn):
-    ### DO NOT DELETE, 
-    ### DO NOT MERGE into saveDataBase()
-        """
-        usage:
-            __saveDB(self.database, self.databaseFilename)
-
-        """
-        try:
-            databasef = sqlite3.connect(dbfn)
-            db.backup(databasef)
-            databasef.commit()
-            databasef.close()
-        except:
-            ## error to create db
-            return False
-            pass
-
-
-    def saveDataBase(self):
-        return self.__saveDB(self.database, self.databaseFilename)
 
 
     def __tableExists(self, tablename):
