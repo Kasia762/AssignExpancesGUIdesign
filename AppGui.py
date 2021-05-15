@@ -55,7 +55,8 @@ class AppWin:
             self.var_wt_tMinVal.set(x.TempMin())
             self.var_wt_tMaxVal.set(x.TempMax())
             self.var_wt_humidityVal.set(x.Humidity())
-            #self.cv_icon.create_image(10,10,image=x.Icon(), anchor='center')
+            
+            self.cv_icon.create_image((0,0),image=x.Icon())
         except:
              tk.messagebox.showwarning("Wrong input city name!!",
                                       "This city name is incorrect.\n\nPlease, give correct city name.",
@@ -171,8 +172,10 @@ class AppWin:
             con = row[4] if row[4] else ""
             values = (idvalue, date, row[2], cat, con)
             self.tbl_transactions.insert('','end', values = values)
+        # ***  
         self.chartCategorySpendings()
         self.chartOverallSpendings()
+
 
     def updateCategoriesTable(self):
         #first clear the treeview

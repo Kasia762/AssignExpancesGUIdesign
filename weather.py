@@ -10,6 +10,7 @@ import io
 import base64
 import tkinter as tk
 from urllib.request import urlopen
+from PIL import ImageTk,Image
 
 import requests
 from PIL import Image
@@ -44,8 +45,16 @@ class Weather:
         url_icon = "http://openweathermap.org/img/wn/"+icon_id+"@2x.png"
         image_byt = urlopen(url_icon).read()
         image_b64 = base64.encodebytes(image_byt)
-        icon = tk.PhotoImage(data=image_b64)    
-        return url_icon
+        icon = tk.PhotoImage(data=image_b64) 
+        
+        #img = tk.PhotoImage(file="cloud.png")
+        #img = img.resize(10,10)
+        #image = ImageTk.PhotoImage(img)
+        
+        img1 = Image.open("cloud.png")
+        #imgage =ImageTk.PhotoImage(img1)
+        img1 = img1.resize((200,100))
+        return img1
 
     def Describtion(self):   
         weather=self.Info()["weather"]
@@ -92,7 +101,14 @@ class Weather:
         return humidity
   
     
-# #print(Weather("Valkeakoski").Icon())    
+# #print(Weather("Valkeakoski").Icon())  
+
+root = tk.Tk()
+imgage =ImageTk.PhotoImage(Weather("Valkeakoski").Icon())
+label = tk.Label(root, image=imgage)
+label.pack()
+
+root.mainloop()  
 
 # root = tk.Tk()
 # root.title("display a website image")
