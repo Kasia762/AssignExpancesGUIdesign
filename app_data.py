@@ -277,18 +277,18 @@ class App_data:
         data = cur.fetchone()
         return data
     
-    #name!!!
-    def chartMonth(self,month):
+
+    def data_chartCategories(self,startDate,endDate):
         cur = self.database.cursor()
         sql ='''
         SELECT SUM(tr.trans_amount),ct.cat_name
         FROM  transactions AS tr
         LEFT OUTER JOIN categories AS ct
                 ON tr.cat_id = ct.cat_id
-        WHERE  strftime('%m',tr.trans_date) IN (?) AND tr.trans_amount < 0
+        WHERE  tr.trans_date BETWEEN ? AND ? AND tr.trans_amount < 0
         GROUP BY ct.cat_name;
         '''
-        cur.execute(sql,(month,))
+        cur.execute(sql,(startDate,endDate))
         data = cur.fetchall()
         return data
     
@@ -304,6 +304,7 @@ class App_data:
         data = cur.fetchall()
         return data
     
+    
     def data_chartOutcome(self,month):
         cur = self.database.cursor()
         sql = '''
@@ -315,6 +316,7 @@ class App_data:
         cur.execute(sql,(month,))
         data = cur.fetchall()
         return data
+    
     
     def data_chartBalance(self, month):
         cur = self.database.cursor()

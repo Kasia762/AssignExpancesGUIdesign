@@ -61,35 +61,44 @@ class AppWin:
              tk.messagebox.showwarning("Wrong input city name!!",
                                       "This city name is incorrect.\n\nPlease, give correct city name.",
                                       parent=self.mainwindow)    
-
+    
+    #def cat_btn_previousMonth(self):
         
-    def chartCategorySpendings(self):
-        mon = self.spn_month.get()
-        def getmonth():
-            if mon == "January": return "01"
-            elif mon =="February": return "02"
-            elif mon == "March": return "03"
-            elif mon == "April": return "04"
-            elif mon == "May": return "05"
-            elif mon == "June": return "06"
-            elif mon == "July": return "07"
-            elif mon == "August": return "08"
-            elif mon == "September": return "09"
-            elif mon == "October": return "10"
-            elif mon == "December": return "12"
-            elif mon == "November": return "11"
-            else: 
-              tk.messagebox.showwarning("Spinbox!!!!","put correct month",
-                                      parent=self.mainwindow)
-               
-        monthname = str(mon)
-        month=str(getmonth())
+    
+    def cat_btn_currentMonth(self):
+        today = dt.date.today()
+        startDate = today.replace(day=1).strftime(_dt_datefmt)
+        endDate = today.replace(day=31).strftime(_dt_datefmt)
+        self.chartCategorySpendings(startDate, endDate)
+        
+    def chartCategorySpendings(self, startDate, endDate):
+       
+        # def getmonth():
+        #     if mon == "January": return "01"
+        #     elif mon =="February": return "02"
+        #     elif mon == "March": return "03"
+        #     elif mon == "April": return "04"
+        #     elif mon == "May": return "05"
+        #     elif mon == "June": return "06"
+        #     elif mon == "July": return "07"
+        #     elif mon == "August": return "08"
+        #     elif mon == "September": return "09"
+        #     elif mon == "October": return "10"
+        #     elif mon == "December": return "12"
+        #     elif mon == "November": return "11"
+        #     else: 
+        #       tk.messagebox.showwarning("Spinbox!!!!","put correct month",
+        #                               parent=self.mainwindow)
+        # monthname = str(mon)
+        # month=str(getmonth())
+        
         amount = 0
         category = 1
+        data = self.badb.data_chartCategories(startDate, endDate)
 
-        am = [abs(i[amount]) for i in self.badb.chartMonth(month)]
-        cat=[i[category] for i in self.badb.chartMonth(month)]
-        print(i for i in self.badb.chartMonth(month))
+        am = [abs(i[amount]) for i in data]
+        cat=[i[category] for i in data]
+        print(i for i in data)
         cat[cat.index(None)] = "Undefined"
         #fig = plt.figure(dpi=dpi)
         fig = plt.figure(dpi=100)
@@ -97,7 +106,7 @@ class AppWin:
         chart = FigureCanvasTkAgg(fig, self.frm_cat_chart)
         chart.get_tk_widget().grid(sticky='nsew', column="0",row="0")
         ax.bar(cat,height=am)
-        ax.set_title('Spendings in '+ monthname)
+        ax.set_title("Spendings from: "+startDate+" to: "+endDate)
         ax.set_xlabel("Categories");ax.set_ylabel("Spendings [Euros]")
     
     def chartOverallSpendings(self):
@@ -173,7 +182,7 @@ class AppWin:
             values = (idvalue, date, row[2], cat, con)
             self.tbl_transactions.insert('','end', values = values)
         # ***  
-        self.chartCategorySpendings()
+        #self.chartCategorySpendings()
         self.chartOverallSpendings()
 
 
@@ -637,21 +646,27 @@ class AppWin:
         self.lbfr_cat_data = ttk.Labelframe(self.frm_categories)
         
         self.cat_monthname=dt.datetime.now().strftime("%B")
-        self.spn_month = ttk.Spinbox(self.lbfr_cat_data,
-                                     values =("January","February","March",
-                                              "April","May", "June",
-                                              "July","August","September",
-                                              "October","November","December"))
+        # self.spn_month = ttk.Spinbox(self.lbfr_cat_data,
+        #                              values =("January","February","March",
+        #                                       "April","May", "June",
+        #                                       "July","August","September",
+        #                                       "October","November","December"))
         
-        self.spn_month.delete('0','end')
-        self.spn_month.insert('0',self.cat_monthname)
-        self.spn_month.grid(column='0',row='0', padx=40, sticky='w')
+        # self.spn_month.delete('0','end')
+        # self.spn_month.insert('0',self.cat_monthname)
+        # self.spn_month.grid(column='0',row='0', padx=40, sticky='w')
         
-        self.btn_Update = ttk.Button(self.lbfr_cat_data)
-        self.btn_Update.configure(text='Update', width='15')
-        self.btn_Update.configure(command=self.chartCategorySpendings)
-        self.btn_Update.grid(column='1',row='0', sticky ='w')
+        self.btn_prevMonth = ttk.Button(self.lbfr_cat_data)
+        self.btn_prevMonth.configure(text='<< Previous Month', width='15')
+        #self.btn_prevMonth.configure(command=self.cat_btn_previousMonth)
+        self.btn_prevMonth.grid(column='0',row='0', sticky = 'w', padx = 20)
         
+        self.btn_currentMonth = ttk.Button(self.lbfr_cat_data)
+        self.btn_currentMonth.configure(text='Current Month', width='15')
+        self.btn_currentMonth.configure(command=self.cat_btn_currentMonth)
+        self.btn_currentMonth.grid(column='1',row='0', sticky = 'w', padx = 20)
+        
+    
         self.frm_cat_chart = ttk.Frame(self.frm_categories)
         self.frm_cat_chart.grid(column = '1', row = '1', sticky = 'nsew',padx=10, pady=10)
         self.frm_cat_chart.columnconfigure('0', weight=1)
