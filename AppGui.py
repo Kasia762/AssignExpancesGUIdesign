@@ -14,6 +14,7 @@ import pandas as pd
 from app_data import App_data 
 from addTransaction import AddTransaction
 from addCategory import AddCategory
+from addContractors import AddContractor
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 import matplotlib.pyplot as plt
 import app_import
@@ -237,7 +238,20 @@ class AppWin:
             _id = row[1] if row[1] else ""
             values = (_id, cat)
             self.tbl_categories.insert('','end', values = values)
-        
+            
+            
+    def updateContractorsTable(self):
+        #first clear the treeview
+        for item in  self.tbl_contractors.get_children():
+             self.tbl_contractors.delete(item)
+        #then display data
+        data = self.badb.getContractorList()
+        for row in data:
+            contr = row[0] if row[0] else ""
+            _id = row[1] if row[1] else ""
+            values = (_id, contr)
+            self.tbl_contractors.insert('','end', values = values)      
+            
 
     def h_btnTrAdd(self):
         addTransactionWindow = AddTransaction(self.mainwindow, self)
@@ -429,8 +443,28 @@ class AppWin:
                                       parent=self.mainwindow)
 
 
-    def h_btnCatDelete(self):
-        pass
+    def h_btnContractorsAdd(self):
+        AddContractor(self.mainwindow, self)
+        
+    def h_btnContractorsChange(self):
+        selected = self.tbl_contractors.selection()
+        print(selected)
+        if len(selected) > 1:
+            print("Multi selection in table. Cannot change several transactions yet.")
+            tk.messagebox.showwarning("Change transaction",
+                                   "Multi selection in table.\n\n Cannot change several transactions at once yet.",
+                                      parent=self.mainwindow)
+            return
+        elif len(selected) == 1:
+            print("One-line selection.")
+            id_value = str(self.tbl_contractors.item(selected, 'values')[0])
+            print('Opening addTransaction window in "change" mode, id: ', id_value)
+            AddContractor(self.mainwindow, self, id_value)
+            self.updateContractorsTable()
+        else:
+            print("Nothing selected in table. Cannot change.")
+            tk.messagebox.showwarning("Change transaction","Select transaction in table to change.",
+                                      parent=self.mainwindow)
 
                
         
@@ -448,6 +482,7 @@ class AppWin:
     def run(self):
         self.updateTransactionTable()
         self.updateCategoriesTable()
+        self.updateContractorsTable()
         self.display_time()
         self.display_balance()
         self.mainwindow.mainloop()    
@@ -643,10 +678,10 @@ class AppWin:
         self.frm_transactions.master.columnconfigure('0', weight=1)
         self.ntb_app.add(self.frm_transactions, text='Trancations')
         
-        
         ### CATEGORIES TAB
         self.frm_categories = ttk.Frame(self.ntb_app)
         self.lbfr_tableCategories = ttk.Labelframe(self.frm_categories)
+        self.lbfr_tableContractors = ttk.Labelframe(self.frm_categories)
         # table
         self.tbl_categories = ttk.Treeview(self.lbfr_tableCategories)
         self.scrb_catTableVert = ttk.Scrollbar(self.lbfr_tableCategories)
@@ -666,37 +701,74 @@ class AppWin:
         self.tbl_categories.grid(column='0', padx='3', pady='3', row='0', sticky='nsew')
         self.tbl_categories.master.rowconfigure('0', weight='1')
         self.tbl_categories.master.columnconfigure('0', weight='0')
+        self.lbfr_tableCategories.configure(text='Categories')
         self.lbfr_tableCategories.grid(column='0', 
                                        #columnspan='2', 
                                        padx='5', row='1', sticky='nsw')
         self.lbfr_tableCategories.master.rowconfigure('1', weight='1')
         self.lbfr_tableCategories.master.columnconfigure('0', pad='0', weight='1')
+        
+        ########CONTRACTORS
+        self.tbl_contractors = ttk.Treeview(self.lbfr_tableContractors)
+        self.scrb_contrTableVert = ttk.Scrollbar(self.lbfr_tableContractors)
+        self.scrb_contrTableVert.configure(orient='vertical', takefocus=False)
+        self.scrb_contrTableVert.grid(column='1', row='0', sticky='ns')
+        self.scrb_contrTableVert.configure(command=self.tbl_contractors.yview)
+        self.tbl_contractors_cols = ['id', 'name']
+        self.tbl_contractors_dcols = [     'name']
+        self.tbl_contractors.configure(columns=self.tbl_contractors_cols, 
+                                      displaycolumns=self.tbl_contractors_dcols,
+                                      yscrollcommand=self.scrb_contrTableVert.set)
+        self.tbl_contractors.column('id', anchor='w',stretch='false',width='40',minwidth='40')
+        self.tbl_contractors.column('name', anchor='w',stretch='true',width='200',minwidth='150')
+        self.tbl_contractors.heading('id', anchor='w',text='ID')
+        self.tbl_contractors.heading('name', anchor='w',text='Name')
+        self.tbl_contractors['show'] = 'headings'
+        self.tbl_contractors.grid(column='0', padx='3', pady='3', row='0', sticky='nsew')
+        #self.tbl_categories.master.rowconfigure('0', weight='1')
+        #self.tbl_categories.master.columnconfigure('0', weight='0')
+        self.lbfr_tableContractors.configure(text="Contractors")
+        self.lbfr_tableContractors.grid(column='0', 
+                                       #columnspan='2', 
+                                       padx='5', row='2', sticky='nsw')
+        #self.lbfr_tableContractors.master.rowconfigure('1', weight='1')
+        self.lbfr_tableContractors.master.columnconfigure('0', pad='0', weight='1')
+        ########CONTRACTORS 
+        
         self.lbfr_cat_Commands = ttk.Labelframe(self.frm_categories)
         self.btn_catAdd = ttk.Button(self.lbfr_cat_Commands)
-        self.btn_catAdd.configure(text='Add', width='20')
+        self.btn_catAdd.configure(text='Add category', width='20')
         self.btn_catAdd.grid(column='0', row='0')
         self.btn_catAdd.master.rowconfigure('0', pad='10')
         self.btn_catAdd.master.columnconfigure('0', pad='10')
         self.btn_catAdd.configure(command=self.h_btnCatAdd)
         self.btn_catChange = ttk.Button(self.lbfr_cat_Commands)
-        self.btn_catChange.configure(text='Change', width='20')
+        self.btn_catChange.configure(text='Change category', width='20')
         self.btn_catChange.grid(column='0', row='1')
         # self.btn_catChange.master.rowconfigure('1', pad='10')
         # self.btn_catChange.master.columnconfigure('0', pad='10')
         self.btn_catChange.configure(command=self.h_btnCatChange)
-        # self.btn_catDelete = ttk.Button(self.lbfr_cat_Commands)
-        # self.btn_catDelete.configure(text='Delete', width='20')
-        # self.btn_catDelete.grid(column='0', row='2')
-        # self.btn_catDelete.master.rowconfigure('2', pad='10')
-        # self.btn_catDelete.master.columnconfigure('0', pad='10')
-        # self.btn_catDelete.configure(command=self.h_btnCatDelete)
+        
+        self.btn_addContractors = ttk.Button(self.lbfr_cat_Commands)
+        self.btn_addContractors.configure(text='Add contractors', width='20')
+        self.btn_addContractors.grid(column='0', row='2')
+        self.btn_addContractors.master.rowconfigure('2', pad='10')
+        self.btn_addContractors.master.columnconfigure('0', pad='10')
+        self.btn_addContractors.configure(command=self.h_btnContractorsAdd)
+        
+        self.btn_changeContractors = ttk.Button(self.lbfr_cat_Commands)
+        self.btn_changeContractors.configure(text='Change contractors', width='20')
+        self.btn_changeContractors.grid(column='0', row='3')
+        self.btn_changeContractors.master.rowconfigure('2', pad='10')
+        self.btn_changeContractors.master.columnconfigure('0', pad='10')
+        self.btn_changeContractors.configure(command=self.h_btnContractorsChange)
+        
         self.lbfr_cat_Commands.configure(height='0', text='Commands', width='200')
         self.lbfr_cat_Commands.grid(column='0', padx='5', row='0', sticky='nsew')
-        self.lbfr_cat_Commands.master.rowconfigure('0', pad='10', weight=0)
-        
+        #self.lbfr_cat_Commands.master.rowconfigure('0', pad='10', weight=0)
         self.lbfr_cat_Commands.columnconfigure('0', weight = 1)
-        self.lbfr_cat_Commands.rowconfigure('0', weight = 1)
-        self.lbfr_cat_Commands.rowconfigure('1', weight = 1)
+        # self.lbfr_cat_Commands.rowconfigure('0', weight = 1)
+        # self.lbfr_cat_Commands.rowconfigure('1', weight = 1)
         
         self.lbfr_cat_data = ttk.Labelframe(self.frm_categories)
         
@@ -733,7 +805,8 @@ class AppWin:
         self.btn_previousWeek.grid(column='3',row='0')
     
         self.frm_cat_chart = ttk.Frame(self.frm_categories)
-        self.frm_cat_chart.grid(column = '1', row = '1', sticky = 'nsew',padx=10, pady=10)
+        self.frm_cat_chart.grid(column = '1', row = '1', sticky = 'nsew',
+                                padx=10, pady=10, rowspan='3')
         self.frm_cat_chart.columnconfigure('0', weight=1)
         self.frm_cat_chart.rowconfigure('0', weight=1)
     
@@ -758,12 +831,12 @@ class AppWin:
         #self.lbfr_cat_data.columnconfigure('1', pad='0', weight=0)
         self.frm_categories.grid(column='0', padx='3', pady='10', row='0', sticky='nsew')
         
-        self.frm_categories.rowconfigure('0', weight=0)
+        self.frm_categories.rowconfigure('0', weight=0, pad="10")
         self.frm_categories.columnconfigure('0', weight=0)
-        self.frm_categories.rowconfigure('1', weight = 1)
+        #self.frm_categories.rowconfigure('1', weight = 1)
         self.frm_categories.columnconfigure('1', weight=1)
         
-        self.ntb_app.add(self.frm_categories, text='Categories	')
+        self.ntb_app.add(self.frm_categories, text='Categories and contractors')
         
         ### LOTTO TAB
         self.frm_bells = ttk.Frame(self.ntb_app)

@@ -501,6 +501,37 @@ class App_data:
             return (False, "SQL error",)
 
 
+    def getContractor_byId(self, id_contractor):
+        ## TODO: check database connection
+        cur = self.database.cursor()
+        sql = '''
+            SELECT cn.cont_name, cn.cont_id
+            FROM contractors AS cn
+            WHERE cn.cont_id = ?;
+            '''
+        cur.execute(sql,(id_contractor,))
+        data = cur.fetchone()
+        return data 
+        
+        
+    def changeContractor(self, id_value, contractor):
+        contractor = self.__parse_name(contractor)
+        cur = self.database.cursor()
+        sql='''
+        UPDATE contractors
+        SET cont_name= ?
+        WHERE cont_id = ?;
+        '''
+        val = (contractor, id_value)
+        try:
+            cur.execute(sql,val)
+            self.database.commit()
+            return (True, "OK",)
+        except sqlite3.Error as err:
+            self.database.rollback()
+            return (False, "SQL error: %s"% err,)
+        
+
     def addCategory(self, category):
         category = self.__parse_name(category)
         ## TODO: 1. data types checking
@@ -530,6 +561,7 @@ class App_data:
         cur.execute(sql,(id_category,))
         data = cur.fetchone()
         return data 
+    
     
     def changeCategory(self, id_value, category):
         category = self.__parse_name(category)
