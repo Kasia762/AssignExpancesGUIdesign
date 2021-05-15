@@ -63,17 +63,38 @@ class AppWin:
                                       "This city name is incorrect.\n\nPlease, give correct city name.",
                                       parent=self.mainwindow)    
     
+    def cat_spn_chooseMonth(self):
+        mon =self.spn_month.get()
+        def getmonth():
+            if mon == "January": return "01"
+            elif mon =="February": return "02"
+            elif mon == "March": return "03"
+            elif mon == "April": return "04"
+            elif mon == "May": return "05"
+            elif mon == "June": return "06"
+            elif mon == "July": return "07"
+            elif mon == "August": return "08"
+            elif mon == "September": return "09"
+            elif mon == "October": return "10"
+            elif mon == "December": return "12"
+            elif mon == "November": return "11"
+            else: 
+              tk.messagebox.showwarning("Spinbox!!!!","put correct month",
+                                      parent=self.mainwindow)
+        today = dt.date.today().replace(month=int(getmonth()))
+        start = today.replace(day=1)
+        end=today.replace(day=28)+dt.timedelta(days=4)
+        end = end - dt.timedelta(days = end.day)
+        self.chartCategorySpendings(start, end)
+        
     def cat_btn_previousWeek(self):
-        print("previous week")
         today = dt.date.today() - \
             dt.timedelta(weeks=1)
         start = today - dt.timedelta(days=today.weekday())
         end = start + dt.timedelta(days=6)
         self.chartCategorySpendings(start, end)
     
-    
     def cat_btn_currentWeek(self):
-        print("current week")
         today = dt.date.today()
         start = today - dt.timedelta(days=today.weekday())
         end = start + dt.timedelta(days=6)
@@ -657,16 +678,17 @@ class AppWin:
         
         self.lbfr_cat_data = ttk.Labelframe(self.frm_categories)
         
-        # self.cat_monthname=dt.datetime.now().strftime("%B")
-        # self.spn_month = ttk.Spinbox(self.lbfr_cat_data,
-        #                              values =("January","February","March",
-        #                                       "April","May", "June",
-        #                                       "July","August","September",
-        #                                       "October","November","December"))
+        self.cat_monthname=dt.datetime.now().strftime("%B")
+        self.spn_month = ttk.Spinbox(self.lbfr_cat_data,
+                                      values =("January","February","March",
+                                              "April","May", "June",
+                                              "July","August","September",
+                                              "October","November","December"),
+                                      command=self.cat_spn_chooseMonth)
         
-        # self.spn_month.delete('0','end')
-        # self.spn_month.insert('0',self.cat_monthname)
-        # self.spn_month.grid(column='0',row='0', padx=40, sticky='w')
+        self.spn_month.delete('0','end')
+        self.spn_month.insert('0',self.cat_monthname)
+        self.spn_month.grid(column='4',row='0', padx=40, sticky='w')
         
         self.btn_prevMonth = ttk.Button(self.lbfr_cat_data)
         self.btn_prevMonth.configure(text='<< Previous Month', width='15')
