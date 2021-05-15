@@ -69,55 +69,31 @@ class AppWin:
             dt.timedelta(weeks=1)
         start = today - dt.timedelta(days=today.weekday())
         end = start + dt.timedelta(days=6)
-        
-        startDate = start.strftime(_dt_datefmt)
-        endDate = end.strftime(_dt_datefmt)
-        print(startDate,endDate)
-        data = self.badb.data_chartCategories(startDate, endDate)        
-        cat=[i[1] for i in data]
-        print("previous week:",cat)
+        self.chartCategorySpendings(start, end)
+    
     
     def cat_btn_currentWeek(self):
         print("current week")
         today = dt.date.today()
         start = today - dt.timedelta(days=today.weekday())
         end = start + dt.timedelta(days=6)
-        startDate = start.strftime(_dt_datefmt)
-        endDate = end.strftime(_dt_datefmt)
-        print(startDate,endDate)
-        data = self.badb.data_chartCategories(startDate, endDate)        
-        cat=[i[1] for i in data]
-        print("currernt week:",cat)
+        self.chartCategorySpendings(start, end)
 
        
     def cat_btn_previousMonth(self):
         today = dt.date.today()
-        last_day = today.replace(day=1) -\
-            dt.timedelta(days=1)
-        endDate = last_day.strftime(_dt_datefmt)    
-        start_day = today.replace(day=1) -\
-            dt.timedelta(days=last_day.day)
-        startDate = start_day.strftime(_dt_datefmt)
-        
-        print(startDate, endDate)
-        data = self.badb.data_chartCategories(startDate, endDate)        
-        cat=[i[1] for i in data]
-        print("previous month:",cat)
-        #self.chartCategorySpendings(startDate, endDate)
+        end = today.replace(day=1) -\
+            dt.timedelta(days=1)    
+        start = today.replace(day=1) -\
+            dt.timedelta(days=end.day)
+        self.chartCategorySpendings(start, end)
         
         
     def cat_btn_currentMonth(self):
         today = dt.date.today()
         start = today.replace(day=1)
-        startDate = start.strftime(_dt_datefmt)
         end = today.replace(day=31)
-        endDate = end.strftime(_dt_datefmt)
-        
-        print(startDate, endDate)
-        data = self.badb.data_chartCategories(startDate, endDate)
-        cat=[i[1] for i in data]
-        print("current:",cat)
-        #self.chartCategorySpendings(startDate, endDate)
+        self.chartCategorySpendings(start, end)
         
     
     def chartCategorySpendings(self, firstDay, lastDay):
@@ -125,11 +101,11 @@ class AppWin:
         category = 1
         
         print(firstDay, lastDay)
-        
-        data = self.badb.data_chartCategories('14.05.2021', '17.05.2021')
+        data = self.badb.data_chartCategories(firstDay, lastDay)
         am = [abs(i[amount]) for i in data]
         cat=[i[category] for i in data]
-        
+        from_date = firstDay.strftime(_dt_datefmt)
+        to_date = lastDay.strftime(_dt_datefmt)
         print("chart:",cat)
         try: 
             cat[cat.index(None)] = "Undefined"
@@ -141,7 +117,7 @@ class AppWin:
         chart = FigureCanvasTkAgg(fig, self.frm_cat_chart)
         chart.get_tk_widget().grid(sticky='nsew', column="0",row="0")
         ax.bar(cat,height=am)
-        ax.set_title("Spendings from: "+firstDay+" to: "+lastDay)
+        ax.set_title("Spendings from: "+from_date+" to: "+ to_date)
         ax.set_xlabel("Categories");ax.set_ylabel("Spendings [Euros]")
     
     
