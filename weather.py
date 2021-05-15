@@ -53,7 +53,7 @@ class Weather:
         
         img1 = Image.open("cloud.png")
         #imgage =ImageTk.PhotoImage(img1)
-        img1 = img1.resize((200,100))
+        img1 = img1.resize((100,100))
         return img1
 
     def Describtion(self):   

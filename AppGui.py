@@ -56,8 +56,7 @@ class AppWin:
             self.var_wt_tMinVal.set(x.TempMin())
             self.var_wt_tMaxVal.set(x.TempMax())
             self.var_wt_humidityVal.set(x.Humidity())
-            
-            self.cv_icon.create_image((0,0),image=x.Icon())
+            self.lbl_wt_icon.configure(image=x.Icon())
         except:
              tk.messagebox.showwarning("Wrong input city name!!",
                                       "This city name is incorrect.\n\nPlease, give correct city name.",
@@ -160,12 +159,16 @@ class AppWin:
             else: 
               tk.messagebox.showwarning("Spinbox!!!!","put correct month",
                                       parent=self.mainwindow)
+        today = dt.date.today().replace(month=int(getmonth()))
+        start = today.replace(day=1)
+        end=today.replace(day=28)+dt.timedelta(days=4)
+        end = end - dt.timedelta(days = end.day)
         
         monthname = str(mon)
         month=str(getmonth())
-        income = self.badb.data_chartIncome(month)
-        outcome = self.badb.data_chartOutcome(month)
-        balance = self.badb.data_chartBalance(month)
+        income = self.badb.data_chartIncome(start,end)
+        outcome = self.badb.data_chartOutcome(start,end)
+        balance = self.badb.data_chartBalance(start,end)
         #print(i[0] for i in amount)
         am_income = [i[0] for i in income] 
         am_outcome = [abs(i[0]) for i in outcome ]
@@ -795,11 +798,10 @@ class AppWin:
         self.lbl_wt_temperature.configure(text='Temperature')
         self.lbl_wt_temperature.grid(column='1', padx='10', pady='10', row='1', sticky='sew')
         
-        self.cv_wt_icon = tk.Canvas(self.frm_wt_values)
-        self.cv_wt_icon.configure(background='#5363ee', height='50', width='50')
-        self.cv_wt_icon.grid(column='0', padx='20', row='2')
-        self.cv_wt_icon.columnconfigure('0', weight='0')
-        
+        self.lbl_wt_icon = ttk.Label(self.frm_wt_values)
+        self.lbl_wt_icon.configure(text='Icon')
+        self.lbl_wt_icon.grid(column='0', ipady = '20', padx='20', row='2', sticky='nsew')
+                
         self.lbl_wt_tempNum = ttk.Label(self.frm_wt_values)
         
         self.var_wt_tempNum = tk.StringVar(value='UNKNOWN')
