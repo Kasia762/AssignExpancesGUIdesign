@@ -43,6 +43,7 @@ class AppWin:
         self.cal_tr_From.bind('<<DateEntrySelected>>', lambda x: self.updateTransactionTable() )
         self.tbl_transactions.bind("<Double-1>", self.h_tblTr_OnDoubleClick)
         
+        
     def getWeatherInfo(self):
         city = self.ent_ch_city.get()
         try:
@@ -62,52 +63,87 @@ class AppWin:
                                       "This city name is incorrect.\n\nPlease, give correct city name.",
                                       parent=self.mainwindow)    
     
-    #def cat_btn_previousMonth(self):
+    def cat_btn_previousWeek(self):
+        print("previous week")
+        today = dt.date.today() - \
+            dt.timedelta(weeks=1)
+        start = today - dt.timedelta(days=today.weekday())
+        end = start + dt.timedelta(days=6)
         
+        startDate = start.strftime(_dt_datefmt)
+        endDate = end.strftime(_dt_datefmt)
+        print(startDate,endDate)
+        data = self.badb.data_chartCategories(startDate, endDate)        
+        cat=[i[1] for i in data]
+        print("previous week:",cat)
     
+    def cat_btn_currentWeek(self):
+        print("current week")
+        today = dt.date.today()
+        start = today - dt.timedelta(days=today.weekday())
+        end = start + dt.timedelta(days=6)
+        startDate = start.strftime(_dt_datefmt)
+        endDate = end.strftime(_dt_datefmt)
+        print(startDate,endDate)
+        data = self.badb.data_chartCategories(startDate, endDate)        
+        cat=[i[1] for i in data]
+        print("currernt week:",cat)
+
+       
+    def cat_btn_previousMonth(self):
+        today = dt.date.today()
+        last_day = today.replace(day=1) -\
+            dt.timedelta(days=1)
+        endDate = last_day.strftime(_dt_datefmt)    
+        start_day = today.replace(day=1) -\
+            dt.timedelta(days=last_day.day)
+        startDate = start_day.strftime(_dt_datefmt)
+        
+        print(startDate, endDate)
+        data = self.badb.data_chartCategories(startDate, endDate)        
+        cat=[i[1] for i in data]
+        print("previous month:",cat)
+        #self.chartCategorySpendings(startDate, endDate)
+        
+        
     def cat_btn_currentMonth(self):
         today = dt.date.today()
-        startDate = today.replace(day=1).strftime(_dt_datefmt)
-        endDate = today.replace(day=31).strftime(_dt_datefmt)
-        self.chartCategorySpendings(startDate, endDate)
+        start = today.replace(day=1)
+        startDate = start.strftime(_dt_datefmt)
+        end = today.replace(day=31)
+        endDate = end.strftime(_dt_datefmt)
         
-    def chartCategorySpendings(self, startDate, endDate):
-       
-        # def getmonth():
-        #     if mon == "January": return "01"
-        #     elif mon =="February": return "02"
-        #     elif mon == "March": return "03"
-        #     elif mon == "April": return "04"
-        #     elif mon == "May": return "05"
-        #     elif mon == "June": return "06"
-        #     elif mon == "July": return "07"
-        #     elif mon == "August": return "08"
-        #     elif mon == "September": return "09"
-        #     elif mon == "October": return "10"
-        #     elif mon == "December": return "12"
-        #     elif mon == "November": return "11"
-        #     else: 
-        #       tk.messagebox.showwarning("Spinbox!!!!","put correct month",
-        #                               parent=self.mainwindow)
-        # monthname = str(mon)
-        # month=str(getmonth())
+        print(startDate, endDate)
+        data = self.badb.data_chartCategories(startDate, endDate)
+        cat=[i[1] for i in data]
+        print("current:",cat)
+        #self.chartCategorySpendings(startDate, endDate)
         
+    
+    def chartCategorySpendings(self, firstDay, lastDay):
         amount = 0
         category = 1
-        data = self.badb.data_chartCategories(startDate, endDate)
-
+        
+        print(firstDay, lastDay)
+        
+        data = self.badb.data_chartCategories('14.05.2021', '17.05.2021')
         am = [abs(i[amount]) for i in data]
         cat=[i[category] for i in data]
-        print(i for i in data)
-        cat[cat.index(None)] = "Undefined"
+        
+        print("chart:",cat)
+        try: 
+            cat[cat.index(None)] = "Undefined"
+        except: 
+            print("no none categories")
         #fig = plt.figure(dpi=dpi)
         fig = plt.figure(dpi=100)
         ax = fig.add_subplot(111)
         chart = FigureCanvasTkAgg(fig, self.frm_cat_chart)
         chart.get_tk_widget().grid(sticky='nsew', column="0",row="0")
         ax.bar(cat,height=am)
-        ax.set_title("Spendings from: "+startDate+" to: "+endDate)
+        ax.set_title("Spendings from: "+firstDay+" to: "+lastDay)
         ax.set_xlabel("Categories");ax.set_ylabel("Spendings [Euros]")
+    
     
     def chartOverallSpendings(self):
         mon = self.account_spn_month.get()
@@ -645,7 +681,7 @@ class AppWin:
         
         self.lbfr_cat_data = ttk.Labelframe(self.frm_categories)
         
-        self.cat_monthname=dt.datetime.now().strftime("%B")
+        # self.cat_monthname=dt.datetime.now().strftime("%B")
         # self.spn_month = ttk.Spinbox(self.lbfr_cat_data,
         #                              values =("January","February","March",
         #                                       "April","May", "June",
@@ -658,14 +694,23 @@ class AppWin:
         
         self.btn_prevMonth = ttk.Button(self.lbfr_cat_data)
         self.btn_prevMonth.configure(text='<< Previous Month', width='15')
-        #self.btn_prevMonth.configure(command=self.cat_btn_previousMonth)
-        self.btn_prevMonth.grid(column='0',row='0', sticky = 'w', padx = 20)
+        self.btn_prevMonth.configure(command=self.cat_btn_previousMonth)
+        self.btn_prevMonth.grid(column='0',row='0')
         
         self.btn_currentMonth = ttk.Button(self.lbfr_cat_data)
         self.btn_currentMonth.configure(text='Current Month', width='15')
         self.btn_currentMonth.configure(command=self.cat_btn_currentMonth)
-        self.btn_currentMonth.grid(column='1',row='0', sticky = 'w', padx = 20)
+        self.btn_currentMonth.grid(column='1',row='0')
         
+        self.btn_currentWeek = ttk.Button(self.lbfr_cat_data)
+        self.btn_currentWeek.configure(text='Current Week', width='15')
+        self.btn_currentWeek.configure(command=self.cat_btn_currentWeek)
+        self.btn_currentWeek.grid(column='2',row='0')
+        
+        self.btn_previousWeek = ttk.Button(self.lbfr_cat_data)
+        self.btn_previousWeek.configure(text='<<Previous Week', width='15')
+        self.btn_previousWeek.configure(command=self.cat_btn_previousWeek)
+        self.btn_previousWeek.grid(column='3',row='0')
     
         self.frm_cat_chart = ttk.Frame(self.frm_categories)
         self.frm_cat_chart.grid(column = '1', row = '1', sticky = 'nsew',padx=10, pady=10)

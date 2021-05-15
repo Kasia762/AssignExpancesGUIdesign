@@ -285,10 +285,11 @@ class App_data:
         FROM  transactions AS tr
         LEFT OUTER JOIN categories AS ct
                 ON tr.cat_id = ct.cat_id
-        WHERE  tr.trans_date BETWEEN ? AND ? AND tr.trans_amount < 0
+        WHERE  tr.trans_date BETWEEN ? AND ?
+        AND tr.trans_amount < 0 
         GROUP BY ct.cat_name;
         '''
-        cur.execute(sql,(startDate,endDate))
+        cur.execute(sql,(startDate,endDate,))
         data = cur.fetchall()
         return data
     
