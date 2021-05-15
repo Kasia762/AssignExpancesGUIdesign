@@ -151,9 +151,9 @@ class App_data:
 
 
 
-    def __testPrintTable(self, db, tablename):
-        if self.__tableExists(db, tablename):
-            cur = db.cursor()
+    def __testPrintTable(self, tablename):
+        if self.__tableExists(tablename):
+            cur = self.database.cursor()
             # print out all tables
             hello = "DEBUG: Table: " + str(tablename)
             print("\n\n", hello)
@@ -200,11 +200,10 @@ class App_data:
 
                 
     def testPrintAllTables(self):
-        db = self.database
         hello = "Debug: printing all tables in database:"
         print(hello)
         print("=" * len(hello) )
-        cur = db.cursor()
+        cur = self.database.cursor()
         sql = 'SELECT name FROM sqlite_master WHERE type = "table";'
         cur.execute(sql )
         data = cur.fetchall()
@@ -212,7 +211,7 @@ class App_data:
         print(data)
         # print out all tables
         for row in data:
-            self.__testPrintTable(db, row[0] )
+            self.__testPrintTable( row[0] )
             
 
     def getAllTransactions(self):

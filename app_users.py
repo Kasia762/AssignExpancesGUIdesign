@@ -11,6 +11,7 @@ from app_data import App_data
 import tempfile
 import os
 import zlib
+import base64
 
 import datetime as dt
 import numpy as np
@@ -179,7 +180,7 @@ class UsersHandler:
 
     def addUser(self, username, password):
         if ( self.__currentUser ):
-            ## FIXME: using login and logout to load empty db
+            ## FIXME: login and logout used to load empty db
             print ("current user:", self.__currentUser)
             return (False, 'Cannot add new user while other is active')
         ## Check username
@@ -205,6 +206,7 @@ class UsersHandler:
             self.usersDatabase.commit()
             cur.close()
             try:
+                ## FIXME: login and logout used to load empty db
                 emptydb = App_data()
                 self.loginUser(username, password)
                 self.saveTransactionDB(emptydb)
@@ -261,6 +263,7 @@ class UsersHandler:
             self.__currentUser = username
             ### Do real stuff
             ### load transaction database and so on...
+            ### ***
             pass
             return (True, 'OK')
         else:
@@ -270,6 +273,7 @@ class UsersHandler:
 
 
     def logoutCurrentUser(self):
+        print('Logout user:"', self.__currentUser, '"', sep='')
         if self.__currentUser != '':
             ## ***
             # TODO: close transactions database
@@ -317,9 +321,11 @@ class UsersHandler:
         
         with open(tempfn, 'rb') as file:
             blobData = file.read()
-        os.remove(tempfn)
-        blobData = zlib.compress(blobData)
+        # os.remove(tempfn)
+        print("Save Trdb to:", tempfn)
         
+        blobData = zlib.compress(blobData)
+        blobData = base64.encodebytes(blobData)
         sql= '''
                 UPDATE  users
                 SET data = ?
@@ -346,30 +352,32 @@ class UsersHandler:
                 FROM users
                 WHERE login = ?;
              '''   
-        try:
-            cur = self.usersDatabase.cursor()
-            cur.execute(sql, ( self.__currentUser, ) )
-            blobData = cur.fetchone()[0]
-            cur.close()
-        except sqlite3.Error as err:
-            cur.close()
-            return (False, "UserSQL stuff error: %s"% err,)
+        # try:
+        cur = self.usersDatabase.cursor()
+        cur.execute(sql, ( self.__currentUser, ) )
+        blobData = cur.fetchone()[0]
+        cur.close()
+        # except sqlite3.Error as err:
+        #     cur.close()
+        #     return (False, "UserSQL stuff error: %s"% err,)
         
+        blobData = base64.decodebytes(blobData)
+        blobData = zlib.decompress(blobData)
         tempfn = os.path.join(tempfile.gettempdir(), os.urandom(32).hex())
         with open(tempfn, 'wb') as file:
              file.write(blobData)
-        os.remove(tempfn)
-        blobData = zlib.decompress(blobData)
         
-        try:
-            databaseInFile = sqlite3.connect(tempfn)
-            databaseInFile.backup(transDBinstance.database)
-            databaseInFile.close()
-        except:
-            ## error to create db
-            print("LOAD DB ERROR")
-            return False
-            pass
+        # try:
+        databaseInFile = sqlite3.connect(tempfn)
+        databaseInFile.backup(transDBinstance.database)
+        databaseInFile.close()
+        # os.remove(tempfn)
+        print("Load Trdb from:", tempfn)
+        # except:
+        #     ## error to create db
+        #     print("LOAD DB ERROR")
+        #     return False
+        #     pass
 
 
 
@@ -382,8 +390,8 @@ emptydb = App_data()
 
 
 val =[
-      ("user_01","password_01","stuff_01"),
-      ("user_03","password_03","stuff_03"),
+       ("user_01","password_01","stuff_01"),
+       ("user_03","password_03","stuff_03"),
       ("user_07","password_07","stuff_07"),
       ("","","")
       ]
@@ -401,9 +409,9 @@ for a in val:
     print("trying to add", a[ ind_user ] , a[ ind_pass ])
     res = userdb.addUser(   a[ ind_user ] , a[ ind_pass ] )
     print(res)
-    # userdb.loginUser(   a[ ind_user ] , a[ ind_pass ]  )
-    # res = userdb.writeStuff( a[ ind_stuf ])
-    # print("Write", res)
+    ## userdb.loginUser(   a[ ind_user ] , a[ ind_pass ]  )
+    ## res = userdb.writeStuff( a[ ind_stuf ])
+    ## print("Write", res)
 
    
 #------------  
@@ -411,13 +419,15 @@ for a in val:
 res = userdb.loginUser("user_07", "password_07")
 print (res)
 
-print ("Adding new user while")
-res = userdb.addUser("username", "password")
-print (res)
+# print ("Adding new user while")
+# res = userdb.addUser("username", "password")
+# print (res)
 
-userdb.saveTransactionDB(emptydb)    
+# userdb.saveTransactionDB(emptydb)    
+print (userdb.getCurrentUser())
+userdb.loadTransactionDB(emptydb)    
 
-userdb.testPrintAllTables()
+emptydb.testPrintAllTables()
 
 print("\n\n")
 print("User list\n")
