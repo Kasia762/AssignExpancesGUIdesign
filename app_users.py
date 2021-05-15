@@ -11,7 +11,6 @@ from app_data import App_data
 import tempfile
 import os
 import zlib
-import base64
 
 import datetime as dt
 import numpy as np
@@ -28,7 +27,6 @@ class UsersHandler:
             print("One instance of class",type(self), " already exist.")
             print("Only one instance is allowed.")
             raise ValueError
-            
         type(self)._class_counter += 1
         
         ### Database filename
@@ -47,6 +45,7 @@ class UsersHandler:
             
         ### Current user name
         self.__currentUser = ''
+        
         
         ### Transaction database instance
         
@@ -179,6 +178,10 @@ class UsersHandler:
 
 
     def addUser(self, username, password):
+        if ( self.__currentUser ):
+            ## FIXME: using login and logout to load empty db
+            print ("current user:", self.__currentUser)
+            return (False, 'Cannot add new user while other is active')
         ## Check username
         username = self.__parse_username(username)
         if ( username == '' ):
@@ -201,9 +204,16 @@ class UsersHandler:
             cur.execute(sql, (username, passhash, ) )
             self.usersDatabase.commit()
             cur.close()
+            try:
+                emptydb = App_data()
+                self.loginUser(username, password)
+                self.saveTransactionDB(emptydb)
+                self.logoutCurrentUser()
+                del emptydb
+            except:
+                print("========= in save=========")
             return (True, "OK",)
         except sqlite3.Error as err:
-            self.usersDatabase.rollback()
             cur.close()
             return (False, "UserSQL error: %s"% err,)
 
@@ -288,7 +298,7 @@ class UsersHandler:
             return (False, "UserSQL stuff error: %s"% err,)
 
         
-    def saveTransactionDB(self, db):
+    def saveTransactionDB(self, transDBinstance):
         if self.__currentUser == '':
             return (False, 'No user logged in')
         
@@ -296,7 +306,7 @@ class UsersHandler:
         ## dump transaction DB
         try:
             databaseInFile = sqlite3.connect( tempfn )
-            self.database.backup(databaseInFile)
+            transDBinstance.database.backup(databaseInFile)
             databaseInFile.commit()
             databaseInFile.close()
         except sqlite3.Error as err:
@@ -327,7 +337,7 @@ class UsersHandler:
         
         
 
-    def loadTransactionDB(self):
+    def loadTransactionDB(self, transDBinstance):
         if self.__currentUser == '':
             return (False, 'No user logged in')
         
@@ -353,7 +363,7 @@ class UsersHandler:
         
         try:
             databaseInFile = sqlite3.connect(tempfn)
-            databaseInFile.backup(self.database)
+            databaseInFile.backup(transDBinstance.database)
             databaseInFile.close()
         except:
             ## error to create db
@@ -385,20 +395,24 @@ ind_user = 0
 ind_pass = 1
 ind_stuf = 2
 
-# for a in val:
-#     res = "---"
-#     ## convert string date into object
-#     print("trying to add", a[ ind_user ] , a[ ind_pass ])
-#     res = userdb.addUser(   a[ ind_user ] , a[ ind_pass ] )
-#     print(res)
-#     userdb.loginUser(   a[ ind_user ] , a[ ind_pass ]  )
-#     res = userdb.writeStuff( a[ ind_stuf ])
-#     print("Write", res)
+for a in val:
+    res = "---"
+    ## convert string date into object
+    print("trying to add", a[ ind_user ] , a[ ind_pass ])
+    res = userdb.addUser(   a[ ind_user ] , a[ ind_pass ] )
+    print(res)
+    # userdb.loginUser(   a[ ind_user ] , a[ ind_pass ]  )
+    # res = userdb.writeStuff( a[ ind_stuf ])
+    # print("Write", res)
 
    
 #------------  
 
 res = userdb.loginUser("user_07", "password_07")
+print (res)
+
+print ("Adding new user while")
+res = userdb.addUser("username", "password")
 print (res)
 
 userdb.saveTransactionDB(emptydb)    
@@ -413,5 +427,3 @@ for row in data:
 
 # res = userdb.loginUser("user_07", "password_07")
 # print (res)
-
-userdb.saveDataBase()

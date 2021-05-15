@@ -20,11 +20,11 @@ class App_data:
 
             
     def __init__(self):
-        self.__debug = True
-        if type(self)._class_counter > 0:
-            print("One instance of class",type(self), " already exist.")
-            print("Only one instance is allowed.")
-            raise ValueError
+        ### self.__debug = True
+        ### if type(self)._class_counter > 0:
+        ###     print("One instance of class",type(self), " already exist.")
+        ###     print("Only one instance is allowed.")
+        ###     raise ValueError
         type(self)._class_counter += 1
         print("OBJECT #", type(self)._class_counter)
 
