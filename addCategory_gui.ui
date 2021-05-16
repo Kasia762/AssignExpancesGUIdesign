@@ -1,0 +1,116 @@
+<?xml version='1.0' encoding='utf-8'?>
+<interface version="1.1">
+  <object class="tk.Toplevel" id="win_addcat">
+    <property name="height">200</property>
+    <property name="resizable">none</property>
+    <property name="width">200</property>
+    <child>
+      <object class="ttk.Frame" id="frm_addcat">
+        <property name="height">200</property>
+        <property name="width">200</property>
+        <layout manager="grid">
+          <property name="column">0</property>
+          <property name="padx">10</property>
+          <property name="pady">10</property>
+          <property name="propagate">True</property>
+          <property name="row">0</property>
+          <property name="sticky">nsew</property>
+        </layout>
+        <child>
+          <object class="ttk.Labelframe" id="lblfr_cat">
+            <property name="height">200</property>
+            <property name="text" translatable="yes">Add new category</property>
+            <property name="width">200</property>
+            <layout manager="grid">
+              <property name="column">0</property>
+              <property name="padx">10</property>
+              <property name="pady">10</property>
+              <property name="propagate">True</property>
+              <property name="row">0</property>
+              <property name="sticky">nsew</property>
+              <property type="col" id="0" name="pad">10</property>
+              <property type="col" id="0" name="weight">1</property>
+              <property type="row" id="0" name="pad">10</property>
+              <property type="row" id="0" name="weight">1</property>
+            </layout>
+            <child>
+              <object class="ttk.Label" id="lbl_addcat">
+                <property name="text" translatable="yes">New category</property>
+                <layout manager="grid">
+                  <property name="column">0</property>
+                  <property name="padx">10</property>
+                  <property name="propagate">True</property>
+                  <property name="row">0</property>
+                  <property type="row" id="0" name="pad">10</property>
+                  <property type="row" id="0" name="weight">1</property>
+                </layout>
+              </object>
+            </child>
+            <child>
+              <object class="ttk.Entry" id="ent_addcat">
+                <layout manager="grid">
+                  <property name="column">1</property>
+                  <property name="propagate">True</property>
+                  <property name="row">0</property>
+                  <property type="row" id="0" name="pad">10</property>
+                  <property type="row" id="0" name="weight">1</property>
+                </layout>
+              </object>
+            </child>
+          </object>
+        </child>
+        <child>
+          <object class="ttk.Labelframe" id="lblfrm_btn">
+            <property name="height">200</property>
+            <property name="text" translatable="yes">Confirm or decline</property>
+            <property name="width">200</property>
+            <layout manager="grid">
+              <property name="column">0</property>
+              <property name="padx">10</property>
+              <property name="pady">10</property>
+              <property name="propagate">True</property>
+              <property name="row">1</property>
+              <property name="sticky">nsew</property>
+              <property type="col" id="0" name="pad">10</property>
+              <property type="col" id="0" name="weight">1</property>
+              <property type="row" id="1" name="pad">10</property>
+              <property type="row" id="1" name="weight">1</property>
+            </layout>
+            <child>
+              <object class="ttk.Button" id="btn_decline">
+                <property name="command" type="command" cbtype="simple">h_btn_decline</property>
+                <property name="text" translatable="yes">DECLINE</property>
+                <layout manager="grid">
+                  <property name="column">0</property>
+                  <property name="padx">25</property>
+                  <property name="propagate">True</property>
+                  <property name="row">0</property>
+                  <property name="sticky">e</property>
+                  <property type="row" id="0" name="pad">10</property>
+                  <property type="row" id="0" name="weight">1</property>
+                </layout>
+              </object>
+            </child>
+            <child>
+              <object class="ttk.Button" id="btn_confirm">
+                <property name="command" type="command" cbtype="simple">h_btn_confirm</property>
+                <property name="state">normal</property>
+                <property name="text" translatable="yes">CONFIRM</property>
+                <layout manager="grid">
+                  <property name="column">1</property>
+                  <property name="padx">25</property>
+                  <property name="propagate">True</property>
+                  <property name="row">0</property>
+                  <property name="sticky">e</property>
+                  <property type="col" id="1" name="weight">1</property>
+                  <property type="row" id="0" name="pad">10</property>
+                  <property type="row" id="0" name="weight">1</property>
+                </layout>
+              </object>
+            </child>
+          </object>
+        </child>
+      </object>
+    </child>
+  </object>
+</interface>

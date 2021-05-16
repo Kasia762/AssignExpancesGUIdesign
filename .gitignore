@@ -8,4 +8,10 @@
 !addTransaction.py
 !app_import.py
 !app_login.py
+!lotto.py
+!bellsTabGui.ui
+!addCategory.py
+!addContractors.py
+!addCategory_gui.ui
+
 

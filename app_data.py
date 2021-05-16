@@ -277,22 +277,61 @@ class App_data:
         data = cur.fetchone()
         return data
     
-    #name!!!
-    def chartMonth(self,month):
+
+    def data_chartCategories(self,startDate,endDate):
         cur = self.database.cursor()
         sql ='''
         SELECT SUM(tr.trans_amount),ct.cat_name
         FROM  transactions AS tr
         LEFT OUTER JOIN categories AS ct
                 ON tr.cat_id = ct.cat_id
-        WHERE  strftime('%m',tr.trans_date) IN (?)
+        WHERE tr.trans_date BETWEEN ? AND ?
+        AND tr.trans_amount < 0 
         GROUP BY ct.cat_name;
         '''
-        cur.execute(sql,(month,))
+        cur.execute(sql,(startDate,endDate,))
         data = cur.fetchall()
         return data
-        
     
+    def data_chartIncome(self,startDate,endDate):
+        cur = self.database.cursor()
+        sql = '''
+        SELECT SUM(tr.trans_amount), tr.trans_date
+        FROM transactions AS tr
+        WHERE tr.trans_date BETWEEN ? AND ? 
+        AND tr.trans_amount > 0
+        GROUP BY tr.trans_date
+        '''
+        cur.execute(sql,(startDate,endDate,))
+        data = cur.fetchall()
+        return data
+    
+    
+    def data_chartOutcome(self,startDate,endDate):
+        cur = self.database.cursor()
+        sql = '''
+        SELECT SUM(tr.trans_amount), tr.trans_date
+        FROM transactions AS tr
+        WHERE tr.trans_date BETWEEN ? AND ? 
+        AND tr.trans_amount < 0
+        GROUP BY tr.trans_date
+        '''
+        cur.execute(sql,(startDate,endDate,))
+        data = cur.fetchall()
+        return data
+    
+    
+    def data_chartBalance(self,startDate,endDate):
+        cur = self.database.cursor()
+        sql = '''
+        SELECT SUM(tr.trans_amount), tr.trans_date
+        FROM transactions AS tr
+        WHERE tr.trans_date BETWEEN ? AND ?
+        GROUP BY tr.trans_date
+        '''
+        cur.execute(sql,(startDate,endDate,))
+        data = cur.fetchall()
+        return data
     
     def getAllTransactionsPeriod(self,startDate, endDate):
                 
@@ -418,11 +457,13 @@ class App_data:
         sql='''UPDATE transactions
         SET
         trans_date=?, trans_amount=?,
-        cont_id = (SELECT ct.cat_id FROM categories ct WHERE ct.cat_name = ? ), 
-        cat_id=(SELECT cont_id FROM contractors WHERE cont_name = ? )
+        cont_id = (SELECT contractors.cont_id 
+                   FROM contractors WHERE contractors.cont_name = ? ), 
+        cat_id= (SELECT categories.cat_id
+                 FROM categories WHERE categories.cat_name = ? )
         WHERE trans_id = ?;
         '''
-        val = (date, amount, category, contractor, id_value)
+        val = (date, amount, contractor, category, id_value)
         try:
             cur.execute(sql,val)
             self.database.commit()
@@ -460,6 +501,37 @@ class App_data:
             return (False, "SQL error",)
 
 
+    def getContractor_byId(self, id_contractor):
+        ## TODO: check database connection
+        cur = self.database.cursor()
+        sql = '''
+            SELECT cn.cont_name, cn.cont_id
+            FROM contractors AS cn
+            WHERE cn.cont_id = ?;
+            '''
+        cur.execute(sql,(id_contractor,))
+        data = cur.fetchone()
+        return data 
+        
+        
+    def changeContractor(self, id_value, contractor):
+        contractor = self.__parse_name(contractor)
+        cur = self.database.cursor()
+        sql='''
+        UPDATE contractors
+        SET cont_name= ?
+        WHERE cont_id = ?;
+        '''
+        val = (contractor, id_value)
+        try:
+            cur.execute(sql,val)
+            self.database.commit()
+            return (True, "OK",)
+        except sqlite3.Error as err:
+            self.database.rollback()
+            return (False, "SQL error: %s"% err,)
+        
+
     def addCategory(self, category):
         category = self.__parse_name(category)
         ## TODO: 1. data types checking
@@ -476,10 +548,44 @@ class App_data:
         except sqlite3.Error:
             self.database.rollback()
             return (False, "SQL error",)
+        
+        
+    def getCategory_byId(self, id_category):
+        ## TODO: check database connection
+        cur = self.database.cursor()
+        sql = '''
+            SELECT ct.cat_name, ct.cat_id
+            FROM categories AS ct
+            WHERE ct.cat_id = ?;
+            '''
+        cur.execute(sql,(id_category,))
+        data = cur.fetchone()
+        return data 
+    
+    
+    def changeCategory(self, id_value, category):
+        category = self.__parse_name(category)
+        cur = self.database.cursor()
+        sql='''
+        UPDATE categories
+        SET cat_name= ?
+        WHERE cat_id = ?;
+        '''
+        val = (category, id_value)
+        try:
+            cur.execute(sql,val)
+            self.database.commit()
+            return (True, "OK",)
+        except sqlite3.Error as err:
+            self.database.rollback()
+            return (False, "SQL error: %s"% err,)
+
 
 #####
 ##### Some stuff for CSV import
 ##### DO NOT DELETE YET
+
+#print(App_data().data_chartOverallSpendings('05'))
 
 """
 
