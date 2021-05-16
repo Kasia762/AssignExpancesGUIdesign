@@ -11,7 +11,6 @@ import tkcalendar as tkcal
 import time
 import datetime as dt
 import pandas as pd
-from app_data import App_data 
 from addTransaction import AddTransaction
 from addCategory import AddCategory
 from addContractors import AddContractor
@@ -34,23 +33,27 @@ _cal_datefmt = "dd.mm.yyyy"
 #######################################3
 
 
-class AppWin:
-    def __init__(self, master=None):
-        
+class FinanceApp:
+    def __init__(self, master, dataBase):
+        self.master = master
         # DataHandler instance
-        self.badb = App_data()
+        ###self.badb = App_data()
+        self.badb = dataBase
         
         # TODO: user manager handle
         
         # TODO: check user and call loginDialog ???
         
         # Main widget, build GUI
-        self.mainwindow = self.GUI(master)
+        self.mainwindow = self.GUI(self.master)
         ### BINDs
         self.cal_tr_To.bind('<<DateEntrySelected>>', lambda x: self.updateTransactionTable() )
         self.cal_tr_From.bind('<<DateEntrySelected>>', lambda x: self.updateTransactionTable() )
         self.tbl_transactions.bind("<Double-1>", self.h_tblTr_OnDoubleClick)
         
+        self.onStartup()
+        if self.master != None:
+            self.mainwindow.grab_set()
         
     def getWeatherInfo(self):
         city = self.ent_ch_city.get()
@@ -415,8 +418,7 @@ class AppWin:
 
     def h_btnTrLotto(self):
         date = dt.date.today()
-        #amount = lotto.check()
-        amount = -5.00
+        amount = lotto.check()
         self.badb.addTransaction(date, amount, "Lotto", None)
         self.updateTransactionTable()
         if amount < 0:
@@ -488,22 +490,21 @@ class AppWin:
         self.var_CurrentBalance.set( value= f"{val:.2f}" )
     
 
-    def run(self):
+    def onStartup(self):
         self.updateTransactionTable()
         self.updateCategoriesTable()
         self.updateContractorsTable()
         self.display_time()
         self.display_balance()
-        self.mainwindow.mainloop()    
 
 
     def GUI(self, master):
         # build ui
-        if master == None:
-            self.root_app = tk.Tk()
-        else:
-            self.root_app = tk.Toplevel(master)
-        
+        # if master == None:
+        #     self.root_app = tk.Tk()
+        # else:
+        self.root_app = tk.Toplevel(master)
+
         ## Hide window 
         ## DO NOT forget to show at the end of init!!!
         self.root_app.withdraw()     
@@ -1032,11 +1033,4 @@ class AppWin:
         self.root_app.deiconify()
         ### 
         return self.root_app
-
-
-if __name__ == '__main__':
-    
-    app = AppWin()
-    app.run()
-   
 

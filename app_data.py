@@ -11,14 +11,14 @@ import numpy as np
 import pandas as pd
 
 
-class App_data:
+class DataBaseHandler:
     _class_counter = 0
+
     
     def __del__(self):
         type(self)._class_counter -= 1
 
 
-            
     def __init__(self):
         ### self.__debug = True
         ### if type(self)._class_counter > 0:
@@ -28,7 +28,7 @@ class App_data:
         type(self)._class_counter += 1
         print("OBJECT #", type(self)._class_counter)
 
-        self.databaseFilename = "app.database.db"
+        ### self.databaseFilename = "app.database.db"
          
         self.default_categories = (
               ("Rent",),
@@ -54,8 +54,9 @@ class App_data:
         print("Loading db")
        # self.__loadDB(self.database, self.databaseFilename)
         if not self.__tableExists("transactions"):
-            print("Creating tables in database...")
+            print("Creating tables in db...", end='')
             self.__initCreateTables()
+            print("done.")
         else:
             print("Tables are exists. Skip")
 
@@ -71,9 +72,9 @@ class App_data:
         data = cur.fetchone()
         count = data[0]
         return ( count > 0 )
-        
-        
-        
+
+
+
     def isExistsCategory(self, name):
         name = self.__parse_name(name)
         if ( name == "" ):
@@ -85,9 +86,8 @@ class App_data:
         count = data[0]
         return ( count > 0 )
 
-        
-        
-        
+
+
     def isExistsContractor(self, name):
         name = self.__parse_name(name)
         if ( name == "" ):
@@ -99,7 +99,7 @@ class App_data:
         count = data[0]
         return ( count > 0 )
 
-        
+
 
     def __initCreateTables(self):        
         self.cur = self.database.cursor()
@@ -163,7 +163,8 @@ class App_data:
             data = cur.fetchall()
             for row in data:
                 print(row)
-                
+
+
 
     def __is_date(self, dtchck):
         import datetime
@@ -179,6 +180,7 @@ class App_data:
             if isinstance(dtchck, datetime.date):
                 return True
         return None
+
 
 
     def __parse_date(self, date):
@@ -198,7 +200,8 @@ class App_data:
         # Remove all extra spaces
         return " ".join(name.split())
 
-                
+
+
     def testPrintAllTables(self):
         hello = "Debug: printing all tables in database:"
         print(hello)
@@ -212,7 +215,8 @@ class App_data:
         # print out all tables
         for row in data:
             self.__testPrintTable( row[0] )
-            
+
+
 
     def getAllTransactions(self):
         ## TODO: check database connection
@@ -231,7 +235,8 @@ class App_data:
         data = cur.fetchall()
         return data
 
-    
+
+
     def getTransaction_byid(self, id_value):
         ## TODO: check database connection
         cur = self.database.cursor()
@@ -249,7 +254,7 @@ class App_data:
         data = cur.fetchone()
         return data
 
-    
+
 
     def data_chartCategories(self,startDate,endDate):
         cur = self.database.cursor()
@@ -265,7 +270,9 @@ class App_data:
         cur.execute(sql,(startDate,endDate,))
         data = cur.fetchall()
         return data
-    
+
+
+
     def data_chartIncome(self,startDate,endDate):
         cur = self.database.cursor()
         sql = '''
@@ -278,8 +285,9 @@ class App_data:
         cur.execute(sql,(startDate,endDate,))
         data = cur.fetchall()
         return data
-    
-    
+
+
+
     def data_chartOutcome(self,startDate,endDate):
         cur = self.database.cursor()
         sql = '''
@@ -292,8 +300,9 @@ class App_data:
         cur.execute(sql,(startDate,endDate,))
         data = cur.fetchall()
         return data
-    
-    
+
+
+
     def data_chartBalance(self,startDate,endDate):
         cur = self.database.cursor()
         sql = '''
@@ -305,7 +314,9 @@ class App_data:
         cur.execute(sql,(startDate,endDate,))
         data = cur.fetchall()
         return data
-    
+
+
+
     def getAllTransactionsPeriod(self,startDate, endDate):
                 
         ## TODO: check database connection
@@ -324,7 +335,7 @@ class App_data:
         cur.execute(sql,period)
         data = cur.fetchall()
         return data
-        
+
 
 
     def getTransactionsPeriod(self, startDate, endDate, category, contractor):
@@ -349,6 +360,7 @@ class App_data:
         return data
 
 
+
     def getBalance(self):
         ## TODO: check database connection
         cur = self.database.cursor()
@@ -362,6 +374,7 @@ class App_data:
         return data
 
 
+
     def getContractorList(self):
         ## TODO: check database connection
         cur = self.database.cursor()
@@ -373,7 +386,8 @@ class App_data:
         cur.execute(sql)
         data = cur.fetchall()
         return data
-        
+
+
 
     def getCategoriesList(self):
         ## TODO: check database connection
@@ -386,8 +400,9 @@ class App_data:
         cur.execute(sql)
         data = cur.fetchall()
         return data
-        
-    
+
+
+
     def addTransaction(self, date, amount, category, contractor):
         date = self.__parse_date(date)
         category = self.__parse_name(category)
@@ -416,7 +431,8 @@ class App_data:
             self.database.rollback()
             return (False, "SQL error: %s"% err,)
 
-    
+
+
     def changeTransaction(self, id_value, date, amount, category, contractor):
         date = self.__parse_date(date)
         category = self.__parse_name(category)
@@ -426,7 +442,6 @@ class App_data:
         if not ( isinstance(amount, float) or isinstance(amount, int) ):
             return (False, "Amount is not real either integer number")
         
-        cur = self.database.cursor()
         sql='''UPDATE transactions
         SET
         trans_date=?, trans_amount=?,
@@ -438,6 +453,7 @@ class App_data:
         '''
         val = (date, amount, contractor, category, id_value)
         try:
+            cur = self.database.cursor()
             cur.execute(sql,val)
             self.database.commit()
             return (True, "OK",)
@@ -445,7 +461,8 @@ class App_data:
             self.database.rollback()
             return (False, "SQL error: %s"% err,)
 
-        
+
+
     def deleteTransaction(self,val):
         cur = self.database.cursor()
         sql= '''
@@ -454,7 +471,8 @@ class App_data:
             '''   
         cur.execute(sql,(val,))
         self.database.commit()
-        
+
+
 
     def addContractor(self,  contractor):
         ## TODO: 1. data types checking
@@ -485,8 +503,9 @@ class App_data:
         cur.execute(sql,(id_contractor,))
         data = cur.fetchone()
         return data 
-        
-        
+
+
+
     def changeContractor(self, id_value, contractor):
         contractor = self.__parse_name(contractor)
         cur = self.database.cursor()
@@ -503,7 +522,8 @@ class App_data:
         except sqlite3.Error as err:
             self.database.rollback()
             return (False, "SQL error: %s"% err,)
-        
+
+
 
     def addCategory(self, category):
         category = self.__parse_name(category)
@@ -521,8 +541,9 @@ class App_data:
         except sqlite3.Error:
             self.database.rollback()
             return (False, "SQL error",)
-        
-        
+
+
+
     def getCategory_byId(self, id_category):
         ## TODO: check database connection
         cur = self.database.cursor()
@@ -534,8 +555,9 @@ class App_data:
         cur.execute(sql,(id_category,))
         data = cur.fetchone()
         return data 
-    
-    
+
+
+
     def changeCategory(self, id_value, category):
         category = self.__parse_name(category)
         cur = self.database.cursor()

@@ -6,21 +6,65 @@ Created on Mon May 10 16:58:15 2021
 """
 import tkinter as tk
 import tkinter.ttk as ttk
-###import 
+from app_main import  FinanceApp
 
 
 class LoginDialog:
-    def __init__(self, master=None):
+    def __init__(self, master, userHandler):
+        ## save userHandler
+        self.userDataBase = userHandler
+        self.master = master
         
-    
         # Main widget
-        self.loginWindow = self.GUI(master)
-        self.loginWindow.title("Login")
-        self.loginWindow.grab_set()
+        self.mainwindow = self.GUI()
+        self.mainwindow.title("Login")
+        
+        ###self.mainwindow.grab_set()
+        self.mainwindow.takefocus = True
+        self.mainwindow.focus_set()
+        
+        ## BINDs
+        self.btn_Login.configure(command = self.h_btnLogin)
+        self.btn_Login.bind('<Return>', lambda x: self.h_btnLogin() )
+        self.txt_PasswordLogin.bind('<Return>', lambda x: self.h_btnLogin() )
+        self.btn_submitAdd.configure(command = self.h_btnCreateUser)
+        self.btn_submitAdd.bind('<Return>', lambda x: self.h_btnCreateUser() )
+        self.txt_passwordConfAdd.bind('<Return>', lambda x: self.h_btnCreateUser() )
+        
+        self.onStartup()
+
+        if self.master == None:
+            self.mainwindow.mainloop()
 
 
+    def showWindow(self):
+        self.mainwindow.update()
+        self.mainwindow.deiconify()
 
-    def cb_CreateUser(self):
+
+    def hideWindow(self):
+        self.mainwindow.withdraw()
+
+
+    def runDatabaseApp(self):
+        print("Run db app")
+        dbApp = FinanceApp(self.master, self.userDataBase.getCurrentUserDB() )
+        self.hideWindow()
+        print("Finance app is opened...")
+        self.mainwindow.wait_window(dbApp.mainwindow)
+        print("... app closed.")
+        self.showWindow()
+
+    def updateUserList(self):
+        data = self.userDataBase.getUsersList()
+        ind_login = 0
+        tr = [i[ind_login]for i in data]
+        self.cmb_UserLogin['values'] = tr
+        if not tr:
+            self.ntb_Login.select(1)
+
+
+    def h_btnCreateUser(self):
         """
         Create user callback
 
@@ -30,21 +74,21 @@ class LoginDialog:
 
         """
 
-        if not self.txt_usernameAddUser.get():
+        if not self.var_usernameAddUser.get():
             self.lbl_usernameAddUser.config(foreground="red")
             self.var_AddUserResult.set(value="User name cannot be empty")
             return False
         else:
             self.lbl_usernameAddUser.configure(foreground="black")
         
-        if not self.txt_passwordAdd.get():
+        if not self.var_passwordAdd.get():
             self.lbl_PasswordAdd.config(foreground="red")
             self.var_AddUserResult.set(value="Password cannot be empty")
             return False
         else:
             self.lbl_PasswordAdd.configure(foreground="black")
         
-        if not (self.txt_passwordAdd.get() == self.txt_passwordConfAdd.get()):
+        if not (self.var_passwordAdd.get() == self.var_passwordConfAdd.get()):
             self.lbl_PasswordAdd.config(foreground="red")
             self.lbl_PasswordConfAdd.config(foreground="red")
             self.var_AddUserResult.set(value="Passwords are not match")
@@ -52,12 +96,13 @@ class LoginDialog:
         else:
             self.lbl_PasswordAdd.configure(foreground="black")
             self.lbl_PasswordConfAdd.configure(foreground="black")
-        ## TODO: call UserCreate()
         self.var_AddUserResult.set(value="Creating user...")
+        ## TODO: call UserCreate()
         pass
-    
-    
-    def cb_Login(self):
+
+
+
+    def h_btnLogin(self):
         """
         Create user callback
 
@@ -72,22 +117,40 @@ class LoginDialog:
         else:
             self.lbl_selectUser.configure(foreground="black")
 
-        if not self.txt_PasswordLogin.get():
+        if not self.var_PasswordLogin.get():
             self.lbl_PasswordLogin.config(foreground="red")
             return False
         else:
             self.lbl_PasswordLogin.configure(foreground="black")
         
-        ## TODO: call UserLogin() 
+        ## TODO: call UserLogin()
+        username = self.cmb_UserLogin.get()
+        password = self.var_PasswordLogin.get()
+        res = self.userDataBase.loginUser(username=username, password=password)
+        if res[0] == True:
+            print("Usercontrol: user", username, "logged in.")
+            self.var_LoginResult.set(value="Logged in. Running app..")
+            self.var_PasswordLogin.set(value='')
+            self.runDatabaseApp()
+            self.var_LoginResult.set(value="")
+            
+        else:
+            self.txt_PasswordLogin.selection_range(0, tk.END)
+            self.var_LoginResult.set(value=res[1])
         pass
 
 
-    def GUI(self, master):
+    def onStartup(self):
+        self.updateUserList()
+        
+
+
+    def GUI(self):
         # build ui
-        if master == None:
+        if self.master == None:
             self.root_login = tk.Tk()
         else:
-            self.root_login = tk.Toplevel(master)
+            self.root_login = tk.Toplevel(self.master)
             
         ## Hide window 
         ## DO NOT forget to show at the end of init!!!
@@ -114,14 +177,19 @@ class LoginDialog:
         self.lbl_PasswordLogin.master.rowconfigure('2', pad='15')
         self.lbl_PasswordLogin.master.columnconfigure('0', pad='0', weight='1')
         self.txt_PasswordLogin = ttk.Entry(self.lbfr_login)
-        self.txt_PasswordLogin.configure(show='*', width='20')
+        self.var_PasswordLogin = tk.StringVar(value='')
+        self.txt_PasswordLogin.configure(show='*', textvariable=self.var_PasswordLogin, width='20')
         self.txt_PasswordLogin.grid(column='0', pady='10', row='3')
         self.txt_PasswordLogin.master.columnconfigure('0', pad='0', weight='1')
-        self.btn_Login = ttk.Button(self.lbfr_login, 
-                                    command = self.cb_Login)
+        self.btn_Login = ttk.Button(self.lbfr_login)
         self.btn_Login.configure(text='LOG IN', width='15')
         self.btn_Login.grid(column='0', pady='20', row='4')
         self.btn_Login.master.columnconfigure('0', pad='0', weight='1')
+        self.lbl_LoginResult = ttk.Label(self.lbfr_login)
+        self.var_LoginResult = tk.StringVar(value='')
+        self.lbl_LoginResult.configure(justify='center', textvariable=self.var_LoginResult)
+        self.lbl_LoginResult.grid(column='0', columnspan='2', row='5')
+        self.lbl_LoginResult.columnconfigure('0', pad='10')
         self.lbfr_login.configure(height='0', text='Please log in below', width='0')
         self.lbfr_login.grid(column='0', ipady='30', padx='40', pady='40', row='0', sticky='nsew')
         self.lbfr_login.master.rowconfigure('0', pad='10', weight='1')
@@ -147,6 +215,8 @@ class LoginDialog:
         self.lbl_usernameAddUser.master.rowconfigure('1', pad='10')
         self.lbl_usernameAddUser.master.columnconfigure('0', pad='10')
         self.txt_usernameAddUser = ttk.Entry(self.lbfr_addUser)
+        self.var_usernameAddUser = tk.StringVar(value='')
+        self.txt_usernameAddUser.configure(textvariable=self.var_usernameAddUser)
         self.txt_usernameAddUser.grid(column='1', row='1', sticky='w')
         self.txt_usernameAddUser.master.rowconfigure('1', pad='10')
         self.txt_usernameAddUser.master.columnconfigure('1', pad='11', weight='1')
@@ -156,7 +226,8 @@ class LoginDialog:
         self.lbl_PasswordAdd.master.rowconfigure('2', pad='5')
         self.lbl_PasswordAdd.master.columnconfigure('0', pad='10')
         self.txt_passwordAdd = ttk.Entry(self.lbfr_addUser)
-        self.txt_passwordAdd.configure(show='*')
+        self.var_passwordAdd = tk.StringVar(value='')
+        self.txt_passwordAdd.configure(show='*', textvariable=self.var_passwordAdd)
         self.txt_passwordAdd.grid(column='1', row='2', sticky='w')
         self.txt_passwordAdd.master.rowconfigure('2', pad='5')
         self.txt_passwordAdd.master.columnconfigure('1', pad='11', weight='1')
@@ -166,12 +237,12 @@ class LoginDialog:
         self.lbl_PasswordConfAdd.master.rowconfigure('3', pad='5')
         self.lbl_PasswordConfAdd.master.columnconfigure('0', pad='10')
         self.txt_passwordConfAdd = ttk.Entry(self.lbfr_addUser)
-        self.txt_passwordConfAdd.configure(show='*')
+        self.var_passwordConfAdd = tk.StringVar(value='')
+        self.txt_passwordConfAdd.configure(show='*', textvariable=self.var_passwordConfAdd)
         self.txt_passwordConfAdd.grid(column='1', row='3', sticky='w')
         self.txt_passwordConfAdd.master.rowconfigure('3', pad='5')
         self.txt_passwordConfAdd.master.columnconfigure('1', pad='11', weight='1')
-        self.btn_submitAdd = ttk.Button(self.lbfr_addUser, 
-                                        command = self.cb_CreateUser)
+        self.btn_submitAdd = ttk.Button(self.lbfr_addUser)
         self.btn_submitAdd.configure(text='SUBMIT', width='15')
         self.btn_submitAdd.grid(column='0', columnspan='2', ipadx='10', ipady='5', padx='10', pady='15', row='4')
         self.btn_submitAdd.master.columnconfigure('0', pad='10')

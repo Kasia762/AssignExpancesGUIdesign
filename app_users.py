@@ -7,7 +7,7 @@ Created on Sat Apr 24 15:53:00 2021
 
 import sqlite3
 import bcrypt
-from app_data import App_data
+from app_data import DataBaseHandler
 import tempfile
 import os
 import zlib
@@ -36,10 +36,10 @@ class UsersHandler:
         
         ### Open connection immideally when running
         ### if no database exist, create it
-        print("Loading users database..")
+        print("Loading database..")
         self.usersDatabase = sqlite3.connect( self.__usersDatabaseFilename )
         if not self.__tableExists("users"):
-            print("Creating tables in database...")
+            print("Creating tables in user database...")
             self.__initCreateTables()
         else:
             print("Tables in database are exists.")
@@ -49,7 +49,8 @@ class UsersHandler:
         
         
         ### Transaction database instance
-        
+        self.__currentUserDB = ''
+
         
 
     def __initCreateTables(self):        
@@ -179,10 +180,6 @@ class UsersHandler:
 
 
     def addUser(self, username, password):
-        if ( self.__currentUser ):
-            ## FIXME: login and logout used to load empty db
-            print ("current user:", self.__currentUser)
-            return (False, 'Cannot add new user while other is active')
         ## Check username
         username = self.__parse_username(username)
         if ( username == '' ):
@@ -206,11 +203,9 @@ class UsersHandler:
             self.usersDatabase.commit()
             cur.close()
             try:
-                ## FIXME: login and logout used to load empty db
-                emptydb = App_data()
-                self.loginUser(username, password)
-                self.saveTransactionDB(emptydb)
-                self.logoutCurrentUser()
+                emptydb = DataBaseHandler()
+                encodedDB = self.__encodeTransactionDB(emptydb)
+                self.__updateUserDB( username, encodedDB )
                 del emptydb
             except:
                 print("========= in save=========")
@@ -222,6 +217,11 @@ class UsersHandler:
 
     def getCurrentUser(self):
         return self.__currentUser
+        ### ======
+
+
+    def getCurrentUserDB(self):
+        return self.__currentUserDB
         ### ======
 
 
@@ -241,7 +241,8 @@ class UsersHandler:
         
 
     def loginUser(self, username, password):
-        self.logoutCurrentUser()
+        if self.__currentUser != '':
+            self.logoutCurrentUser()
 
         username = self.__parse_username(username)
         print('Login attempt, username:"', username,'"', sep='')
@@ -257,13 +258,14 @@ class UsersHandler:
         if passcheck == False:
             print("incorrect password!")
             return (False, 'Incorrect password')
-        
-        if passcheck == True:
+        elif passcheck == True:
             print("OK")
             self.__currentUser = username
             ### Do real stuff
             ### load transaction database and so on...
             ### ***
+            self.__currentUserDB = DataBaseHandler()
+            self.loadTransactionDB(self.__currentUserDB)
             pass
             return (True, 'OK')
         else:
@@ -277,8 +279,10 @@ class UsersHandler:
         if self.__currentUser != '':
             ## ***
             # TODO: close transactions database
+            del self.__currentUserDB
             pass
         self.__currentUser = ''
+        self.__currentUserDB = ''
 
 
 
@@ -301,11 +305,8 @@ class UsersHandler:
             cur.close()
             return (False, "UserSQL stuff error: %s"% err,)
 
-        
-    def saveTransactionDB(self, transDBinstance):
-        if self.__currentUser == '':
-            return (False, 'No user logged in')
-        
+
+    def __encodeTransactionDB(self, transDBinstance):
         tempfn = os.path.join(tempfile.gettempdir(), os.urandom(32).hex())
         ## dump transaction DB
         try:
@@ -321,11 +322,15 @@ class UsersHandler:
         
         with open(tempfn, 'rb') as file:
             blobData = file.read()
-        # os.remove(tempfn)
-        print("Save Trdb to:", tempfn)
+        os.remove(tempfn)
         
         blobData = zlib.compress(blobData)
         blobData = base64.encodebytes(blobData)
+        return blobData
+
+
+    def __updateUserDB(self, username, data):
+        ## TODO: checks
         sql= '''
                 UPDATE  users
                 SET data = ?
@@ -333,54 +338,68 @@ class UsersHandler:
              '''   
         try:
             cur = self.usersDatabase.cursor()
-            cur.execute(sql, ( blobData, self.__currentUser, ) )
+            cur.execute(sql, ( data, username, ) )
             self.usersDatabase.commit()
             cur.close()
             return (True, "OK",)
         except sqlite3.Error as err:
             cur.close()
             return (False, "UserSQL stuff error: %s"% err,)
-        
-        
 
-    def loadTransactionDB(self, transDBinstance):
+        
+    def saveTransactionDB(self, transDBinstance):
         if self.__currentUser == '':
             return (False, 'No user logged in')
+        encodedDB = self.__encodeTransactionDB(transDBinstance)
+        res = self.__updateUserDB( self.__currentUser, encodedDB )
+        return res
+
+
+
+    def __restoreEncodedDB(self, transDBinstance, data):
+        blobData = base64.decodebytes(data)
+        blobData = zlib.decompress(blobData)
+        tempfn = os.path.join(tempfile.gettempdir(), os.urandom(32).hex())
+        with open(tempfn, 'wb') as file:
+             file.write(blobData)
+        try:
+            databaseInFile = sqlite3.connect(tempfn)
+            databaseInFile.backup(transDBinstance.database)
+            databaseInFile.close()
+            os.remove(tempfn)
+        except:
+            ## error to create db
+            print("LOAD DB ERROR")
+            return False
+            pass
         
+        
+    def __getUserDB(self, username):
         sql= '''
                 SELECT data
                 FROM users
                 WHERE login = ?;
              '''   
-        # try:
-        cur = self.usersDatabase.cursor()
-        cur.execute(sql, ( self.__currentUser, ) )
-        blobData = cur.fetchone()[0]
-        cur.close()
-        # except sqlite3.Error as err:
-        #     cur.close()
-        #     return (False, "UserSQL stuff error: %s"% err,)
+        try:
+            cur = self.usersDatabase.cursor()
+            cur.execute(sql, ( self.__currentUser, ) )
+            blobData = cur.fetchone()[0]
+            cur.close()
+            return blobData
+        except sqlite3.Error as err:
+            cur.close()
+            # return (False, "UserSQL stuff error: %s"% err,)
+            return ''
+
+
+    def loadTransactionDB(self, transDBinstance):
+        if self.__currentUser == '':
+            return (False, 'No user logged in')
         
-        blobData = base64.decodebytes(blobData)
-        blobData = zlib.decompress(blobData)
-        tempfn = os.path.join(tempfile.gettempdir(), os.urandom(32).hex())
-        with open(tempfn, 'wb') as file:
-             file.write(blobData)
-        
-        # try:
-        databaseInFile = sqlite3.connect(tempfn)
-        databaseInFile.backup(transDBinstance.database)
-        databaseInFile.close()
-        # os.remove(tempfn)
-        print("Load Trdb from:", tempfn)
-        # except:
-        #     ## error to create db
-        #     print("LOAD DB ERROR")
-        #     return False
-        #     pass
+        blobData = self.__getUserDB(self.__currentUser)
+        self.__restoreEncodedDB(transDBinstance, blobData)
 
-
-
+'''
 #
 #================================================================
 #================================================================
@@ -437,3 +456,4 @@ for row in data:
 
 # res = userdb.loginUser("user_07", "password_07")
 # print (res)
+'''

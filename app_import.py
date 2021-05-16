@@ -185,12 +185,6 @@ class ImportTransactionDialog:
                     subdf.insert(len(subdf.columns), "", self.__df.loc[:,col] , allow_duplicates=True)
             else:
                 subdf.insert(len(subdf.columns), "" , ''  , allow_duplicates=True)
-        if mode in ['check', 'import']:
-            if amount_col == '':
-                tk.messagebox.showwarning("CSV column selection",
-                                      "Column for Amount is not selected.\n\nPlease, select column corresponding to amount.",
-                                      parent=self.mainwindow)
-                return
         ### Check  data
         self.progressbar.start()
         try:
@@ -256,10 +250,23 @@ class ImportTransactionDialog:
 
     
     def h_btnCheck(self):
+        amount_col = self.cmb_Amount.get()
+        if amount_col == '':
+            tk.messagebox.showwarning("CSV column selection",
+                                  "Column for Amount is not selected.\n\nPlease, select column corresponding to amount.",
+                                  parent=self.mainwindow)
+            return
+        
         self.processTable(mode='check')
 
 
     def h_btnImport(self):
+        amount_col = self.cmb_Amount.get()
+        if amount_col == '':
+            tk.messagebox.showwarning("CSV column selection",
+                                  "Column for Amount is not selected.\n\nPlease, select column corresponding to amount.",
+                                  parent=self.mainwindow)
+            return
         self.processTable(mode='import')
         pass
 
@@ -268,7 +275,7 @@ class ImportTransactionDialog:
         pass
 
 
-    def run(self):
+    def onStartup(self):
         #### self.mainwindow.mainloop()
         pass
 

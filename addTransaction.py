@@ -36,9 +36,7 @@ class AddTransaction:
         self.ent_atamount.bind('<Return>', lambda x: self.__evaluateAmountEntry() )
 
         ## Initialisation
-        self.viewContractors()
-        self.viewCatergories()
-        self.__initLoadTransactionData()
+        self.onStartup()
             
 
     def __initLoadTransactionData(self):
@@ -166,8 +164,10 @@ class AddTransaction:
        
             
         
-    def run(self):
-        ### self.mainwindow.mainloop()
+    def onStartup(self):
+        self.viewContractors()
+        self.viewCatergories()
+        self.__initLoadTransactionData()
         pass
 
 
