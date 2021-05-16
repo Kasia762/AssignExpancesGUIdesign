@@ -9,20 +9,25 @@ import sqlite3
 import datetime as dt
 import numpy as np
 import pandas as pd
-import matplotlib.pyplot as plt
+
 
 class App_data:
     _class_counter = 0
     
+    def __del__(self):
+        type(self)._class_counter -= 1
+
+
             
     def __init__(self):
-        self.__debug = True
-        if type(self)._class_counter > 0:
-            print("One instance of class",type(self), " already exist.")
-            print("For now only one instance is allowed.")
-            raise ValueError
-            
+        ### self.__debug = True
+        ### if type(self)._class_counter > 0:
+        ###     print("One instance of class",type(self), " already exist.")
+        ###     print("Only one instance is allowed.")
+        ###     raise ValueError
         type(self)._class_counter += 1
+        print("OBJECT #", type(self)._class_counter)
+
         self.databaseFilename = "app.database.db"
          
         self.default_categories = (
@@ -42,10 +47,10 @@ class App_data:
         
         ### Open connection immideally when running
         ### if no database exist, create it
-       # self.database = sqlite3.connect(':memory:', 
-       #                 detect_types=sqlite3.PARSE_DECLTYPES|sqlite3.PARSE_COLNAMES)
-        self.database = sqlite3.connect(self.databaseFilename, 
+        self.database = sqlite3.connect(':memory:', 
                         detect_types=sqlite3.PARSE_DECLTYPES|sqlite3.PARSE_COLNAMES)
+        # self.database = sqlite3.connect(self.databaseFilename, 
+        #                 detect_types=sqlite3.PARSE_DECLTYPES|sqlite3.PARSE_COLNAMES)
         print("Loading db")
        # self.__loadDB(self.database, self.databaseFilename)
         if not self.__tableExists("transactions"):
@@ -54,39 +59,6 @@ class App_data:
         else:
             print("Tables are exists. Skip")
 
-        
-    def __loadDB(self, db, dbfn):
-        try:
-            databasef = sqlite3.connect(dbfn)
-            databasef.backup(db)
-            databasef.close()
-        except:
-            ## error to create db
-            return False
-            pass
-
-    
-    def __saveDB(self, db, dbfn):
-    ### DO NOT DELETE, 
-    ### DO NOT MERGE into saveDataBase()
-        """
-        usage:
-            __saveDB(self.database, self.databaseFilename)
-
-        """
-        try:
-            databasef = sqlite3.connect(dbfn)
-            db.backup(databasef)
-            databasef.commit()
-            databasef.close()
-        except:
-            ## error to create db
-            return False
-            pass
-
-
-    def saveDataBase(self):
-        return self.__saveDB(self.database, self.databaseFilename)
 
 
     def __tableExists(self, tablename):
@@ -179,9 +151,9 @@ class App_data:
 
 
 
-    def __testPrintTable(self, db, tablename):
-        if self.__tableExists(db, tablename):
-            cur = db.cursor()
+    def __testPrintTable(self, tablename):
+        if self.__tableExists(tablename):
+            cur = self.database.cursor()
             # print out all tables
             hello = "DEBUG: Table: " + str(tablename)
             print("\n\n", hello)
@@ -228,11 +200,10 @@ class App_data:
 
                 
     def testPrintAllTables(self):
-        db = self.database
         hello = "Debug: printing all tables in database:"
         print(hello)
         print("=" * len(hello) )
-        cur = db.cursor()
+        cur = self.database.cursor()
         sql = 'SELECT name FROM sqlite_master WHERE type = "table";'
         cur.execute(sql )
         data = cur.fetchall()
@@ -240,7 +211,7 @@ class App_data:
         print(data)
         # print out all tables
         for row in data:
-            self.__testPrintTable(db, row[0] )
+            self.__testPrintTable( row[0] )
             
 
     def getAllTransactions(self):
@@ -259,6 +230,7 @@ class App_data:
         cur.execute(sql)
         data = cur.fetchall()
         return data
+
     
     def getTransaction_byid(self, id_value):
         ## TODO: check database connection
@@ -276,6 +248,7 @@ class App_data:
         cur.execute(sql,(id_value,))
         data = cur.fetchone()
         return data
+
     
 
     def data_chartCategories(self,startDate,endDate):
@@ -581,6 +554,7 @@ class App_data:
             return (False, "SQL error: %s"% err,)
 
 
+<<<<<<< HEAD
 #####
 ##### Some stuff for CSV import
 ##### DO NOT DELETE YET
@@ -743,4 +717,6 @@ for row in data:
 #badb.saveDataBase()'
 '''
 
+=======
+>>>>>>> login
 
