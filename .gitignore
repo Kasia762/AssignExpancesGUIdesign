@@ -13,5 +13,8 @@
 !addCategory.py
 !addContractors.py
 !addCategory_gui.ui
+!ChoosePeriod.py
+!periodChooser.ui
+
 
 
