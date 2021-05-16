@@ -328,8 +328,6 @@ class AppWin:
                                       parent=self.mainwindow)
 
         
-
-
     def h_btnTrImport(self):
         importWindow = app_import.ImportTransactionDialog(self.mainwindow, self)
         importWindow.run()
@@ -454,7 +452,8 @@ class AppWin:
 
     def h_btnContractorsAdd(self):
         AddContractor(self.mainwindow, self)
-        
+    
+    
     def h_btnContractorsChange(self):
         selected = self.tbl_contractors.selection()
         print(selected)
@@ -476,7 +475,6 @@ class AppWin:
                                       parent=self.mainwindow)
 
                
-        
     def display_time(self):
         self.var_wt_CurrentTime.set( value= time.strftime('%H:%M:%S') )
         self.mainwindow.after(1000, self.display_time)     
