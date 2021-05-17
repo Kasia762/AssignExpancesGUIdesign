@@ -109,13 +109,13 @@ class PeriodChooserWidget(ttk.Frame):
         
     def set_datePeriod(self, date_from, date_to):
         self.lbl_inter_selection.configure(text="Date period: " + str(date_from) + " - " + str(date_to))
-        print(date_from, date_to)
-        return(date_from, date_to)
+        
         
     def get_calEntryDates(self):
         start = self.cal_inter_from.get_date()
         end = self.cal_inter_to.get_date()
         self.set_datePeriod(start, end)
+        return (start, end)
         
     def previousPeriod(self, start):
         if self.get_chartDateType() == 'month':

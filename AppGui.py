@@ -21,7 +21,7 @@ import matplotlib.pyplot as plt
 import app_import
 from weather import Weather
 import lotto
-
+import matplotlib.dates as mdates
 
 import base64
 import tkinter as tk
@@ -59,13 +59,14 @@ class AppWin:
         fig = plt.figure(dpi=self.dpi)
         self.ax1 = fig.add_subplot(111)
         self.chart1 = FigureCanvasTkAgg(fig, self.lbfr_Acc_Chart)
-        self.chart1.get_tk_widget().grid(padx=20, pady=5,
-                                   column="0", row="1", columnspan="2", sticky = 'nsew')
-        
+        self.chart1.get_tk_widget().grid(padx='0',pady='10',
+                column="0", row="0", sticky = 'nsew')
+    
         fig = plt.figure(dpi=self.dpi)
         self.ax2 = fig.add_subplot(111)
         self.chart2 = FigureCanvasTkAgg(fig, self.frm_cat_chart)
         self.chart2.get_tk_widget().grid(sticky='nsew', column="0",row="0")
+        
         
         
     def getWeatherInfo(self):
@@ -116,55 +117,34 @@ class AppWin:
         
 
     
-    def chartCategorySpendings(self, firstDay, lastDay):
+    def chartCategorySpendings(self, start, end):
         amount = 0
         category = 1
-        
-        print(firstDay, lastDay)
-        data = self.badb.data_chartCategories(firstDay, lastDay)
+        data = self.badb.data_chartCategories(start, end)
         am = [abs(i[amount]) for i in data]
         cat=[i[category] for i in data]
-        from_date = firstDay.strftime(_dt_datefmt)
-        to_date = lastDay.strftime(_dt_datefmt)
-        print("chart:",cat)
+
         try: 
             cat[cat.index(None)] = "Undefined"
         except: 
             print("no none categories")
-        
+            
+        start = start.strftime(_dt_datefmt)
+        end = end.strftime(_dt_datefmt)
         self.ax2.clear()
         self.ax2.bar(cat,height=am)
-        self.ax2.set_title("Spendings from: "+from_date+" to: "+ to_date)
+        self.ax2.set_title("Spendings from: "+start+" to: "+ end)
         self.ax2.set_xlabel("Categories")
         self.ax2.set_ylabel("Spendings [Euros]")
         self.chart2.draw()
         
-    
+        
     def chartOverallSpendings(self):
-        mon = self.account_spn_month.get()
-        def getmonth():
-            if mon == "January": return "01"
-            elif mon =="February": return "02"
-            elif mon == "March": return "03"
-            elif mon == "April": return "04"
-            elif mon == "May": return "05"
-            elif mon == "June": return "06"
-            elif mon == "July": return "07"
-            elif mon == "August": return "08"
-            elif mon == "September": return "09"
-            elif mon == "October": return "10"
-            elif mon == "December": return "12"
-            elif mon == "November": return "11"
-            else: 
-              tk.messagebox.showwarning("Spinbox!!!!","put correct month",
-                                      parent=self.mainwindow)
-        today = dt.date.today().replace(month=int(getmonth()))
+        today = dt.date.today()
         start = today.replace(day=1)
         end=today.replace(day=28)+dt.timedelta(days=4)
         end = end - dt.timedelta(days = end.day)
         
-        monthname = str(mon)
-        month=str(getmonth())
         income = self.badb.data_chartIncome(start,end)
         outcome = self.badb.data_chartOutcome(start,end)
         balance = self.badb.data_chartBalance(start,end)
@@ -172,27 +152,53 @@ class AppWin:
         am_income = [i[0] for i in income] 
         am_outcome = [abs(i[0]) for i in outcome ]
         am_balance = [i[0] for i in balance]
-        date_income = [int(i[1].strftime('%d')) for i in income]
-        date_outcome = [int(i[1].strftime('%d')) for i in outcome]
-        date_balance = [int(i[1].strftime('%d')) for i in balance]
-                
         
+        date_income = [(i[1].strftime(_dt_datefmt)) for i in income]
+        date_outcome = [(i[1].strftime(_dt_datefmt)) for i in outcome]
+        date_balance = [(i[1].strftime(_dt_datefmt)) for i in balance]
+        
+        date_income = [str(i[1]) for i in income]
+        date_outcome = [str(i[1]) for i in outcome]
+        date_balance = [str(i[1]) for i in balance]
+    
+        date_income = mdates.datestr2num(date_income)
+        date_outcome = mdates.datestr2num(date_outcome)
+        date_balance = mdates.datestr2num(date_balance)
+    
         self.ax1.clear()
         self.ax1.plot(date_income, am_income, 
-                      color='green', label='income', marker='+', linestyle=":")
+                      color='green', label='income', marker = '*')
         self.ax1.plot(date_outcome, am_outcome, 
                       color = 'red',label='outcome', marker = '.')
-        
         
         self.ax1b = self.ax1.twinx()
         self.ax1b.clear()
         self.ax1b.bar(date_balance, am_balance, 
-                      color = 'PaleGreen', label="balance", alpha = 0.5)
-                
-        monthname=dt.datetime.now().strftime("%d")
-        end_date = int(monthname)+1
-        step = 1 
-        plt.xticks(range(1,end_date,step))
+                       color = 'PaleGreen', label="balance", alpha = 0.5)
+    
+        self.ax1.xaxis.set_major_formatter(mdates.DateFormatter(_dt_datefmt))
+        self.ax1b.xaxis.set_major_formatter(mdates.DateFormatter(_dt_datefmt))
+        
+        self.ax1.set_title("Overall spendings for period: "+\
+                  str(start)+" - "+str(end),
+                  y=1.04, loc="center")
+        self.ax1.set_xlabel("Dates")
+        self.ax1.set_ylabel("Balance [Euros]")
+        self.ax1b.set_ylabel("Income/outcome [Euros]")
+        
+        self.ax1.legend( bbox_to_anchor=(0,1.08), 
+                   loc="center")
+        self.ax1b.legend( bbox_to_anchor=(1,1.05), 
+                   loc="center")
+        
+        self.ax1b.grid(b=True, which='major', color='#999999', 
+                       linestyle='--', linewidth = 0.8, alpha=0.2)
+        self.ax1.grid(axis='x', linestyle='--', linewidth = 0.8)
+        plt.gcf().autofmt_xdate()
+        
+        self.ax1.tick_params(axis='x', labelrotation=10)
+        plt.tight_layout(pad=5, w_pad=5 , h_pad=5)
+        
         self.chart1.draw()
     
         
@@ -216,7 +222,6 @@ class AppWin:
             values = (idvalue, date, row[2], cat, con)
             self.tbl_transactions.insert('','end', values = values)
         # ***  
-        #self.chartCategorySpendings()
         self.chartOverallSpendings()
 
 
@@ -476,7 +481,8 @@ class AppWin:
         self.updateContractorsTable()
         self.display_time()
         self.display_balance()
-        self.mainwindow.mainloop()    
+        self.mainwindow.mainloop()   
+        
 
 
     def GUI(self, master):
@@ -517,35 +523,20 @@ class AppWin:
         self.lbfr_account.master.rowconfigure('0', pad='10', weight=0)
         self.lbfr_account.master.columnconfigure('0', weight=1)
         self.lbfr_account.master.columnconfigure('1', weight=0)
+    
         self.lbfr_Acc_Chart = ttk.Labelframe(self.frm_account)
-        #self.lbfr_Acc_Chart.configure(height='200', width='200')
-        self.lbfr_Acc_Chart.grid(column='0', ipadx='10', ipady='10', row='1', sticky='nsew')
-        self.lbfr_Acc_Chart.master.rowconfigure('1', weight=1)
+        self.lbfr_Acc_Chart.grid(column='0', ipadx='10', ipady='10', 
+                                 row='1', sticky='nsew')
+        self.lbfr_Acc_Chart.rowconfigure('0', weight=1)
         self.lbfr_Acc_Chart.columnconfigure('0', weight=1)
-        self.lbfr_Acc_Chart.columnconfigure('1', weight=1)
-        self.lbfr_Acc_Chart.rowconfigure('1', weight=1)
-        #self.frm_account.configure(height='200', width='200')
+    
         self.frm_account.grid(column='0', row='0', sticky='nsew')
-        self.frm_account.master.rowconfigure('0', weight=1)
-        self.frm_account.master.columnconfigure('0', weight=1)
+        self.frm_account.rowconfigure('0', weight=0)
+        self.frm_account.rowconfigure('1', weight=1)
+        self.frm_account.columnconfigure('0', weight=1)
+        
         self.ntb_app.add(self.frm_account, sticky='nsew', text='Account')
     
-        monthname=dt.datetime.now().strftime("%B")
-        self.account_spn_month = ttk.Spinbox(self.lbfr_Acc_Chart,
-                                     values =("January","February","March",
-                                              "April","May", "June",
-                                              "July","August","September",
-                                              "October","November","December"))
-        
-        self.account_spn_month.delete('0','end')
-        self.account_spn_month.insert('0',monthname)
-        self.account_spn_month.grid(column='0',row='0', sticky='e', padx = 20)
-        
-        self.btn_Update = ttk.Button(self.lbfr_Acc_Chart)
-        self.btn_Update.configure(text='Update', width='15')
-        self.btn_Update.configure(command=self.chartOverallSpendings)
-        self.btn_Update.grid(column='1',row='0', sticky = 'w', padx = 20)
-        
         ### TRANSACTIONS TAB
         self.frm_transactions = ttk.Frame(self.ntb_app)
         self.lbfr_drTransactions = ttk.Labelframe(self.frm_transactions)
@@ -764,7 +755,8 @@ class AppWin:
         ########FRAME FOR PERIOD CHOSER
         
         self.frm_chooseDate = ttk.Frame(self.frm_categories)
-        
+        self.choosePeriod = ChoosePeriod.PeriodChooserWidget(self.frm_chooseDate)
+        self.choosePeriod.grid(column = '1', row = '0')
         # self.cat_monthname=dt.datetime.now().strftime("%B")
         # self.spn_month = ttk.Spinbox(self.lbfr_cat_data,
         #                               values =("January","February","March",
