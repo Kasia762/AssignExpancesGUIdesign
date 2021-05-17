@@ -86,8 +86,8 @@ class PeriodChooserWidget(ttk.Frame):
         self.lbfrm_pr_inter.configure(height='200', text='Choose period', width='200')
         self.lbfrm_pr_inter.grid(column='0', ipadx='10', padx='10', pady='10', row='0', sticky='new')
         
-        self.lbfrm_pr_inter.master.columnconfigure('0', weight='1')
-        self.lbfrm_pr_inter.master.rowconfigure('0', weight='9')
+        self.lbfrm_pr_inter.master.columnconfigure('0', weight='9')
+        self.lbfrm_pr_inter.master.rowconfigure('0', weight='1')
 
         #bind calendar entries to function
         self.cal_inter_from.bind('<<DateEntrySelected>>', lambda x: self.get_calEntryDates() )
