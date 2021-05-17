@@ -993,6 +993,7 @@ class AppWin:
         self.root_app.minsize(700, 400)
         self.root_app.resizable(True, True)
         self.root_app.title('Python cash')
+        self.root_app.iconbitmap('pig1.ico')
         
         # SHOW window, fully constructed
         self.root_app.deiconify()
