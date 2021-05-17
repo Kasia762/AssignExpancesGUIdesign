@@ -45,16 +45,35 @@ class FinanceApp:
         # TODO: check user and call loginDialog ???
         
         # Main widget, build GUI
-        self.mainwindow = self.GUI(self.master)
+        self.mainwindow = self.__GUI(self.master)
         ### BINDs
         self.cal_tr_To.bind('<<DateEntrySelected>>', lambda x: self.updateTransactionTable() )
         self.cal_tr_From.bind('<<DateEntrySelected>>', lambda x: self.updateTransactionTable() )
         self.tbl_transactions.bind("<Double-1>", self.h_tblTr_OnDoubleClick)
+        ## others
+        self.ntb_app.bind("<<NotebookTabChanged>>", self.onTabChange)
+        self.ntb_app.enable_traversal()
+        
         
         self.onStartup()
         if self.master != None:
             self.mainwindow.grab_set()
-        
+
+
+    def onTabChange(self, event):
+        tabIndex = str(self.ntb_app.index(self.ntb_app.select()))
+        if tabIndex == "0":
+            ## Account overview
+            self.display_balance()
+            pass
+        elif tabIndex == "1":
+            pass
+        else:
+            pass
+
+
+
+
     def getWeatherInfo(self):
         city = self.ent_ch_city.get()
         try:
@@ -335,7 +354,6 @@ class FinanceApp:
 
     def h_btnTrImport(self):
         importWindow = app_import.ImportTransactionDialog(self.mainwindow, self)
-        importWindow.run()
         print("Import dialog is opened...")
         self.mainwindow.wait_window(importWindow.mainwindow)
         print("... Import dialog closed.")
@@ -485,7 +503,6 @@ class FinanceApp:
 
 
     def display_balance(self):
-        ## TODO: not by after
         val = self.badb.getBalance()
         self.var_CurrentBalance.set( value= f"{val:.2f}" )
     
@@ -498,7 +515,7 @@ class FinanceApp:
         self.display_balance()
 
 
-    def GUI(self, master):
+    def __GUI(self, master):
         # build ui
         # if master == None:
         #     self.root_app = tk.Tk()

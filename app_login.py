@@ -16,7 +16,7 @@ class LoginDialog:
         self.master = master
         
         # Main widget
-        self.mainwindow = self.GUI()
+        self.mainwindow = self.__GUI()
         self.mainwindow.title("Login")
         
         ###self.mainwindow.grab_set()
@@ -24,12 +24,17 @@ class LoginDialog:
         self.mainwindow.focus_set()
         
         ## BINDs
+        ## buttons
         self.btn_Login.configure(command = self.h_btnLogin)
+        self.btn_submitAdd.configure(command = self.h_btnCreateUser)
+        ## keyboard
         self.btn_Login.bind('<Return>', lambda x: self.h_btnLogin() )
         self.txt_PasswordLogin.bind('<Return>', lambda x: self.h_btnLogin() )
-        self.btn_submitAdd.configure(command = self.h_btnCreateUser)
         self.btn_submitAdd.bind('<Return>', lambda x: self.h_btnCreateUser() )
         self.txt_passwordConfAdd.bind('<Return>', lambda x: self.h_btnCreateUser() )
+        ## other
+        self.ntb_Login.bind("<<NotebookTabChanged>>", self.onTabChange)
+        self.ntb_Login.enable_traversal()
         
         self.onStartup()
 
@@ -37,13 +42,28 @@ class LoginDialog:
             self.mainwindow.mainloop()
 
 
+    def onTabChange(self, event):
+        tabIndex = str(self.ntb_Login.index(self.ntb_Login.select()))
+        if tabIndex == "0":
+            self.updateUserList()
+            pass
+        elif tabIndex == "1":
+            pass
+        else:
+            pass
+    
+
+
+
     def showWindow(self):
         self.mainwindow.update()
         self.mainwindow.deiconify()
 
 
+
     def hideWindow(self):
         self.mainwindow.withdraw()
+
 
 
     def runDatabaseApp(self):
@@ -55,13 +75,15 @@ class LoginDialog:
         print("... app closed.")
         self.showWindow()
 
+
+
     def updateUserList(self):
         data = self.userDataBase.getUsersList()
         ind_login = 0
         tr = [i[ind_login]for i in data]
         self.cmb_UserLogin['values'] = tr
         if not tr:
-            self.ntb_Login.select(1)
+            self.ntb_Login.select(self.frm_addUser)
 
 
     def h_btnCreateUser(self):
@@ -96,8 +118,26 @@ class LoginDialog:
         else:
             self.lbl_PasswordAdd.configure(foreground="black")
             self.lbl_PasswordConfAdd.configure(foreground="black")
+        ## Creating user
         self.var_AddUserResult.set(value="Creating user...")
-        ## TODO: call UserCreate()
+        username = self.var_usernameAddUser.get()
+        password = self.var_passwordAdd.get()
+        res = self.userDataBase.addUser(username, password)
+        if res[0] == True:
+            print("Usercontrol: user", username, "added.")
+            self.var_passwordAdd.set(value='')
+            self.var_passwordConfAdd.set(value='')
+            self.var_usernameAddUser.set(value='')
+            self.var_AddUserResult.set(value="User added.")
+            self.updateUserList()
+            reslog = self.userDataBase.loginUser(username=username, password=password)
+            if reslog[0] == True:
+                print("Usercontrol: user", username, "logged in.")
+                self.var_AddUserResult.set(value="Logged in. Running app..")
+                self.runDatabaseApp()
+                self.var_AddUserResult.set(value="")
+        else:
+            self.var_AddUserResult.set(value=res[1])
         pass
 
 
@@ -140,12 +180,13 @@ class LoginDialog:
         pass
 
 
+
     def onStartup(self):
         self.updateUserList()
         
 
 
-    def GUI(self):
+    def __GUI(self):
         # build ui
         if self.master == None:
             self.root_login = tk.Tk()

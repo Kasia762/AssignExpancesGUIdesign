@@ -34,7 +34,7 @@ class ImportTransactionDialog:
         self.mainwindow.bind_class("TCheckbutton","<<Toggle>>", self.updatePreview)
         self.mainwindow.bind('<Escape>', lambda x: self.mainwindow.destroy() )
         
-        self.btn_Open.focus_set()
+        self.onStartup()
 
 
         
@@ -276,7 +276,7 @@ class ImportTransactionDialog:
 
 
     def onStartup(self):
-        #### self.mainwindow.mainloop()
+        self.btn_Open.focus_set()
         pass
 
 

@@ -66,17 +66,16 @@ def startup_checking():
         print('python -m pip install tkinter')
     else:
         import tkinter as tk
-        import tkinter.ttk as ttk
+        # GUI SPLASH SCREEN
+        splash_root = tk.Tk()
+        splash_root.geometry("400x200")
+        splash_label = tk.Label(splash_root,text="Loading...",font=28)
+        splash_label.pack()
+        splash_root.eval('tk::PlaceWindow . center')
+        
         # not empty means smthg absent
         absent = check_libs(libs)
         if absent :
-            # GUI QUESTION
-            splash_root = tk.Tk()
-            splash_root.geometry("400x200")
-            splash_label = tk.Label(splash_root,text="Loading...",font=28)
-            splash_label.pack()
-            splash_root.eval('tk::PlaceWindow . center')
-            
             reply =  tk.messagebox.askyesno(title="Libraries absent", 
                                    message="Python libraries absent:\n" + 
                                            "\n".join(absent) +
@@ -86,15 +85,15 @@ def startup_checking():
                 if  installres:
                     print("Please, install that stuff:\n" + "\n".join(installres))
                     print("Cannot continue. Exit.")
-                    ### 
-                    ### TODO: exit from whole programm
                     exit(1) 
             else:
                 ## Libs are missing but answer is NO
-                ## TODO: exit from app
                 exit(1)
                 pass
-            splash_root.destroy()
+        else:
+            pass
+        splash_root.destroy()
+        ##splash_root.after(3000, splash_root.destroy() )
         
 class Main_App:
     
@@ -118,8 +117,6 @@ class Main_App:
 if __name__ == '__main__':
     ## Check all libraries present
     startup_checking()
-    import tkinter as tk
-    import tkinter.ttk as ttk
     from app_users import UsersHandler
     from app_login import LoginDialog
     app = Main_App()
