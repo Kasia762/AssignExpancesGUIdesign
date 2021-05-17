@@ -84,8 +84,10 @@ class PeriodChooserWidget(ttk.Frame):
         self.lbl_inter_enterinterval.grid(column='0', columnspan='2', pady='10', row='0')
         self.lbl_inter_enterinterval.columnconfigure('0', pad='0', weight='0')
         self.lbfrm_pr_inter.configure(height='200', text='Choose period', width='200')
-        self.lbfrm_pr_inter.grid(column='0', ipadx='10', padx='10', pady='10', row='1', sticky='ew')
-        self.lbfrm_pr_inter.columnconfigure('0', weight='0')
+        self.lbfrm_pr_inter.grid(column='0', ipadx='10', padx='10', pady='10', row='0', sticky='new')
+        
+        self.lbfrm_pr_inter.master.columnconfigure('0', weight='1')
+        self.lbfrm_pr_inter.master.rowconfigure('0', weight='9')
 
         #bind calendar entries to function
         self.cal_inter_from.bind('<<DateEntrySelected>>', lambda x: self.get_calEntryDates() )
@@ -124,7 +126,8 @@ class PeriodChooserWidget(ttk.Frame):
         
     def set_datePeriod(self, date_from, date_to):
         self.lbl_inter_selection.configure(text="Date period: " + str(date_from) + " - " + str(date_to))
-        return (date_from, date_to)
+        print(date_from, date_to)
+        return(date_from, date_to)
         
     def get_calEntryDates(self):
         start = self.cal_inter_from.get_date()
@@ -207,4 +210,3 @@ if __name__ == '__main__':
     widget.pack(expand=True, fill='both')
     root.mainloop() 
     # widget.run()
-

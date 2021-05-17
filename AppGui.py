@@ -15,6 +15,7 @@ from app_data import App_data
 from addTransaction import AddTransaction
 from addCategory import AddCategory
 from addContractors import AddContractor
+import ChoosePeriod
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 import matplotlib.pyplot as plt
 import app_import
@@ -50,6 +51,10 @@ class AppWin:
         self.cal_tr_To.bind('<<DateEntrySelected>>', lambda x: self.updateTransactionTable() )
         self.cal_tr_From.bind('<<DateEntrySelected>>', lambda x: self.updateTransactionTable() )
         self.tbl_transactions.bind("<Double-1>", self.h_tblTr_OnDoubleClick)
+        
+        self.dpi = self.mainwindow.winfo_fpixels('1i')
+        print(f"Current dpi is set to {self.dpi}")
+        
         
         
     def getWeatherInfo(self):
@@ -146,14 +151,15 @@ class AppWin:
         except: 
             print("no none categories")
         #fig = plt.figure(dpi=dpi)
-        fig = plt.figure(dpi=100)
+        fig = plt.figure(dpi=self.dpi)
+        
         ax = fig.add_subplot(111)
         chart = FigureCanvasTkAgg(fig, self.frm_cat_chart)
         chart.get_tk_widget().grid(sticky='nsew', column="0",row="0")
         ax.bar(cat,height=am)
         ax.set_title("Spendings from: "+from_date+" to: "+ to_date)
         ax.set_xlabel("Categories");ax.set_ylabel("Spendings [Euros]")
-    
+        chart.draw()
     
     def chartOverallSpendings(self):
         mon = self.account_spn_month.get()
@@ -191,17 +197,18 @@ class AppWin:
         date_outcome = [int(i[1].strftime('%d')) for i in outcome]
         date_balance = [int(i[1].strftime('%d')) for i in balance]
                 
-        fig = plt.figure(dpi=100)
+        fig = plt.figure(dpi=self.dpi)
         ax = fig.add_subplot(111)
         chart = FigureCanvasTkAgg(fig, self.lbfr_Acc_Chart)
         chart.get_tk_widget().grid(padx=20, pady=5,
                                    column="0", row="1", columnspan="2", sticky = 'nsew')
-        
+        ax.clear()
         ax.plot(date_income, am_income, color='green', label='income', marker='+', linestyle=":")
         ax.plot(date_outcome, am_outcome, color = 'red',label='outcome', marker = '.')
         plt.legend(loc=0)
         
         ax1 = ax.twinx()
+        ax1.clear()
         ax1.bar(date_balance, am_balance, color = 'PaleGreen', label="balance", alpha = 0.5)
         plt.legend(loc=9)
         
@@ -210,7 +217,9 @@ class AppWin:
         step = 1 
         plt.xticks(range(1,end_date,step))
         #print(monthname)
-
+        chart.draw()
+    
+    
         
     def updateTransactionTable(self):
         self.display_balance()
@@ -776,40 +785,39 @@ class AppWin:
         # self.lbfr_cat_Commands.rowconfigure('0', weight = 1)
         # self.lbfr_cat_Commands.rowconfigure('1', weight = 1)
         
-        self.lbfr_cat_data = ttk.Labelframe(self.frm_categories)
         
-        self.cat_monthname=dt.datetime.now().strftime("%B")
-        self.spn_month = ttk.Spinbox(self.lbfr_cat_data,
-                                      values =("January","February","March",
-                                              "April","May", "June",
-                                              "July","August","September",
-                                              "October","November","December"),
-                                      command=self.cat_spn_chooseMonth)
+        ########FRAME FOR PERIOD CHOSER
         
-        self.spn_month.delete('0','end')
-        self.spn_month.insert('0',self.cat_monthname)
-        self.spn_month.grid(column='0',row='0', columnspan = "4",
-                            ipady='7')
+        self.frm_chooseDate = ttk.Frame(self.frm_categories)
         
-        self.btn_prevMonth = ttk.Button(self.lbfr_cat_data)
-        self.btn_prevMonth.configure(text='<< Previous Month', width='15')
-        self.btn_prevMonth.configure(command=self.cat_btn_previousMonth)
-        self.btn_prevMonth.grid(column='0',row='1', sticky='we')
-        
-        self.btn_currentMonth = ttk.Button(self.lbfr_cat_data)
-        self.btn_currentMonth.configure(text='Current Month', width='15')
-        self.btn_currentMonth.configure(command=self.cat_btn_currentMonth)
-        self.btn_currentMonth.grid(column='1',row='1', sticky='we')
-        
-        self.btn_currentWeek = ttk.Button(self.lbfr_cat_data)
-        self.btn_currentWeek.configure(text='Current Week', width='15')
-        self.btn_currentWeek.configure(command=self.cat_btn_currentWeek)
-        self.btn_currentWeek.grid(column='3',row='1', sticky='we')
-        
-        self.btn_previousWeek = ttk.Button(self.lbfr_cat_data)
-        self.btn_previousWeek.configure(text='<<Previous Week', width='15')
-        self.btn_previousWeek.configure(command=self.cat_btn_previousWeek)
-        self.btn_previousWeek.grid(column='2',row='1', sticky='we')
+        # self.cat_monthname=dt.datetime.now().strftime("%B")
+        # self.spn_month = ttk.Spinbox(self.lbfr_cat_data,
+        #                               values =("January","February","March",
+        #                                       "April","May", "June",
+        #                                       "July","August","September",
+        #                                       "October","November","December"),
+        #                               command=self.cat_spn_chooseMonth)
+        # self.spn_month.delete('0','end')
+        # self.spn_month.insert('0',self.cat_monthname)
+        # self.spn_month.grid(column='0',row='0', columnspan = "4",ipady='7')
+        # self.btn_prevMonth = ttk.Button(self.lbfr_cat_data)
+        # self.btn_prevMonth.configure(text='<< Previous Month', width='15')
+        # self.btn_prevMonth.configure(command=self.cat_btn_previousMonth)
+        # self.btn_prevMonth.grid(column='0',row='1', sticky='we')
+        # self.btn_currentMonth = ttk.Button(self.lbfr_cat_data)
+        # self.btn_currentMonth.configure(text='Current Month', width='15')
+        # self.btn_currentMonth.configure(command=self.cat_btn_currentMonth)
+        # self.btn_currentMonth.grid(column='1',row='1', sticky='we')
+        # self.btn_currentWeek = ttk.Button(self.lbfr_cat_data)
+        # self.btn_currentWeek.configure(text='Current Week', width='15')
+        # self.btn_currentWeek.configure(command=self.cat_btn_currentWeek)
+        # self.btn_currentWeek.grid(column='3',row='1', sticky='we')
+        # self.btn_previousWeek = ttk.Button(self.lbfr_cat_data)
+        # self.btn_previousWeek.configure(text='<<Previous Week', width='15')
+        # self.btn_previousWeek.configure(command=self.cat_btn_previousWeek)
+        # self.btn_previousWeek.grid(column='2',row='1', sticky='we')
+        self.frm_chooseDate.grid(column='1',padx='5',row='0', sticky='nsew')
+            
     
         self.frm_cat_chart = ttk.Frame(self.frm_categories)
         self.frm_cat_chart.grid(column = '1', row = '1', sticky = 'nsew',
@@ -817,14 +825,7 @@ class AppWin:
         self.frm_cat_chart.columnconfigure('0', weight=1)
         self.frm_cat_chart.rowconfigure('0', weight=1)
     
-        self.lbfr_cat_data.configure(height='0', text='Data for operations')
-        self.lbfr_cat_data.grid(column='1',padx='5',row='0', sticky='nsew')
-        self.lbfr_cat_data.rowconfigure('0', pad='5', weight=1)
-        self.lbfr_cat_data.rowconfigure('1', pad='5', weight=1)       
-        self.lbfr_cat_data.columnconfigure('0', pad='5', weight=1)        
-        self.lbfr_cat_data.columnconfigure('1', pad='5', weight=1)
-        self.lbfr_cat_data.columnconfigure('2', pad='5', weight=1)
-        self.lbfr_cat_data.columnconfigure('3', pad='5', weight=1)
+        
         self.frm_categories.grid(column='0', padx='5', pady='10', row='0', sticky='nsew')
         
         self.frm_categories.rowconfigure('0', weight=0, pad="10")

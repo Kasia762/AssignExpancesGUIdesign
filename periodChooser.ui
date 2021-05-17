@@ -9,60 +9,6 @@
       <property name="row">0</property>
     </layout>
     <child>
-      <object class="ttk.Labelframe" id="lbfrm_pr_type">
-        <property name="height">200</property>
-        <property name="text" translatable="yes">Choose contractor or category</property>
-        <property name="width">200</property>
-        <layout manager="grid">
-          <property name="column">0</property>
-          <property name="ipadx">10</property>
-          <property name="ipady">10</property>
-          <property name="padx">10</property>
-          <property name="pady">10</property>
-          <property name="propagate">True</property>
-          <property name="row">0</property>
-          <property name="sticky">ew</property>
-          <property type="col" id="0" name="weight">0</property>
-          <property type="row" id="0" name="weight">0</property>
-        </layout>
-        <child>
-          <object class="ttk.Radiobutton" id="rbn_type_cont">
-            <property name="style">Toolbutton</property>
-            <property name="text" translatable="yes">contractor</property>
-            <layout manager="grid">
-              <property name="column">0</property>
-              <property name="padx">10</property>
-              <property name="pady">0</property>
-              <property name="propagate">True</property>
-              <property name="row">0</property>
-              <property name="sticky">ew</property>
-              <property type="col" id="0" name="pad">0</property>
-              <property type="col" id="0" name="weight">1</property>
-              <property type="row" id="0" name="pad">0</property>
-              <property type="row" id="0" name="weight">1</property>
-            </layout>
-          </object>
-        </child>
-        <child>
-          <object class="ttk.Radiobutton" id="rbn_type_cat">
-            <property name="style">Toolbutton</property>
-            <property name="text" translatable="yes">category</property>
-            <layout manager="grid">
-              <property name="column">1</property>
-              <property name="padx">10</property>
-              <property name="pady">0</property>
-              <property name="propagate">True</property>
-              <property name="row">0</property>
-              <property name="sticky">ew</property>
-              <property type="col" id="1" name="weight">1</property>
-              <property type="row" id="0" name="pad">0</property>
-              <property type="row" id="0" name="weight">1</property>
-            </layout>
-          </object>
-        </child>
-      </object>
-    </child>
-    <child>
       <object class="ttk.Labelframe" id="lbfrm_pr_inter">
         <property name="height">200</property>
         <property name="text" translatable="yes">Choose period</property>
@@ -73,7 +19,7 @@
           <property name="padx">10</property>
           <property name="pady">10</property>
           <property name="propagate">True</property>
-          <property name="row">1</property>
+          <property name="row">0</property>
           <property name="sticky">ew</property>
           <property type="col" id="0" name="weight">0</property>
         </layout>
@@ -146,6 +92,8 @@
           <object class="ttk.Radiobutton" id="rbn_inter_week">
             <property name="style">Toolbutton</property>
             <property name="text" translatable="yes">week</property>
+            <property name="value">week</property>
+            <property name="variable">string:var_date_type</property>
             <layout manager="grid">
               <property name="column">3</property>
               <property name="padx">10</property>
@@ -161,6 +109,8 @@
           <object class="ttk.Radiobutton" id="rbn_inter_month">
             <property name="style">Toolbutton</property>
             <property name="text" translatable="yes">month</property>
+            <property name="value">month</property>
+            <property name="variable">string:var_date_type</property>
             <layout manager="grid">
               <property name="column">4</property>
               <property name="padx">10</property>
@@ -176,6 +126,8 @@
           <object class="ttk.Radiobutton" id="rbn_inter_year">
             <property name="style">Toolbutton</property>
             <property name="text" translatable="yes">year</property>
+            <property name="value">year</property>
+            <property name="variable">string:var_date_type</property>
             <layout manager="grid">
               <property name="column">5</property>
               <property name="padx">10</property>
@@ -189,6 +141,7 @@
         </child>
         <child>
           <object class="ttk.Button" id="btn_inter_prev">
+            <property name="command" type="command" cbtype="simple">h_btn_Prev</property>
             <property name="text" translatable="yes">&lt;&lt;Previous</property>
             <layout manager="grid">
               <property name="column">3</property>
@@ -201,6 +154,7 @@
         </child>
         <child>
           <object class="ttk.Button" id="btn_inter_current">
+            <property name="command" type="command" cbtype="simple">h_btn_Current</property>
             <property name="text" translatable="yes">Current</property>
             <layout manager="grid">
               <property name="column">4</property>
@@ -213,6 +167,7 @@
         </child>
         <child>
           <object class="ttk.Button" id="rbn_inter_next">
+            <property name="command" type="command" cbtype="simple">h_btn_Next</property>
             <property name="text" translatable="yes">Next&gt;&gt;</property>
             <layout manager="grid">
               <property name="column">5</property>
