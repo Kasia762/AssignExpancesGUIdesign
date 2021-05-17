@@ -865,6 +865,11 @@ class AppWin:
         self.lbl_wt_tempNum = ttk.Label(self.frm_wt_values)
         
         self.var_wt_tempNum = tk.StringVar(value='???')
+        img = Image.open('temp.ico')
+        img = img.resize((50, 50), Image.ANTIALIAS)
+        img = ImageTk.PhotoImage(img)
+        self.lbl_wt_tempNum.configure(image = img)
+        self.lbl_wt_tempNum.image = img
         self.lbl_wt_tempNum.configure(font='{Arial} 16 {}', textvariable=self.var_wt_tempNum)
         self.lbl_wt_tempNum.grid(column='1', row='2')
         
