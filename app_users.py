@@ -36,13 +36,13 @@ class UsersHandler:
         
         ### Open connection immideally when running
         ### if no database exist, create it
-        print("Loading database..")
+        print("Loading users database..")
         self.usersDatabase = sqlite3.connect( self.__usersDatabaseFilename )
         if not self.__tableExists("users"):
-            print("Creating tables in user database...")
+            print("Creating tables in users database...")
             self.__initCreateTables()
         else:
-            print("Tables in database are exists.")
+            print("Tables in users database are exists.")
             
         ### Current user name
         self.__currentUser = ''

@@ -45,9 +45,11 @@ class LoginDialog:
     def onTabChange(self, event):
         tabIndex = str(self.ntb_Login.index(self.ntb_Login.select()))
         if tabIndex == "0":
+            ## Login tab
             self.updateUserList()
             pass
         elif tabIndex == "1":
+            ## AddUser tab
             pass
         else:
             pass
