@@ -160,6 +160,7 @@ class AppWin:
         ax.set_title("Spendings from: "+from_date+" to: "+ to_date)
         ax.set_xlabel("Categories");ax.set_ylabel("Spendings [Euros]")
         chart.draw()
+        plt.close(fig)
     
     def chartOverallSpendings(self):
         mon = self.account_spn_month.get()
@@ -218,7 +219,7 @@ class AppWin:
         plt.xticks(range(1,end_date,step))
         #print(monthname)
         chart.draw()
-    
+        plt.close(fig)
     
         
     def updateTransactionTable(self):
