@@ -855,7 +855,11 @@ class AppWin:
         self.lbl_wt_temperature.grid(column='1', padx='10', pady='5', row='1', sticky='sew')
         
         self.lbl_wt_icon = ttk.Label(self.frm_wt_values)
-        self.lbl_wt_icon.configure(text='Icon')
+        img = Image.open('pig1.ico')
+        img = img.resize((50, 50), Image.ANTIALIAS)
+        img = ImageTk.PhotoImage(img)
+        self.lbl_wt_icon.configure(image = img)
+        self.lbl_wt_icon.image = img
         self.lbl_wt_icon.grid(column='0', ipady = '10', padx='20', row='2', sticky='nsew')
                 
         self.lbl_wt_tempNum = ttk.Label(self.frm_wt_values)
