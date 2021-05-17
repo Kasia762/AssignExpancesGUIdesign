@@ -56,6 +56,17 @@ class AppWin:
         print(f"Current dpi is set to {self.dpi}")
         
         
+        fig = plt.figure(dpi=self.dpi)
+        self.ax1 = fig.add_subplot(111)
+        self.chart1 = FigureCanvasTkAgg(fig, self.lbfr_Acc_Chart)
+        self.chart1.get_tk_widget().grid(padx=20, pady=5,
+                                   column="0", row="1", columnspan="2", sticky = 'nsew')
+        
+        fig = plt.figure(dpi=self.dpi)
+        self.ax2 = fig.add_subplot(111)
+        self.chart2 = FigureCanvasTkAgg(fig, self.frm_cat_chart)
+        self.chart2.get_tk_widget().grid(sticky='nsew', column="0",row="0")
+        
         
     def getWeatherInfo(self):
         city = self.ent_ch_city.get()
@@ -103,37 +114,7 @@ class AppWin:
         end = end - dt.timedelta(days = end.day)
         self.chartCategorySpendings(start, end)
         
-        
-    def cat_btn_previousWeek(self):
-        today = dt.date.today() - \
-            dt.timedelta(weeks=1)
-        start = today - dt.timedelta(days=today.weekday())
-        end = start + dt.timedelta(days=6)
-        self.chartCategorySpendings(start, end)
-    
-    
-    def cat_btn_currentWeek(self):
-        today = dt.date.today()
-        start = today - dt.timedelta(days=today.weekday())
-        end = start + dt.timedelta(days=6)
-        self.chartCategorySpendings(start, end)
 
-       
-    def cat_btn_previousMonth(self):
-        today = dt.date.today()
-        end = today.replace(day=1) -\
-            dt.timedelta(days=1)    
-        start = today.replace(day=1) -\
-            dt.timedelta(days=end.day)
-        self.chartCategorySpendings(start, end)
-        
-        
-    def cat_btn_currentMonth(self):
-        today = dt.date.today()
-        start = today.replace(day=1)
-        end = today.replace(day=31)
-        self.chartCategorySpendings(start, end)
-        
     
     def chartCategorySpendings(self, firstDay, lastDay):
         amount = 0
@@ -150,17 +131,14 @@ class AppWin:
             cat[cat.index(None)] = "Undefined"
         except: 
             print("no none categories")
-        #fig = plt.figure(dpi=dpi)
-        fig = plt.figure(dpi=self.dpi)
         
-        ax = fig.add_subplot(111)
-        chart = FigureCanvasTkAgg(fig, self.frm_cat_chart)
-        chart.get_tk_widget().grid(sticky='nsew', column="0",row="0")
-        ax.bar(cat,height=am)
-        ax.set_title("Spendings from: "+from_date+" to: "+ to_date)
-        ax.set_xlabel("Categories");ax.set_ylabel("Spendings [Euros]")
-        chart.draw()
-        plt.close(fig)
+        self.ax2.clear()
+        self.ax2.bar(cat,height=am)
+        self.ax2.set_title("Spendings from: "+from_date+" to: "+ to_date)
+        self.ax2.set_xlabel("Categories")
+        self.ax2.set_ylabel("Spendings [Euros]")
+        self.chart2.draw()
+        
     
     def chartOverallSpendings(self):
         mon = self.account_spn_month.get()
@@ -198,28 +176,24 @@ class AppWin:
         date_outcome = [int(i[1].strftime('%d')) for i in outcome]
         date_balance = [int(i[1].strftime('%d')) for i in balance]
                 
-        fig = plt.figure(dpi=self.dpi)
-        ax = fig.add_subplot(111)
-        chart = FigureCanvasTkAgg(fig, self.lbfr_Acc_Chart)
-        chart.get_tk_widget().grid(padx=20, pady=5,
-                                   column="0", row="1", columnspan="2", sticky = 'nsew')
-        ax.clear()
-        ax.plot(date_income, am_income, color='green', label='income', marker='+', linestyle=":")
-        ax.plot(date_outcome, am_outcome, color = 'red',label='outcome', marker = '.')
-        plt.legend(loc=0)
         
-        ax1 = ax.twinx()
-        ax1.clear()
-        ax1.bar(date_balance, am_balance, color = 'PaleGreen', label="balance", alpha = 0.5)
-        plt.legend(loc=9)
+        self.ax1.clear()
+        self.ax1.plot(date_income, am_income, 
+                      color='green', label='income', marker='+', linestyle=":")
+        self.ax1.plot(date_outcome, am_outcome, 
+                      color = 'red',label='outcome', marker = '.')
         
+        
+        self.ax1b = self.ax1.twinx()
+        self.ax1b.clear()
+        self.ax1b.bar(date_balance, am_balance, 
+                      color = 'PaleGreen', label="balance", alpha = 0.5)
+                
         monthname=dt.datetime.now().strftime("%d")
         end_date = int(monthname)+1
         step = 1 
         plt.xticks(range(1,end_date,step))
-        #print(monthname)
-        chart.draw()
-        plt.close(fig)
+        self.chart1.draw()
     
         
     def updateTransactionTable(self):
