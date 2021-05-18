@@ -48,8 +48,8 @@ class FinanceApp:
         # Main widget, build GUI
         self.mainwindow = self.__GUI(self.master)
         ### BINDs
-        self.cal_tr_To.bind('<<DateEntrySelected>>', lambda x: self.updateTransactionTable() )
-        self.cal_tr_From.bind('<<DateEntrySelected>>', lambda x: self.updateTransactionTable() )
+        # self.cal_tr_To.bind('<<DateEntrySelected>>', lambda x: self.updateTransactionTable() )
+        # self.cal_tr_From.bind('<<DateEntrySelected>>', lambda x: self.updateTransactionTable() )
         self.tbl_transactions.bind("<Double-1>", self.h_tblTr_OnDoubleClick)
         self.tbl_categories.bind("<Double-1>", self.h_tblCat_OnDoubleClick)
         self.tbl_contractors.bind("<Double-1>", self.h_tblCont_OnDoubleClick)
@@ -58,6 +58,7 @@ class FinanceApp:
         self.ntb_app.enable_traversal()
         self.tbl_contractors['show'] = 'headings'
         self.tbl_categories['show'] = 'headings'
+        self.cat_choosePeriod.bind('<<PeriodSelected>>', self.chartCategorySpendings())
         
         self.onStartup()
         
@@ -71,7 +72,6 @@ class FinanceApp:
             # self.mainwindow.grab_set()
             pass
 
-        
         
 
 
@@ -92,7 +92,7 @@ class FinanceApp:
             self.chart2 = FigureCanvasTkAgg(fig, self.lbfr_cat_Chart)
             self.chart2.get_tk_widget().grid(sticky='nsew', column="0",row="0")
             
-            self.chartOverallSpendings()
+            #self.chartOverallSpendings()
             pass
         elif tabIndex == "1":
             ## Transaction tab
@@ -131,6 +131,9 @@ class FinanceApp:
       
         
     def chartCategorySpendings(self):
+        dates = self.cat_choosePeriod.get_calEntryDates()
+        print("category:",str(dates))
+        
         today = dt.date.today()
         start = today.replace(day=1)
         end=today.replace(day=28)+dt.timedelta(days=4)
@@ -157,6 +160,7 @@ class FinanceApp:
     
     
     def chartOverallSpendings(self):
+       
         today = dt.date.today()
         start = today.replace(day=1)
         end=today.replace(day=28)+dt.timedelta(days=4)
@@ -231,8 +235,8 @@ class FinanceApp:
             self.tbl_transactions.delete(i)
              
         #then display data
-        datefr = self.cal_tr_From.get_date()
-        dateto = self.cal_tr_To.get_date()
+        datefr = self.cat_choosePeriod[0]
+        dateto = self.cat_choosePeriod[1]
         
         data = self.badb.getAllTransactionsPeriod(datefr, dateto)
         for row in data:
@@ -244,7 +248,7 @@ class FinanceApp:
             self.tbl_transactions.insert('','end', values = values)
         # ***  
         #self.chartCategorySpendings()
-        self.chartOverallSpendings()
+        #self.chartOverallSpendings()
 
 
     def updateCategoriesTable(self):
@@ -347,7 +351,6 @@ class FinanceApp:
             tk.messagebox.showwarning("Change transaction","Select transaction in table to change.",
                                       parent=self.mainwindow)
 
-        
 
     def h_btnTrDelete(self):
         selected = self.tbl_transactions.selection()
@@ -367,8 +370,6 @@ class FinanceApp:
             print("Nothing selected. Cannot delete.")
             tk.messagebox.showwarning("Delete transaction","Select transaction in table to delete.",
                                       parent=self.mainwindow)
-
-        
 
 
     def h_btnTrImport(self):
@@ -472,7 +473,6 @@ class FinanceApp:
         self.updateCategoriesTable()
 
 
-
     def h_btnCatChange(self):
         selected = self.tbl_categories.selection()
         print(selected)
@@ -498,7 +498,6 @@ class FinanceApp:
         AddContractor(self.mainwindow, self)
         self.updateContractorsTable()
 
-
         
     def h_btnContractorsChange(self):
         selected = self.tbl_contractors.selection()
@@ -521,7 +520,6 @@ class FinanceApp:
                                       parent=self.mainwindow)
 
                
-        
     def display_time(self):
         self.var_wt_CurrentTime.set( value= time.strftime('%H:%M:%S') )
         self.mainwindow.after(1000, self.display_time)     
@@ -545,7 +543,7 @@ class FinanceApp:
     
 
     def onStartup(self):
-        self.updateTransactionTable()
+        #self.updateTransactionTable()
         self.updateCategoriesTable()
         self.updateContractorsTable()
         self.display_time()
@@ -565,7 +563,7 @@ class FinanceApp:
         
         ### Notebook 
         self.ntb_app = ttk.Notebook(self.root_app)
-        
+                        
         ###
         ### ACCOUNT TAB
         ###
@@ -1094,7 +1092,6 @@ class FinanceApp:
         self.frm_bells.rowconfigure('1', weight='1')        
 
         self.ntb_app.add(self.frm_bells, text='Bells and whistlers')
-        
         
         ### NOTEBOOK GRID ...
         self.ntb_app.configure(style='Toolbutton', takefocus=True)

@@ -69,7 +69,7 @@ class PeriodChooserWidget(ttk.Frame):
         self.btn_inter_current.configure(command=self.h_btn_Current)
         self.rbn_inter_next = ttk.Button(self.lbfrm_pr_inter)
         self.rbn_inter_next.configure(text='Next>>')
-        self.rbn_inter_next.grid(column='5', pady ='10',padx='10', row='2', sticky='ew')
+        self.rbn_inter_next.grid(column='5', padx='10', row='2', sticky='ew')
         self.rbn_inter_next.configure(command=self.h_btn_Next)
         self.lbl_inter_chooseperiod = ttk.Label(self.lbfrm_pr_inter)
         self.lbl_inter_chooseperiod.configure(text='Or choose period')
@@ -117,6 +117,7 @@ class PeriodChooserWidget(ttk.Frame):
         start = self.cal_inter_from.get_date()
         end = self.cal_inter_to.get_date()
         #self.set_datePeriod(start, end)
+        self.event_generate('<<PeriodSelected>>')
         print(start, end)
         return (start, end)
     
