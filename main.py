@@ -4,6 +4,17 @@ MAIN APP class
 
 @author: ilia
 """
+try:
+    import tkinter as tk
+    import tkinter.ttk as ttk
+    import sys
+except:
+    ## NO GUI. EXIT
+    print('Required library "tkinter" is not found. Please install it running:')
+    print('python -m pip install tkinter')
+    
+    
+    
 def check_libs(libs, install=False):
     
     import os
@@ -56,44 +67,38 @@ def startup_checking():
         "sys",
         "pandas",
         "tkinter",
+#        "newtestraiseerror",
         "tkcalendar"
         ]
 
 
-    if check_libs("tkinter"):
-        ## NO GUI. EXIT
-        print('Required library "tkinter" is not found. Please install it running:')
-        print('python -m pip install tkinter')
-    else:
-        import tkinter as tk
+    
+    # not empty means smthg absent
+    absent = check_libs(libs)
+    if absent :
         # GUI SPLASH SCREEN
         splash_root = tk.Tk()
         splash_root.geometry("400x200")
         splash_label = tk.Label(splash_root,text="Loading...",font=28)
         splash_label.pack()
         splash_root.eval('tk::PlaceWindow . center')
-        
-        # not empty means smthg absent
-        absent = check_libs(libs)
-        if absent :
-            reply =  tk.messagebox.askyesno(title="Libraries absent", 
-                                   message="Python libraries absent:\n" + 
-                                           "\n".join(absent) +
-                                           "\n\nDo you want to install them?")
-            if reply == True:
-                installres = check_libs(libs, install=True)
-                if  installres:
-                    print("Please, install that stuff:\n" + "\n".join(installres))
-                    print("Cannot continue. Exit.")
-                    exit(1) 
-            else:
-                ## Libs are missing but answer is NO
-                exit(1)
-                pass
-        else:
-            pass
+        reply =  tk.messagebox.askyesno(title="Libraries absent", 
+                               message="Python libraries absent:\n" + 
+                                       "\n".join(absent) +
+                                       "\n\nDo you want to install them?")
         splash_root.destroy()
-        ##splash_root.after(3000, splash_root.destroy() )
+        if reply == True:
+            installres = check_libs(libs, install=True)
+            if  installres:
+                print("Please, install libraries:\n" + "\n".join(installres))
+                print("Cannot continue. Exit.")
+                sys.exit()
+        else:
+            ## Libs are missing but answer is NO
+            sys.exit()
+            pass
+    else:
+        pass
         
 class Main_App:
     

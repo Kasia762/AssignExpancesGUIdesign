@@ -19,9 +19,6 @@ class LoginDialog:
         self.mainwindow = self.__GUI()
         self.mainwindow.title("Login")
         
-        ###self.mainwindow.grab_set()
-        self.mainwindow.takefocus = True
-        self.mainwindow.focus_set()
         
         ## BINDs
         ## buttons
@@ -38,8 +35,13 @@ class LoginDialog:
         
         self.onStartup()
 
+        self.mainwindow.takefocus = True
+        self.mainwindow.focus_set()
+        8
         if self.master == None:
             self.mainwindow.mainloop()
+        else:
+            self.mainwindow.grab_set()
 
 
     def onTabChange(self, event):
