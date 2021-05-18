@@ -2,7 +2,7 @@
 <interface version="1.1">
   <object class="tk.Toplevel" id="win_addcat">
     <property name="height">200</property>
-    <property name="resizable">none</property>
+    <property name="resizable">both</property>
     <property name="width">200</property>
     <child>
       <object class="ttk.Frame" id="frm_addcat">
@@ -10,84 +10,163 @@
         <property name="width">200</property>
         <layout manager="grid">
           <property name="column">0</property>
-          <property name="padx">10</property>
-          <property name="pady">10</property>
           <property name="propagate">True</property>
           <property name="row">0</property>
           <property name="sticky">nsew</property>
+          <property type="col" id="0" name="weight">1</property>
+          <property type="row" id="0" name="weight">1</property>
         </layout>
         <child>
-          <object class="ttk.Labelframe" id="lblfr_cat">
-            <property name="height">200</property>
-            <property name="text" translatable="yes">Add new category</property>
-            <property name="width">200</property>
+          <object class="ttk.Frame" id="lblfr_cat">
+            <property name="padding">20 20</property>
             <layout manager="grid">
               <property name="column">0</property>
-              <property name="padx">10</property>
-              <property name="pady">10</property>
+              <property name="ipady">10</property>
               <property name="propagate">True</property>
               <property name="row">0</property>
               <property name="sticky">nsew</property>
-              <property type="col" id="0" name="pad">10</property>
+              <property type="col" id="0" name="pad">0</property>
               <property type="col" id="0" name="weight">1</property>
-              <property type="row" id="0" name="pad">10</property>
+              <property type="row" id="0" name="pad">0</property>
               <property type="row" id="0" name="weight">1</property>
             </layout>
             <child>
               <object class="ttk.Label" id="lbl_addcat">
-                <property name="text" translatable="yes">New category</property>
+                <property name="text" translatable="yes">Name</property>
                 <layout manager="grid">
                   <property name="column">0</property>
                   <property name="padx">10</property>
                   <property name="propagate">True</property>
                   <property name="row">0</property>
-                  <property type="row" id="0" name="pad">10</property>
-                  <property type="row" id="0" name="weight">1</property>
+                  <property name="sticky">e</property>
+                  <property type="row" id="0" name="pad">30</property>
                 </layout>
               </object>
             </child>
             <child>
-              <object class="ttk.Entry" id="ent_addcat">
+              <object class="ttk.Entry" id="ent_addcatName">
+                <property name="textvariable">string:var_Name</property>
                 <layout manager="grid">
                   <property name="column">1</property>
                   <property name="propagate">True</property>
                   <property name="row">0</property>
-                  <property type="row" id="0" name="pad">10</property>
-                  <property type="row" id="0" name="weight">1</property>
+                  <property name="sticky">ew</property>
+                  <property type="col" id="1" name="minsize">300</property>
+                  <property type="col" id="1" name="weight">1</property>
+                  <property type="row" id="0" name="pad">30</property>
+                </layout>
+              </object>
+            </child>
+            <child>
+              <object class="ttk.Label" id="lbl_addcatLimit">
+                <property name="text" translatable="yes">Month limit</property>
+                <layout manager="grid">
+                  <property name="column">0</property>
+                  <property name="padx">10</property>
+                  <property name="propagate">True</property>
+                  <property name="row">1</property>
+                  <property name="sticky">e</property>
+                  <property type="row" id="1" name="pad">10</property>
+                </layout>
+              </object>
+            </child>
+            <child>
+              <object class="ttk.Entry" id="ent_addcatLimit">
+                <property name="textvariable">string:var_Limit</property>
+                <layout manager="grid">
+                  <property name="column">1</property>
+                  <property name="propagate">True</property>
+                  <property name="row">1</property>
+                  <property name="sticky">w</property>
+                  <property type="col" id="1" name="minsize">300</property>
+                  <property type="col" id="1" name="weight">1</property>
+                  <property type="row" id="1" name="pad">10</property>
+                </layout>
+              </object>
+            </child>
+            <child>
+              <object class="ttk.Label" id="lbl_addcatComm">
+                <property name="text" translatable="yes">Comment</property>
+                <layout manager="grid">
+                  <property name="column">0</property>
+                  <property name="padx">10</property>
+                  <property name="propagate">True</property>
+                  <property name="row">2</property>
+                  <property name="sticky">e</property>
+                  <property type="row" id="2" name="pad">10</property>
+                </layout>
+              </object>
+            </child>
+            <child>
+              <object class="ttk.Entry" id="ent_addcatComm">
+                <property name="textvariable">string:var_Comment</property>
+                <layout manager="grid">
+                  <property name="column">1</property>
+                  <property name="propagate">True</property>
+                  <property name="row">2</property>
+                  <property name="sticky">ew</property>
+                  <property type="col" id="1" name="minsize">300</property>
+                  <property type="col" id="1" name="weight">1</property>
+                  <property type="row" id="2" name="pad">10</property>
                 </layout>
               </object>
             </child>
           </object>
         </child>
         <child>
-          <object class="ttk.Labelframe" id="lblfrm_btn">
-            <property name="height">200</property>
-            <property name="text" translatable="yes">Confirm or decline</property>
-            <property name="width">200</property>
+          <object class="ttk.Separator" id="separator1">
+            <property name="orient">horizontal</property>
             <layout manager="grid">
               <property name="column">0</property>
               <property name="padx">10</property>
-              <property name="pady">10</property>
               <property name="propagate">True</property>
               <property name="row">1</property>
-              <property name="sticky">nsew</property>
-              <property type="col" id="0" name="pad">10</property>
+              <property name="sticky">sew</property>
+              <property type="col" id="0" name="pad">0</property>
+              <property type="col" id="0" name="weight">1</property>
+              <property type="row" id="1" name="pad">0</property>
+            </layout>
+          </object>
+        </child>
+        <child>
+          <object class="ttk.Frame" id="lblfrm_btn">
+            <property name="height">200</property>
+            <property name="padding">5 5</property>
+            <layout manager="grid">
+              <property name="column">0</property>
+              <property name="propagate">True</property>
+              <property name="row">2</property>
+              <property name="sticky">sew</property>
+              <property type="col" id="0" name="pad">0</property>
               <property type="col" id="0" name="weight">1</property>
               <property type="row" id="1" name="pad">10</property>
               <property type="row" id="1" name="weight">1</property>
             </layout>
             <child>
+              <object class="ttk.Button" id="MA______STER______GRID">
+                <property name="text" translatable="yes">Delete IT, just for grid  manager </property>
+                <layout manager="grid">
+                  <property name="column">0</property>
+                  <property name="propagate">True</property>
+                  <property name="row">0</property>
+                  <property type="col" id="0" name="weight">100</property>
+                  <property type="row" id="0" name="minsize">30</property>
+                  <property type="row" id="0" name="pad">20</property>
+                </layout>
+              </object>
+            </child>
+            <child>
               <object class="ttk.Button" id="btn_decline">
                 <property name="command" type="command" cbtype="simple">h_btn_decline</property>
                 <property name="text" translatable="yes">DECLINE</property>
+                <property name="width">10</property>
                 <layout manager="grid">
-                  <property name="column">0</property>
-                  <property name="padx">25</property>
+                  <property name="column">1</property>
                   <property name="propagate">True</property>
                   <property name="row">0</property>
-                  <property name="sticky">e</property>
-                  <property type="row" id="0" name="pad">10</property>
-                  <property type="row" id="0" name="weight">1</property>
+                  <property type="col" id="1" name="pad">10</property>
+                  <property type="row" id="0" name="minsize">30</property>
+                  <property type="row" id="0" name="pad">20</property>
                 </layout>
               </object>
             </child>
@@ -97,14 +176,14 @@
                 <property name="state">normal</property>
                 <property name="text" translatable="yes">CONFIRM</property>
                 <layout manager="grid">
-                  <property name="column">1</property>
-                  <property name="padx">25</property>
+                  <property name="column">2</property>
                   <property name="propagate">True</property>
                   <property name="row">0</property>
-                  <property name="sticky">e</property>
                   <property type="col" id="1" name="weight">1</property>
-                  <property type="row" id="0" name="pad">10</property>
-                  <property type="row" id="0" name="weight">1</property>
+                  <property type="col" id="2" name="minsize">0</property>
+                  <property type="col" id="2" name="pad">20</property>
+                  <property type="row" id="0" name="minsize">30</property>
+                  <property type="row" id="0" name="pad">20</property>
                 </layout>
               </object>
             </child>

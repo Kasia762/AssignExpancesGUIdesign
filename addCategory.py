@@ -52,7 +52,7 @@ class AddCategory:
 
 
     def h_btn_confirm(self):
-    #update fields to selected row    
+        #update fields to selected row    
         category = self.ent_addcat.get()
       
         if self.id_category == None:
