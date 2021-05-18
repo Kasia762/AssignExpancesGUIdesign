@@ -47,6 +47,8 @@ class FinanceApp:
         
         # Main widget, build GUI
         self.mainwindow = self.__GUI(self.master)
+        ### startup fun
+        self.onStartup()
         ### BINDs
         # self.cal_tr_To.bind('<<DateEntrySelected>>', lambda x: self.updateTransactionTable() )
         # self.cal_tr_From.bind('<<DateEntrySelected>>', lambda x: self.updateTransactionTable() )
@@ -58,10 +60,7 @@ class FinanceApp:
         self.ntb_app.enable_traversal()
         self.tbl_contractors['show'] = 'headings'
         self.tbl_categories['show'] = 'headings'
-        
         self.cat_choosePeriod.bind('<<PeriodSelected>>', self.chartCategorySpendings())
-        
-        self.onStartup()
         
         self.mainwindow.takefocus = True
         self.mainwindow.focus_set()
