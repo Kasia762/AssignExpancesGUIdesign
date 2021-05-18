@@ -265,7 +265,7 @@ class UsersHandler:
             ### load transaction database and so on...
             ### ***
             self.__currentUserDB = DataBaseHandler()
-            self.loadTransactionDB(self.__currentUserDB)
+            self.loadTransactionDB()
             pass
             return (True, 'OK')
         else:
@@ -347,10 +347,10 @@ class UsersHandler:
             return (False, "UserSQL stuff error: %s"% err,)
 
         
-    def saveTransactionDB(self, transDBinstance):
+    def saveTransactionDB(self):
         if self.__currentUser == '':
             return (False, 'No user logged in')
-        encodedDB = self.__encodeTransactionDB(transDBinstance)
+        encodedDB = self.__encodeTransactionDB(self.__currentUserDB)
         res = self.__updateUserDB( self.__currentUser, encodedDB )
         return res
 
@@ -392,12 +392,12 @@ class UsersHandler:
             return ''
 
 
-    def loadTransactionDB(self, transDBinstance):
+    def loadTransactionDB(self):
         if self.__currentUser == '':
             return (False, 'No user logged in')
         
         blobData = self.__getUserDB(self.__currentUser)
-        self.__restoreEncodedDB(transDBinstance, blobData)
+        self.__restoreEncodedDB(self.__currentUserDB, blobData)
 
 '''
 #

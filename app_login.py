@@ -35,13 +35,15 @@ class LoginDialog:
         
         self.onStartup()
 
-        self.mainwindow.takefocus = True
-        self.mainwindow.focus_set()
-        8
+        # self.mainwindow.takefocus = True
+        # self.mainwindow.focus_set()
+        
         if self.master == None:
+            print("Login application: run mainloop")
             self.mainwindow.mainloop()
         else:
-            self.mainwindow.grab_set()
+            # self.mainwindow.grab_set()
+            pass
 
 
     def onTabChange(self, event):
@@ -62,21 +64,26 @@ class LoginDialog:
     def showWindow(self):
         self.mainwindow.update()
         self.mainwindow.deiconify()
+        # self.mainwindow.grab_set()
 
 
 
     def hideWindow(self):
+        # self.mainwindow.grab_release()
         self.mainwindow.withdraw()
 
 
 
     def runDatabaseApp(self):
-        print("Run db app")
-        dbApp = FinanceApp(self.master, self.userDataBase.getCurrentUserDB() )
+        print("Run Finance app")
         self.hideWindow()
+        print("Login application: window hided.")
+        dbApp = FinanceApp(self.mainwindow, self.userDataBase.getCurrentUserDB() )
         print("Finance app is opened...")
         self.mainwindow.wait_window(dbApp.mainwindow)
-        print("... app closed.")
+        print("...Finance app closed.")
+        self.userDataBase.saveTransactionDB()
+        print("Transaction database saved")
         self.showWindow()
 
 

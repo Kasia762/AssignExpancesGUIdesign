@@ -50,14 +50,25 @@ class FinanceApp:
         self.cal_tr_To.bind('<<DateEntrySelected>>', lambda x: self.updateTransactionTable() )
         self.cal_tr_From.bind('<<DateEntrySelected>>', lambda x: self.updateTransactionTable() )
         self.tbl_transactions.bind("<Double-1>", self.h_tblTr_OnDoubleClick)
+        self.tbl_categories.bind("<Double-1>", self.h_tblCat_OnDoubleClick)
+        self.tbl_contractors.bind("<Double-1>", self.h_tblCont_OnDoubleClick)
         ## others
         self.ntb_app.bind("<<NotebookTabChanged>>", self.onTabChange)
         self.ntb_app.enable_traversal()
-        
+        self.tbl_contractors['show'] = 'headings'
+        self.tbl_categories['show'] = 'headings'
         
         self.onStartup()
-        if self.master != None:
-            self.mainwindow.grab_set()
+        
+        self.mainwindow.takefocus = True
+        self.mainwindow.focus_set()
+        
+        if self.master == None:
+            print("Finance application: run mainloop")
+            self.mainwindow.mainloop()
+        else:
+            # self.mainwindow.grab_set()
+            pass
 
 
     def onTabChange(self, event):
@@ -67,6 +78,13 @@ class FinanceApp:
             self.display_balance()
             pass
         elif tabIndex == "1":
+            ## Transaction tab
+            pass
+        elif tabIndex == "2":
+            ## Ctegories & contractors tab
+            pass
+        elif tabIndex == "3":
+            ## Bells tab
             pass
         else:
             pass
@@ -308,6 +326,36 @@ class FinanceApp:
         else:
                 print("somewhere. Not olnly one element selected or other area clicked.")
 
+    
+    def h_tblCat_OnDoubleClick(self, event):
+        ### Detect only item, on which was double clicked
+        print("Double-clicked in table ", end='')
+        clicked = self.tbl_categories.identify('item',event.x,event.y)
+        selected = self.tbl_categories.selection()
+        if len(selected) == 1:
+            print("element.")
+            id_value = str( self.tbl_categories.item(clicked, 'values')[0] )
+            print('Opening addCategory window in "change" mode, id: ', id_value)
+            AddCategory(self.mainwindow, self, id_value)
+            self.updateCategoriesTable()
+        else:
+            print("somewhere. Not olnly one element selected or other area clicked.")
+
+    
+    def h_tblCont_OnDoubleClick(self, event):
+        ### Detect only item, on which was double clicked
+        print("Double-clicked in table ", end='')
+        clicked = self.tbl_contractors.identify('item',event.x,event.y)
+        selected = self.tbl_contractors.selection()
+        if len(selected) == 1:
+            print("element.")
+            id_value = str( self.tbl_contractors.item(clicked, 'values')[0] )
+            print('Opening AddContractor window in "change" mode, id: ', id_value)
+            AddContractor(self.mainwindow, self, id_value)
+            self.updateContractorsTable()
+        else:
+                print("somewhere. Not olnly one element selected or other area clicked.")
+
         
     def h_btnTrChange(self):
         selected = self.tbl_transactions.selection()
@@ -447,52 +495,58 @@ class FinanceApp:
                                       parent=self.mainwindow)
 
 
+
     def h_btnCatAdd(self):
-        AddCategory(self.mainwindow, self)        
+        AddCategory(self.mainwindow, self)
+        self.updateCategoriesTable()
+
 
 
     def h_btnCatChange(self):
         selected = self.tbl_categories.selection()
         print(selected)
         if len(selected) > 1:
-            print("Multi selection in table. Cannot change several transactions yet.")
-            tk.messagebox.showwarning("Change transaction",
-                                   "Multi selection in table.\n\n Cannot change several transactions at once yet.",
+            print("Multi selection in table. Cannot change several elements yet.")
+            tk.messagebox.showwarning("Change category",
+                                   "Multi selection in table.\n\n Cannot change several elements at once yet.",
                                       parent=self.mainwindow)
             return
         elif len(selected) == 1:
             print("One-line selection.")
             id_value = str(self.tbl_categories.item(selected, 'values')[0])
-            print('Opening addTransaction window in "change" mode, id: ', id_value)
+            print('Opening addCategory window in "change" mode, id: ', id_value)
             AddCategory(self.mainwindow, self, id_value)
             self.updateCategoriesTable()
         else:
             print("Nothing selected in table. Cannot change.")
-            tk.messagebox.showwarning("Change transaction","Select transaction in table to change.",
+            tk.messagebox.showwarning("Change category","Select category in table to change.",
                                       parent=self.mainwindow)
 
 
     def h_btnContractorsAdd(self):
         AddContractor(self.mainwindow, self)
+        self.updateContractorsTable()
+
+
         
     def h_btnContractorsChange(self):
         selected = self.tbl_contractors.selection()
         print(selected)
         if len(selected) > 1:
-            print("Multi selection in table. Cannot change several transactions yet.")
-            tk.messagebox.showwarning("Change transaction",
-                                   "Multi selection in table.\n\n Cannot change several transactions at once yet.",
+            print("Multi selection in table. Cannot change several elements yet.")
+            tk.messagebox.showwarning("Change contractor",
+                                   "Multi selection in table.\n\n Cannot change several elements at once yet.",
                                       parent=self.mainwindow)
             return
         elif len(selected) == 1:
             print("One-line selection.")
             id_value = str(self.tbl_contractors.item(selected, 'values')[0])
-            print('Opening addTransaction window in "change" mode, id: ', id_value)
+            print('Opening addContractor window in "change" mode, id: ', id_value)
             AddContractor(self.mainwindow, self, id_value)
             self.updateContractorsTable()
         else:
             print("Nothing selected in table. Cannot change.")
-            tk.messagebox.showwarning("Change transaction","Select transaction in table to change.",
+            tk.messagebox.showwarning("Change contractor","Select contractor in table to change.",
                                       parent=self.mainwindow)
 
                
@@ -517,10 +571,10 @@ class FinanceApp:
 
     def __GUI(self, master):
         # build ui
-        # if master == None:
-        #     self.root_app = tk.Tk()
-        # else:
-        self.root_app = tk.Toplevel(master)
+        if master == None:
+            self.root_app = tk.Tk()
+        else:
+            self.root_app = tk.Toplevel(master)
 
         ## Hide window 
         ## DO NOT forget to show at the end of init!!!
@@ -529,7 +583,9 @@ class FinanceApp:
         ### Notebook 
         self.ntb_app = ttk.Notebook(self.root_app)
         
+        ###
         ### ACCOUNT TAB
+        ###
         self.frm_account = ttk.Frame(self.ntb_app)
         self.lbfr_account = ttk.Labelframe(self.frm_account)
         self.lbl_balance = ttk.Label(self.lbfr_account)
@@ -582,7 +638,9 @@ class FinanceApp:
         self.btn_Update.configure(command=self.chartOverallSpendings)
         self.btn_Update.grid(column='1',row='0', sticky = 'w', padx = 20)
         
+        ###
         ### TRANSACTIONS TAB
+        ###
         self.frm_transactions = ttk.Frame(self.ntb_app)
         self.lbfr_drTransactions = ttk.Labelframe(self.frm_transactions)
         self.lbl_trFrom = ttk.Label(self.lbfr_drTransactions)
@@ -704,159 +762,139 @@ class FinanceApp:
         self.frm_transactions.master.columnconfigure('0', weight=1)
         self.ntb_app.add(self.frm_transactions, text='Trancations')
         
+        ###
         ### CATEGORIES TAB
-        self.frm_categories = ttk.Frame(self.ntb_app)
-        self.lbfr_tableCategories = ttk.Labelframe(self.frm_categories)
-        self.lbfr_tableContractors = ttk.Labelframe(self.frm_categories)
-        # table
-        self.tbl_categories = ttk.Treeview(self.lbfr_tableCategories)
-        self.scrb_catTableVert = ttk.Scrollbar(self.lbfr_tableCategories)
-        self.scrb_catTableVert.configure(orient='vertical', takefocus=False)
-        self.scrb_catTableVert.grid(column='1', row='0', sticky='ns')
-        self.scrb_catTableVert.configure(command=self.tbl_categories.yview)
-        self.tbl_categories_cols = ['id', 'name']
-        self.tbl_categories_dcols = [     'name']
-        self.tbl_categories.configure(columns=self.tbl_categories_cols, 
-                                      displaycolumns=self.tbl_categories_dcols,
-                                      yscrollcommand=self.scrb_catTableVert.set)
-        self.tbl_categories.column('id', anchor='w',stretch='false',width='40',minwidth='40')
-        self.tbl_categories.column('name', anchor='w',stretch='true',width='200',minwidth='150')
-        self.tbl_categories.heading('id', anchor='w',text='ID')
-        self.tbl_categories.heading('name', anchor='w',text='Name')
-        self.tbl_categories['show'] = 'headings'
-        self.tbl_categories.grid(column='0', padx='3', pady='3', row='0', sticky='nsew')
-        self.tbl_categories.master.rowconfigure('0', weight='1')
-        self.tbl_categories.master.columnconfigure('0', weight='0')
-        self.lbfr_tableCategories.configure(text='Categories')
-        self.lbfr_tableCategories.grid(column='0', 
-                                       #columnspan='2', 
-                                       padx='5', row='1', sticky='nsw')
-        self.lbfr_tableCategories.master.rowconfigure('1', weight='1')
-        self.lbfr_tableCategories.master.columnconfigure('0', pad='0', weight='1')
-        
-        ########CONTRACTORS
-        self.tbl_contractors = ttk.Treeview(self.lbfr_tableContractors)
-        self.scrb_contrTableVert = ttk.Scrollbar(self.lbfr_tableContractors)
-        self.scrb_contrTableVert.configure(orient='vertical', takefocus=False)
-        self.scrb_contrTableVert.grid(column='1', row='0', sticky='ns')
-        self.scrb_contrTableVert.configure(command=self.tbl_contractors.yview)
-        self.tbl_contractors_cols = ['id', 'name']
-        self.tbl_contractors_dcols = [     'name']
-        self.tbl_contractors.configure(columns=self.tbl_contractors_cols, 
-                                      displaycolumns=self.tbl_contractors_dcols,
-                                      yscrollcommand=self.scrb_contrTableVert.set)
-        self.tbl_contractors.column('id', anchor='w',stretch='false',width='40',minwidth='40')
-        self.tbl_contractors.column('name', anchor='w',stretch='true',width='200',minwidth='150')
-        self.tbl_contractors.heading('id', anchor='w',text='ID')
-        self.tbl_contractors.heading('name', anchor='w',text='Name')
-        self.tbl_contractors['show'] = 'headings'
-        self.tbl_contractors.grid(column='0', padx='3', pady='3', row='0', sticky='nsew')
-        #self.tbl_categories.master.rowconfigure('0', weight='1')
-        #self.tbl_categories.master.columnconfigure('0', weight='0')
-        self.lbfr_tableContractors.configure(text="Contractors")
-        self.lbfr_tableContractors.grid(column='0', 
-                                       #columnspan='2', 
-                                       padx='5', row='2', sticky='nsw')
-        #self.lbfr_tableContractors.master.rowconfigure('1', weight='1')
-        self.lbfr_tableContractors.master.columnconfigure('0', pad='0', weight='1')
-        ########CONTRACTORS 
-        
-        self.lbfr_cat_Commands = ttk.Labelframe(self.frm_categories)
+        ###
+        self.ntab_categories = ttk.Frame(self.ntb_app)
+        self.frm_cat_Tables = ttk.Frame(self.ntab_categories)
+        self.lbfr_tableCategories = ttk.Labelframe(self.frm_cat_Tables)
+        self.lbfr_cat_Commands = ttk.Frame(self.lbfr_tableCategories)
         self.btn_catAdd = ttk.Button(self.lbfr_cat_Commands)
-        self.btn_catAdd.configure(text='Add category', width='20')
+        self.btn_catAdd.configure(text='Add', width='10')
         self.btn_catAdd.grid(column='0', row='0')
         self.btn_catAdd.master.rowconfigure('0', pad='10')
         self.btn_catAdd.master.columnconfigure('0', pad='10')
         self.btn_catAdd.configure(command=self.h_btnCatAdd)
         self.btn_catChange = ttk.Button(self.lbfr_cat_Commands)
-        self.btn_catChange.configure(text='Change category', width='20')
-        self.btn_catChange.grid(column='0', row='1')
-        # self.btn_catChange.master.rowconfigure('1', pad='10')
-        # self.btn_catChange.master.columnconfigure('0', pad='10')
+        self.btn_catChange.configure(text='Change', width='10')
+        self.btn_catChange.grid(column='1', row='0')
+        self.btn_catChange.master.rowconfigure('1', pad='10')
+        self.btn_catChange.master.columnconfigure('0', pad='10')
         self.btn_catChange.configure(command=self.h_btnCatChange)
-        
-        self.btn_addContractors = ttk.Button(self.lbfr_cat_Commands)
-        self.btn_addContractors.configure(text='Add contractors', width='20')
-        self.btn_addContractors.grid(column='0', row='2')
-        self.btn_addContractors.master.rowconfigure('2', pad='10')
-        self.btn_addContractors.master.columnconfigure('0', pad='10')
-        self.btn_addContractors.configure(command=self.h_btnContractorsAdd)
-        
-        self.btn_changeContractors = ttk.Button(self.lbfr_cat_Commands)
-        self.btn_changeContractors.configure(text='Change contractors', width='20')
-        self.btn_changeContractors.grid(column='0', row='3')
-        self.btn_changeContractors.master.rowconfigure('2', pad='10')
-        self.btn_changeContractors.master.columnconfigure('0', pad='10')
-        self.btn_changeContractors.configure(command=self.h_btnContractorsChange)
-        
-        self.lbfr_cat_Commands.configure(height='0', text='Commands', width='200')
-        self.lbfr_cat_Commands.grid(column='0', padx='5', row='0', sticky='nsew')
-        #self.lbfr_cat_Commands.master.rowconfigure('0', pad='10', weight=0)
-        self.lbfr_cat_Commands.columnconfigure('0', weight = 1)
-        # self.lbfr_cat_Commands.rowconfigure('0', weight = 1)
-        # self.lbfr_cat_Commands.rowconfigure('1', weight = 1)
-        
-        self.lbfr_cat_data = ttk.Labelframe(self.frm_categories)
-        
-        self.cat_monthname=dt.datetime.now().strftime("%B")
-        self.spn_month = ttk.Spinbox(self.lbfr_cat_data,
-                                      values =("January","February","March",
-                                              "April","May", "June",
-                                              "July","August","September",
-                                              "October","November","December"),
-                                      command=self.cat_spn_chooseMonth)
-        
-        self.spn_month.delete('0','end')
-        self.spn_month.insert('0',self.cat_monthname)
-        self.spn_month.grid(column='0',row='0', columnspan = "4",
-                            ipady='7')
-        
-        self.btn_prevMonth = ttk.Button(self.lbfr_cat_data)
-        self.btn_prevMonth.configure(text='<< Previous Month', width='15')
-        self.btn_prevMonth.configure(command=self.cat_btn_previousMonth)
-        self.btn_prevMonth.grid(column='0',row='1', sticky='we')
-        
-        self.btn_currentMonth = ttk.Button(self.lbfr_cat_data)
-        self.btn_currentMonth.configure(text='Current Month', width='15')
-        self.btn_currentMonth.configure(command=self.cat_btn_currentMonth)
-        self.btn_currentMonth.grid(column='1',row='1', sticky='we')
-        
-        self.btn_currentWeek = ttk.Button(self.lbfr_cat_data)
-        self.btn_currentWeek.configure(text='Current Week', width='15')
-        self.btn_currentWeek.configure(command=self.cat_btn_currentWeek)
-        self.btn_currentWeek.grid(column='3',row='1', sticky='we')
-        
-        self.btn_previousWeek = ttk.Button(self.lbfr_cat_data)
-        self.btn_previousWeek.configure(text='<<Previous Week', width='15')
-        self.btn_previousWeek.configure(command=self.cat_btn_previousWeek)
-        self.btn_previousWeek.grid(column='2',row='1', sticky='we')
-    
-        self.frm_cat_chart = ttk.Frame(self.frm_categories)
-        self.frm_cat_chart.grid(column = '1', row = '1', sticky = 'nsew',
-                                padx=10, pady=10, rowspan='3')
-        self.frm_cat_chart.columnconfigure('0', weight=1)
-        self.frm_cat_chart.rowconfigure('0', weight=1)
-    
-        self.lbfr_cat_data.configure(height='0', text='Data for operations')
-        self.lbfr_cat_data.grid(column='1',padx='5',row='0', sticky='nsew')
-        self.lbfr_cat_data.rowconfigure('0', pad='5', weight=1)
-        self.lbfr_cat_data.rowconfigure('1', pad='5', weight=1)       
-        self.lbfr_cat_data.columnconfigure('0', pad='5', weight=1)        
-        self.lbfr_cat_data.columnconfigure('1', pad='5', weight=1)
-        self.lbfr_cat_data.columnconfigure('2', pad='5', weight=1)
-        self.lbfr_cat_data.columnconfigure('3', pad='5', weight=1)
-        self.frm_categories.grid(column='0', padx='5', pady='10', row='0', sticky='nsew')
-        
-        self.frm_categories.rowconfigure('0', weight=0, pad="10")
-        self.frm_categories.columnconfigure('0', weight=0)
-        #self.frm_categories.rowconfigure('1', weight = 1)
-        self.frm_categories.columnconfigure('1', weight=1)
-        
-        self.ntb_app.add(self.frm_categories, text='Categories and contractors')
+        self.lbfr_cat_Commands.configure(height='0', width='200')
+        self.lbfr_cat_Commands.grid(sticky='new')
+        self.lbfr_cat_Commands.master.rowconfigure('0', weight='0')
+        self.lbfr_cat_Commands.master.columnconfigure('0', weight='1')
+        self.frame3 = ttk.Frame(self.lbfr_tableCategories)
+        self.tbl_categories = ttk.Treeview(self.frame3)
+        self.scrb_catTableVert = ttk.Scrollbar(self.frame3)
+        self.scrb_catTableVert.configure(orient='vertical', takefocus=False)
+        self.scrb_catTableVert.grid(column='1', row='0', sticky='ns')
+        self.scrb_catTableVert.master.columnconfigure('0', weight='1')
+        self.scrb_catTableVert.configure(command=self.tbl_categories.yview)
+        self.tbl_categories_cols = ['id', 'name']
+        self.tbl_categories_dcols = ['name']
+        self.tbl_categories.configure(columns=self.tbl_categories_cols, 
+                                      displaycolumns=self.tbl_categories_dcols,
+                                      yscrollcommand=self.scrb_catTableVert.set)
+        self.tbl_categories.column('id', anchor='w',stretch='true',width='40',minwidth='20')
+        self.tbl_categories.column('name', anchor='w',stretch='true',width='150',minwidth='50')
+        self.tbl_categories.heading('id', anchor='center',text='ID')
+        self.tbl_categories.heading('name', anchor='w',text='Category name')
+        self.tbl_categories.grid(column='0', row='0', sticky='nsew')
+        self.tbl_categories.master.rowconfigure('0', weight='1')
+        self.tbl_categories.master.columnconfigure('0', weight='1')
+        self.frame3.configure(height='200', width='200')
+        self.frame3.grid(column='0', row='2', sticky='nsew')
+        self.frame3.master.rowconfigure('2', weight='1')
+        self.frame3.master.columnconfigure('0', weight='1')
+        self.lbfr_tableCategories.configure(text='Categories')
+        self.lbfr_tableCategories.grid(column='0', row='0', sticky='nsew')
+        self.lbfr_tableCategories.master.rowconfigure('0', weight='1')
+        self.lbfr_tableCategories.master.columnconfigure('0', weight='1')
+        self.lbfr_tableContractors = ttk.Labelframe(self.frm_cat_Tables)
+        self.lbfr_cont_Commands = ttk.Frame(self.lbfr_tableContractors)
+        self.btn_contAdd = ttk.Button(self.lbfr_cont_Commands)
+        self.btn_contAdd.configure(text='Add', width='10')
+        self.btn_contAdd.grid(column='0', row='0')
+        self.btn_contAdd.master.rowconfigure('0', pad='10')
+        self.btn_contAdd.master.columnconfigure('0', pad='10')
+        self.btn_contAdd.configure(command=self.h_btnContractorsAdd)
+        self.btn_contChange = ttk.Button(self.lbfr_cont_Commands)
+        self.btn_contChange.configure(text='Change', width='10')
+        self.btn_contChange.grid(column='1', row='0')
+        self.btn_contChange.master.rowconfigure('1', pad='10')
+        self.btn_contChange.master.columnconfigure('0', pad='10')
+        self.btn_contChange.configure(command=self.h_btnContractorsChange)
+        self.lbfr_cont_Commands.configure(height='0', width='200')
+        self.lbfr_cont_Commands.grid(sticky='new')
+        self.lbfr_cont_Commands.master.rowconfigure('0', weight='0')
+        self.lbfr_cont_Commands.master.columnconfigure('0', weight='1')
+        self.frame1 = ttk.Frame(self.lbfr_tableContractors)
+        self.tbl_contractors = ttk.Treeview(self.frame1)
+        self.scrb_contTableVert = ttk.Scrollbar(self.frame1)
+        self.scrb_contTableVert.configure(orient='vertical', takefocus=False)
+        self.scrb_contTableVert.grid(column='1', row='0', sticky='ns')
+        self.scrb_contTableVert.master.columnconfigure('0', weight='1')
+        self.scrb_contTableVert.configure(command=self.tbl_contractors.yview)
+        self.tbl_contractors_cols = ['column5', 'column6']
+        self.tbl_contractors_dcols = ['column6']
+        self.tbl_contractors.configure(columns=self.tbl_contractors_cols, 
+                                       displaycolumns=self.tbl_contractors_dcols,
+                                       yscrollcommand=self.scrb_contTableVert.set)
+        self.tbl_contractors.column('column5', anchor='w',stretch='true',width='40',minwidth='20')
+        self.tbl_contractors.column('column6', anchor='w',stretch='true',width='150',minwidth='50')
+        self.tbl_contractors.heading('column5', anchor='center',text='ID')
+        self.tbl_contractors.heading('column6', anchor='w',text='Contractor name')
+        self.tbl_contractors.grid(column='0', row='0', sticky='nsew')
+        self.tbl_contractors.master.rowconfigure('0', weight='1')
+        self.tbl_contractors.master.columnconfigure('0', weight='1')
+        self.frame1.configure(height='200', width='200')
+        self.frame1.grid(column='0', row='2', sticky='nsew')
+        self.frame1.master.rowconfigure('2', weight='1')
+        self.frame1.master.columnconfigure('0', weight='1')
+        self.lbfr_tableContractors.configure(text='Contractors')
+        self.lbfr_tableContractors.grid(column='0', row='1', sticky='nsew')
+        self.lbfr_tableContractors.master.rowconfigure('0', weight='1')
+        self.lbfr_tableContractors.master.rowconfigure('1', weight='1')
+        self.lbfr_tableContractors.master.columnconfigure('0', weight='1')
+        self.frm_cat_Tables.configure(height='100', padding='5 10 5 5', width='100')
+        self.frm_cat_Tables.grid(column='0', row='0', sticky='nsew')
+        self.frm_cat_Tables.master.rowconfigure('0', pad='0', weight='1')
+        self.frm_cat_Tables.master.columnconfigure('0', minsize='200', pad='0', weight='1')
+        self.frm_cat_Graphs = ttk.Frame(self.ntab_categories)
+        self.lbfr_cat_data = ttk.Labelframe(self.frm_cat_Graphs)
+        self.DDDDDDDDDDDDEEEEEEEEEEEEEEEELLLLLLLLLLLLLLLLLL = ttk.Button(self.lbfr_cat_data)
+        self.DDDDDDDDDDDDEEEEEEEEEEEEEEEELLLLLLLLLLLLLLLLLL.configure(text='button1')
+        self.DDDDDDDDDDDDEEEEEEEEEEEEEEEELLLLLLLLLLLLLLLLLL.grid(column='0', padx='20', pady='30', row='0', sticky='ew')
+        self.DDDDDDDDDDDDEEEEEEEEEEEEEEEELLLLLLLLLLLLLLLLLL.master.rowconfigure('0', weight='0')
+        self.DDDDDDDDDDDDEEEEEEEEEEEEEEEELLLLLLLLLLLLLLLLLL.master.columnconfigure('0', weight='1')
+        self.lbfr_cat_data.configure(height='100', text='Date selection')
+        self.lbfr_cat_data.grid(column='0', row='0', sticky='new')
+        self.lbfr_cat_data.master.rowconfigure('0', weight='0')
+        self.lbfr_cat_data.master.columnconfigure('0', weight='1')
+        self.lbfr_cat_Chart = ttk.Labelframe(self.frm_cat_Graphs)
+        self.DDDDDDDDDDDDEEEEEEEEEEEEEEEELLLLLLLLLLLLLLLLLL2 = ttk.Button(self.lbfr_cat_Chart)
+        self.DDDDDDDDDDDDEEEEEEEEEEEEEEEELLLLLLLLLLLLLLLLLL2.configure(text='button2')
+        self.DDDDDDDDDDDDEEEEEEEEEEEEEEEELLLLLLLLLLLLLLLLLL2.grid(column='0', row='0', sticky='nsew')
+        self.DDDDDDDDDDDDEEEEEEEEEEEEEEEELLLLLLLLLLLLLLLLLL2.master.rowconfigure('0', weight='1')
+        self.DDDDDDDDDDDDEEEEEEEEEEEEEEEELLLLLLLLLLLLLLLLLL2.master.columnconfigure('0', weight='1')
+        self.lbfr_cat_Chart.configure(height='200', text='Chart', width='200')
+        self.lbfr_cat_Chart.grid(column='0', row='1', sticky='nsew')
+        self.lbfr_cat_Chart.master.rowconfigure('1', weight='1')
+        self.lbfr_cat_Chart.master.columnconfigure('0', weight='1')
+        self.frm_cat_Graphs.configure(height='200', padding='5 10 5 5', width='200')
+        self.frm_cat_Graphs.grid(column='1', row='0', sticky='nsew')
+        self.frm_cat_Graphs.master.rowconfigure('0', pad='0', weight='1')
+        self.frm_cat_Graphs.master.columnconfigure('1', weight='5')
+        self.ntab_categories.configure(padding='0 5 0 0')
+        self.ntab_categories.grid(column='0', row='0', sticky='nsew')
+        self.ntab_categories.master.rowconfigure('0', weight='1')
+        self.ntab_categories.master.columnconfigure('0', weight='1')
+        self.ntb_app.add(self.ntab_categories, sticky='nsew', text='Categories & Contractors', underline='0')
         
         ### LOTTO TAB
         self.frm_bells = ttk.Frame(self.ntb_app)
-        
         self.lbfr_bells_choose = ttk.Labelframe(self.frm_bells)
         
         self.lbl_ch_city = ttk.Label(self.lbfr_bells_choose)
@@ -1041,7 +1079,7 @@ class FinanceApp:
         self.ntb_app.master.rowconfigure('0', weight=1)
         self.ntb_app.master.columnconfigure('0', weight=1)
         self.root_app.configure(relief='flat')
-        self.root_app.geometry('800x600')
+        self.root_app.geometry('900x500')
         self.root_app.minsize(700, 400)
         self.root_app.resizable(True, True)
         self.root_app.title('Python cash')
