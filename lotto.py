@@ -6,7 +6,6 @@ Created on Tue May 11 00:20:30 2021
 """
 
 import random as rd
-from app_data import App_data
 
 def check():
     num = rd.randint(10000,100000)

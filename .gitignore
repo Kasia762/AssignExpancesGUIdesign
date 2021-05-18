@@ -1,7 +1,7 @@
 *
 !.gitignore
 !app_data.py
-!AppGui.py
+!app_main.py
 !weather.py
 !root_app.ui
 !root_login.ui
@@ -13,5 +13,5 @@
 !addCategory.py
 !addContractors.py
 !addCategory_gui.ui
-
-
+!app_users.py
+!main.py

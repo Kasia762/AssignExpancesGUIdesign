@@ -13,6 +13,7 @@ import numpy as np
 import datetime
 import dateutil.parser 
 import collections
+import string
 
 
 
@@ -33,29 +34,35 @@ class ImportTransactionDialog:
         self.mainwindow.bind_class("TCheckbutton","<<Toggle>>", self.updatePreview)
         self.mainwindow.bind('<Escape>', lambda x: self.mainwindow.destroy() )
         
-        self.btn_Open.focus_set()
+        self.onStartup()
+
+
         
-    def detect_separator(self, filePath):
+    def detect_separator(self, filePath, sep=(',', ';', '\t', ':')):
         """
         Detect separator in CSV
         Main idea, that in each line there is the same count of separators
         It will not work for quoted string
 
         """
+        forbidden = list(string.ascii_letters + string.digits)
         fileh = open(filePath, 'r')
         # read only first 4kB, hope few lines will be there
         Lines = fileh.readlines(4096)
         histograms = []
-        result = []
         for i, line in enumerate(Lines):
             cnt = collections.Counter(line)
-            histograms.append( cnt )
-            if i == 0:
-                intersection = cnt
-            else:
-                intersection = intersection & cnt
-        del intersection['\n']
+            del cnt['\n']
+            if len(cnt) > 0:
+                histograms.append( cnt )
+                if i == 0:
+                    intersection = cnt
+                else:
+                    intersection = intersection & cnt
+        result = []
         for char in intersection:
+            if char in forbidden:
+                continue
             ok = 1
             num = histograms[0][char]
             for hist in histograms:
@@ -64,6 +71,8 @@ class ImportTransactionDialog:
             if ok == 1:
                 result.append(char)
         return result
+
+
     
     def h_btnOpen(self):
         filetypes = (
@@ -83,6 +92,7 @@ class ImportTransactionDialog:
             return
         print("Selected file to import: ", filePath)
         sep = self.detect_separator(filePath)
+        print("==debug==: separators ", sep)
         try:
             sep = sep[0]
             if sep == ';':
@@ -90,8 +100,10 @@ class ImportTransactionDialog:
             else: 
                 dec = '.'
         except:
+            print ("Using default separator.")
             sep = ','
-        print ("Detected separator: '", sep, "' , decimal point: '", dec, "'")
+            dec = '.'
+        print ("Detected separator: '", sep, "' , decimal point: '", dec, "'", sep='')
         try:
             del self.__df
             self.__df = pd.read_csv(filePath, sep=sep[0], decimal=dec)
@@ -173,12 +185,6 @@ class ImportTransactionDialog:
                     subdf.insert(len(subdf.columns), "", self.__df.loc[:,col] , allow_duplicates=True)
             else:
                 subdf.insert(len(subdf.columns), "" , ''  , allow_duplicates=True)
-        if mode in ['check', 'import']:
-            if amount_col == '':
-                tk.messagebox.showwarning("CSV column selection",
-                                      "Column for Amount is not selected.\n\nPlease, select column corresponding to amount.",
-                                      parent=self.mainwindow)
-                return
         ### Check  data
         self.progressbar.start()
         try:
@@ -244,10 +250,23 @@ class ImportTransactionDialog:
 
     
     def h_btnCheck(self):
+        amount_col = self.cmb_Amount.get()
+        if amount_col == '':
+            tk.messagebox.showwarning("CSV column selection",
+                                  "Column for Amount is not selected.\n\nPlease, select column corresponding to amount.",
+                                  parent=self.mainwindow)
+            return
+        
         self.processTable(mode='check')
 
 
     def h_btnImport(self):
+        amount_col = self.cmb_Amount.get()
+        if amount_col == '':
+            tk.messagebox.showwarning("CSV column selection",
+                                  "Column for Amount is not selected.\n\nPlease, select column corresponding to amount.",
+                                  parent=self.mainwindow)
+            return
         self.processTable(mode='import')
         pass
 
@@ -256,8 +275,8 @@ class ImportTransactionDialog:
         pass
 
 
-    def run(self):
-        #### self.mainwindow.mainloop()
+    def onStartup(self):
+        self.btn_Open.focus_set()
         pass
 
 

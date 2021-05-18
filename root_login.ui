@@ -72,6 +72,7 @@
                     </child>
                     <child>
                       <object class="ttk.Combobox" id="cmb_UserLogin">
+                        <property name="textvariable">string:var_UserLogin</property>
                         <property name="width">20</property>
                         <layout manager="grid">
                           <property name="column">0</property>
@@ -100,6 +101,7 @@
                     <child>
                       <object class="ttk.Entry" id="txt_PasswordLogin">
                         <property name="show">*</property>
+                        <property name="textvariable">string:var_PasswordLogin</property>
                         <property name="width">20</property>
                         <layout manager="grid">
                           <property name="column">0</property>
@@ -122,6 +124,19 @@
                           <property name="row">4</property>
                           <property type="col" id="0" name="pad">0</property>
                           <property type="col" id="0" name="weight">1</property>
+                        </layout>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="ttk.Label" id="lbl_LoginResult">
+                        <property name="justify">center</property>
+                        <property name="textvariable">string:var_LoginResult</property>
+                        <layout manager="grid">
+                          <property name="column">0</property>
+                          <property name="columnspan">2</property>
+                          <property name="propagate">True</property>
+                          <property name="row">5</property>
+                          <property type="col" id="0" name="pad">10</property>
                         </layout>
                       </object>
                     </child>
@@ -196,6 +211,7 @@ and type your password two times</property>
                     </child>
                     <child>
                       <object class="ttk.Entry" id="txt_usernameAddUser">
+                        <property name="textvariable">string:var_usernameAddUser</property>
                         <layout manager="grid">
                           <property name="column">1</property>
                           <property name="propagate">True</property>
@@ -225,6 +241,7 @@ and type your password two times</property>
                     <child>
                       <object class="ttk.Entry" id="txt_passwordAdd">
                         <property name="show">*</property>
+                        <property name="textvariable">string:var_passwordAdd</property>
                         <layout manager="grid">
                           <property name="column">1</property>
                           <property name="propagate">True</property>
@@ -254,6 +271,7 @@ and type your password two times</property>
                     <child>
                       <object class="ttk.Entry" id="txt_passwordConfAdd">
                         <property name="show">*</property>
+                        <property name="textvariable">string:var_passwordConfAdd</property>
                         <layout manager="grid">
                           <property name="column">1</property>
                           <property name="propagate">True</property>
