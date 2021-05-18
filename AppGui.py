@@ -145,6 +145,10 @@ class AppWin:
         end=today.replace(day=28)+dt.timedelta(days=4)
         end = end - dt.timedelta(days = end.day)
         
+        self.display_balance(start, end)
+        self.display_amountIn(start, end)
+        self.display_amountOut(start, end)
+        
         income = self.badb.data_chartIncome(start,end)
         outcome = self.badb.data_chartOutcome(start,end)
         balance = self.badb.data_chartBalance(start,end)
@@ -174,13 +178,15 @@ class AppWin:
         self.ax1b = self.ax1.twinx()
         self.ax1b.clear()
         self.ax1b.bar(date_balance, am_balance, 
-                       color = 'PaleGreen', label="balance", alpha = 0.5)
+                       color = 'PaleGreen', label="balance", alpha = 0.4)
     
         self.ax1.xaxis.set_major_formatter(mdates.DateFormatter(_dt_datefmt))
         self.ax1b.xaxis.set_major_formatter(mdates.DateFormatter(_dt_datefmt))
         
+        start = start.strftime(_dt_datefmt)
+        end = end.strftime(_dt_datefmt)
         self.ax1.set_title("Overall spendings for period: "+\
-                  str(start)+" - "+str(end),
+                  str(start)+" ---> "+str(end),
                   y=1.04, loc="center")
         self.ax1.set_xlabel("Dates")
         self.ax1.set_ylabel("Balance [Euros]")
@@ -203,8 +209,6 @@ class AppWin:
     
         
     def updateTransactionTable(self):
-        self.display_balance()
-        
         #first clear the treeview
         for i in self.tbl_transactions.get_children():
             self.tbl_transactions.delete(i)
@@ -469,10 +473,21 @@ class AppWin:
         self.mainwindow.after(1000, self.display_time)     
 
 
-    def display_balance(self):
+    def display_balance(self, start, end):
         ## TODO: not by after
-        val = self.badb.getBalance()
+        val = self.badb.getBalance(start,end)
         self.var_CurrentBalance.set( value= f"{val:.2f}" )
+        
+        
+    def display_amountIn(self, start, end):
+        ## TODO: not by after
+        val = self.badb.getAmountIn(start, end)
+        self.var_perAmountIn.set( value= f"{val:.2f}" )
+        
+        
+    def display_amountOut(self, start, end):
+        val = self.badb.getAmountOut(start, end)
+        self.var_perAmountOut.set( value= f"{val:.2f}" )
     
 
     def run(self):
@@ -480,7 +495,6 @@ class AppWin:
         self.updateCategoriesTable()
         self.updateContractorsTable()
         self.display_time()
-        self.display_balance()
         self.mainwindow.mainloop()   
         
 
@@ -503,7 +517,7 @@ class AppWin:
         self.frm_account = ttk.Frame(self.ntb_app)
         self.lbfr_account = ttk.Labelframe(self.frm_account)
         self.lbl_balance = ttk.Label(self.lbfr_account)
-        self.lbl_balance.configure(text='Balance:')
+        self.lbl_balance.configure(text='Balance/Savings:')
         self.lbl_balance.grid(column='0', padx='10', pady='5', row='0')
         self.lbl_percentage = ttk.Label(self.lbfr_account)
         self.var_CurrentBalance = tk.StringVar(value="...")
@@ -513,6 +527,22 @@ class AppWin:
         self.progressbar.configure(orient='horizontal')
         self.progressbar.grid(column='2', padx='10', row='0', sticky='ew')
         self.progressbar.master.columnconfigure('2', weight=1)
+        self.lbl_amountIn = ttk.Label(self.lbfr_account)
+        self.lbl_amountIn.configure(text='Amount in:')
+        self.lbl_amountIn.grid(column='0', padx='10', pady='5', row='1')
+        self.lbl_perAmountIn = ttk.Label(self.lbfr_account)
+        self.var_perAmountIn = tk.StringVar(value="...")
+        self.lbl_perAmountIn.configure(font='{Arial} 12 {bold}', textvariable=self.var_perAmountIn)
+        self.lbl_perAmountIn.grid(column='1', row='1')
+        self.lbl_amountOut = ttk.Label(self.lbfr_account)
+        self.lbl_amountOut.configure(text='Amount Out:')
+        self.lbl_amountOut.grid(column='2', padx='10', pady='5', row='1')
+        self.lbl_perAmountOut = ttk.Label(self.lbfr_account)
+        self.var_perAmountOut = tk.StringVar(value="...")
+        self.lbl_perAmountOut.configure(font='{Arial} 12 {bold}', textvariable=self.var_perAmountOut)
+        self.lbl_perAmountOut.grid(column='3', row='1')
+        
+        
         # logout button
         self.btn_Logout = ttk.Button(self.lbfr_account)
         self.btn_Logout.configure(text='Logout', width='15')

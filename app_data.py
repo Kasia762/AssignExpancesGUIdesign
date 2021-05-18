@@ -376,18 +376,47 @@ class App_data:
         return data
 
 
-    def getBalance(self):
+    def getBalance(self, start,end):
         ## TODO: check database connection
         cur = self.database.cursor()
         sql = '''
             SELECT  SUM(tr.trans_amount)
-            FROM  transactions AS tr ;
+            FROM  transactions AS tr
+            WHERE tr.trans_date BETWEEN ? AND ?;
             '''
-        cur.execute(sql)
+        cur.execute(sql,(start, end,))
         data = cur.fetchone()[0]
         data = data if data else 0.0
         return data
 
+
+    def getAmountIn(self, start, end):
+        cur = self.database.cursor()
+        sql = '''
+            SELECT  SUM(tr.trans_amount)
+            FROM  transactions AS tr 
+            WHERE tr.trans_amount > 0
+            AND tr.trans_date BETWEEN ? AND ?;
+            '''
+        cur.execute(sql, (start,end,))
+        data = cur.fetchone()[0]
+        data = data if data else 0.0
+        return data
+    
+    
+    def getAmountOut(self, start, end):
+        cur = self.database.cursor()
+        sql = '''
+            SELECT  SUM(tr.trans_amount)
+            FROM  transactions AS tr 
+            WHERE tr.trans_amount < 0
+            AND tr.trans_date BETWEEN ? AND ?;
+            '''
+        cur.execute(sql, (start,end,))
+        data = cur.fetchone()[0]
+        data = data if data else 0.0
+        return data
+        
 
     def getContractorList(self):
         ## TODO: check database connection
