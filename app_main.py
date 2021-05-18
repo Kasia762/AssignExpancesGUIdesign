@@ -58,6 +58,7 @@ class FinanceApp:
         self.ntb_app.enable_traversal()
         self.tbl_contractors['show'] = 'headings'
         self.tbl_categories['show'] = 'headings'
+        
         self.cat_choosePeriod.bind('<<PeriodSelected>>', self.chartCategorySpendings())
         
         self.onStartup()
@@ -72,27 +73,28 @@ class FinanceApp:
             # self.mainwindow.grab_set()
             pass
 
+    def initGraphs(self):
+        ### CHARTS
+        self.dpi = self.mainwindow.winfo_fpixels('1i')
+        print(f"Current dpi is set to {self.dpi}")
+        fig = plt.figure(dpi=self.dpi)
+        self.ax1 = fig.add_subplot(111)
+        self.chart1 = FigureCanvasTkAgg(fig, self.lbfr_Acc_Chart)
+        self.chart1.get_tk_widget().grid(padx='0',pady='10',
+                column="0", row="0", sticky = 'nsew')
+        fig = plt.figure(dpi=self.dpi)
+        self.ax2 = fig.add_subplot(111)
+        self.chart2 = FigureCanvasTkAgg(fig, self.lbfr_cat_Chart)
+        self.chart2.get_tk_widget().grid(sticky='nsew', column="0",row="0")
         
+           
 
 
     def onTabChange(self, event):
         tabIndex = str(self.ntb_app.index(self.ntb_app.select()))
         if tabIndex == "0":
             ## Account overview
-            ### CHARTS
-            self.dpi = self.mainwindow.winfo_fpixels('1i')
-            print(f"Current dpi is set to {self.dpi}")
-            fig = plt.figure(dpi=self.dpi)
-            self.ax1 = fig.add_subplot(111)
-            self.chart1 = FigureCanvasTkAgg(fig, self.lbfr_Acc_Chart)
-            self.chart1.get_tk_widget().grid(padx='0',pady='10',
-                    column="0", row="0", sticky = 'nsew')
-            fig = plt.figure(dpi=self.dpi)
-            self.ax2 = fig.add_subplot(111)
-            self.chart2 = FigureCanvasTkAgg(fig, self.lbfr_cat_Chart)
-            self.chart2.get_tk_widget().grid(sticky='nsew', column="0",row="0")
-            
-            #self.chartOverallSpendings()
+            self.chartOverallSpendings()
             pass
         elif tabIndex == "1":
             ## Transaction tab
@@ -547,6 +549,7 @@ class FinanceApp:
         self.updateCategoriesTable()
         self.updateContractorsTable()
         self.display_time()
+        self.initGraphs()
 
 
 
