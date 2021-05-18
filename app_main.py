@@ -14,12 +14,13 @@ import pandas as pd
 from addTransaction import AddTransaction
 from addCategory import AddCategory
 from addContractors import AddContractor
+import PeriodChooser
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 import matplotlib.pyplot as plt
 import app_import
 from weather import Weather
 import lotto
-
+import matplotlib.dates as mdates
 
 import base64
 import tkinter as tk
@@ -70,26 +71,41 @@ class FinanceApp:
             # self.mainwindow.grab_set()
             pass
 
+        
+        
+
 
     def onTabChange(self, event):
         tabIndex = str(self.ntb_app.index(self.ntb_app.select()))
         if tabIndex == "0":
             ## Account overview
-            self.display_balance()
+            ### CHARTS
+            self.dpi = self.mainwindow.winfo_fpixels('1i')
+            print(f"Current dpi is set to {self.dpi}")
+            fig = plt.figure(dpi=self.dpi)
+            self.ax1 = fig.add_subplot(111)
+            self.chart1 = FigureCanvasTkAgg(fig, self.lbfr_Acc_Chart)
+            self.chart1.get_tk_widget().grid(padx='0',pady='10',
+                    column="0", row="0", sticky = 'nsew')
+            fig = plt.figure(dpi=self.dpi)
+            self.ax2 = fig.add_subplot(111)
+            self.chart2 = FigureCanvasTkAgg(fig, self.lbfr_cat_Chart)
+            self.chart2.get_tk_widget().grid(sticky='nsew', column="0",row="0")
+            
+            self.chartOverallSpendings()
             pass
         elif tabIndex == "1":
             ## Transaction tab
             pass
         elif tabIndex == "2":
             ## Ctegories & contractors tab
+            self.chartCategorySpendings()
             pass
         elif tabIndex == "3":
             ## Bells tab
             pass
         else:
             pass
-
-
 
 
     def getWeatherInfo(self):
@@ -112,114 +128,44 @@ class FinanceApp:
              tk.messagebox.showwarning("Wrong input city name!!",
                                       "This city name is incorrect.\n\nPlease, give correct city name.",
                                       parent=self.mainwindow)    
+      
         
-        
-    def cat_spn_chooseMonth(self):
-        mon =self.spn_month.get()
-        def getmonth():
-            if mon == "January": return "01"
-            elif mon =="February": return "02"
-            elif mon == "March": return "03"
-            elif mon == "April": return "04"
-            elif mon == "May": return "05"
-            elif mon == "June": return "06"
-            elif mon == "July": return "07"
-            elif mon == "August": return "08"
-            elif mon == "September": return "09"
-            elif mon == "October": return "10"
-            elif mon == "December": return "12"
-            elif mon == "November": return "11"
-            else: 
-              tk.messagebox.showwarning("Spinbox!!!!","put correct month",
-                                      parent=self.mainwindow)
-        today = dt.date.today().replace(month=int(getmonth()))
+    def chartCategorySpendings(self):
+        today = dt.date.today()
         start = today.replace(day=1)
         end=today.replace(day=28)+dt.timedelta(days=4)
         end = end - dt.timedelta(days = end.day)
-        self.chartCategorySpendings(start, end)
-        
-        
-    def cat_btn_previousWeek(self):
-        today = dt.date.today() - \
-            dt.timedelta(weeks=1)
-        start = today - dt.timedelta(days=today.weekday())
-        end = start + dt.timedelta(days=6)
-        self.chartCategorySpendings(start, end)
-    
-    
-    def cat_btn_currentWeek(self):
-        today = dt.date.today()
-        start = today - dt.timedelta(days=today.weekday())
-        end = start + dt.timedelta(days=6)
-        self.chartCategorySpendings(start, end)
-
-       
-    def cat_btn_previousMonth(self):
-        today = dt.date.today()
-        end = today.replace(day=1) -\
-            dt.timedelta(days=1)    
-        start = today.replace(day=1) -\
-            dt.timedelta(days=end.day)
-        self.chartCategorySpendings(start, end)
-        
-        
-    def cat_btn_currentMonth(self):
-        today = dt.date.today()
-        start = today.replace(day=1)
-        end = today.replace(day=31)
-        self.chartCategorySpendings(start, end)
-        
-    
-    def chartCategorySpendings(self, firstDay, lastDay):
         amount = 0
         category = 1
-        
-        print(firstDay, lastDay)
-        data = self.badb.data_chartCategories(firstDay, lastDay)
+        data = self.badb.data_chartCategories(start, end)
         am = [abs(i[amount]) for i in data]
         cat=[i[category] for i in data]
-        from_date = firstDay.strftime(_dt_datefmt)
-        to_date = lastDay.strftime(_dt_datefmt)
-        print("chart:",cat)
+
         try: 
             cat[cat.index(None)] = "Undefined"
         except: 
             print("no none categories")
-        #fig = plt.figure(dpi=dpi)
-        fig = plt.figure(dpi=100)
-        ax = fig.add_subplot(111)
-        chart = FigureCanvasTkAgg(fig, self.frm_cat_chart)
-        chart.get_tk_widget().grid(sticky='nsew', column="0",row="0")
-        ax.bar(cat,height=am)
-        ax.set_title("Spendings from: "+from_date+" to: "+ to_date)
-        ax.set_xlabel("Categories");ax.set_ylabel("Spendings [Euros]")
+            
+        start = start.strftime(_dt_datefmt)
+        end = end.strftime(_dt_datefmt)
+        self.ax2.clear()
+        self.ax2.bar(cat,height=am)
+        self.ax2.set_title("Spendings from: "+start+" to: "+ end)
+        self.ax2.set_xlabel("Categories")
+        self.ax2.set_ylabel("Spendings [Euros]")
+        self.chart2.draw()
     
     
     def chartOverallSpendings(self):
-        mon = self.account_spn_month.get()
-        def getmonth():
-            if mon == "January": return "01"
-            elif mon =="February": return "02"
-            elif mon == "March": return "03"
-            elif mon == "April": return "04"
-            elif mon == "May": return "05"
-            elif mon == "June": return "06"
-            elif mon == "July": return "07"
-            elif mon == "August": return "08"
-            elif mon == "September": return "09"
-            elif mon == "October": return "10"
-            elif mon == "December": return "12"
-            elif mon == "November": return "11"
-            else: 
-              tk.messagebox.showwarning("Spinbox!!!!","put correct month",
-                                      parent=self.mainwindow)
-        today = dt.date.today().replace(month=int(getmonth()))
+        today = dt.date.today()
         start = today.replace(day=1)
         end=today.replace(day=28)+dt.timedelta(days=4)
         end = end - dt.timedelta(days = end.day)
         
-        monthname = str(mon)
-        month=str(getmonth())
+        self.display_balance(start, end)
+        self.display_amountIn(start, end)
+        self.display_amountOut(start, end)
+        
         income = self.badb.data_chartIncome(start,end)
         outcome = self.badb.data_chartOutcome(start,end)
         balance = self.badb.data_chartBalance(start,end)
@@ -227,34 +173,59 @@ class FinanceApp:
         am_income = [i[0] for i in income] 
         am_outcome = [abs(i[0]) for i in outcome ]
         am_balance = [i[0] for i in balance]
-        date_income = [int(i[1].strftime('%d')) for i in income]
-        date_outcome = [int(i[1].strftime('%d')) for i in outcome]
-        date_balance = [int(i[1].strftime('%d')) for i in balance]
-                
-        fig = plt.figure(dpi=100)
-        ax = fig.add_subplot(111)
-        chart = FigureCanvasTkAgg(fig, self.lbfr_Acc_Chart)
-        chart.get_tk_widget().grid(padx=20, pady=5,
-                                   column="0", row="1", columnspan="2", sticky = 'nsew')
         
-        ax.plot(date_income, am_income, color='green', label='income', marker='+', linestyle=":")
-        ax.plot(date_outcome, am_outcome, color = 'red',label='outcome', marker = '.')
-        plt.legend(loc=0)
+        date_income = [(i[1].strftime(_dt_datefmt)) for i in income]
+        date_outcome = [(i[1].strftime(_dt_datefmt)) for i in outcome]
+        date_balance = [(i[1].strftime(_dt_datefmt)) for i in balance]
         
-        ax1 = ax.twinx()
-        ax1.bar(date_balance, am_balance, color = 'PaleGreen', label="balance", alpha = 0.5)
-        plt.legend(loc=9)
+        date_income = [str(i[1]) for i in income]
+        date_outcome = [str(i[1]) for i in outcome]
+        date_balance = [str(i[1]) for i in balance]
+    
+        date_income = mdates.datestr2num(date_income)
+        date_outcome = mdates.datestr2num(date_outcome)
+        date_balance = mdates.datestr2num(date_balance)
+    
+        self.ax1.clear()
+        self.ax1.plot(date_income, am_income, 
+                      color='green', label='income', marker = '*')
+        self.ax1.plot(date_outcome, am_outcome, 
+                      color = 'red',label='outcome', marker = '.')
         
-        monthname=dt.datetime.now().strftime("%d")
-        end_date = int(monthname)+1
-        step = 1 
-        plt.xticks(range(1,end_date,step))
-        #print(monthname)
+        self.ax1b = self.ax1.twinx()
+        self.ax1b.clear()
+        self.ax1b.bar(date_balance, am_balance, 
+                       color = 'PaleGreen', label="balance", alpha = 0.4)
+    
+        self.ax1.xaxis.set_major_formatter(mdates.DateFormatter(_dt_datefmt))
+        self.ax1b.xaxis.set_major_formatter(mdates.DateFormatter(_dt_datefmt))
+        
+        start = start.strftime(_dt_datefmt)
+        end = end.strftime(_dt_datefmt)
+        self.ax1.set_title("Overall spendings for period: "+\
+                  str(start)+" ---> "+str(end),
+                  y=1.04, loc="center")
+        self.ax1.set_xlabel("Dates")
+        self.ax1.set_ylabel("Balance [Euros]")
+        self.ax1b.set_ylabel("Income/outcome [Euros]")
+        
+        self.ax1.legend( bbox_to_anchor=(0,1.08), 
+                   loc="center")
+        self.ax1b.legend( bbox_to_anchor=(1,1.05), 
+                   loc="center")
+        
+        self.ax1b.grid(b=True, which='major', color='#999999', 
+                       linestyle='--', linewidth = 0.8, alpha=0.2)
+        self.ax1.grid(axis='x', linestyle='--', linewidth = 0.8)
+        plt.gcf().autofmt_xdate()
+        
+        self.ax1.tick_params(axis='x', labelrotation=10)
+        plt.tight_layout(pad=5, w_pad=5 , h_pad=5)
+        
+        self.chart1.draw()
 
         
     def updateTransactionTable(self):
-        self.display_balance()
-        
         #first clear the treeview
         for i in self.tbl_transactions.get_children():
             self.tbl_transactions.delete(i)
@@ -556,9 +527,21 @@ class FinanceApp:
         self.mainwindow.after(1000, self.display_time)     
 
 
-    def display_balance(self):
-        val = self.badb.getBalance()
+    def display_balance(self, start, end):
+        ## TODO: not by after
+        val = self.badb.getBalance(start,end)
         self.var_CurrentBalance.set( value= f"{val:.2f}" )
+        
+        
+    def display_amountIn(self, start, end):
+        ## TODO: not by after
+        val = self.badb.getAmountIn(start, end)
+        self.var_perAmountIn.set( value= f"{val:.2f}" )
+        
+        
+    def display_amountOut(self, start, end):
+        val = self.badb.getAmountOut(start, end)
+        self.var_perAmountOut.set( value= f"{val:.2f}" )
     
 
     def onStartup(self):
@@ -566,7 +549,7 @@ class FinanceApp:
         self.updateCategoriesTable()
         self.updateContractorsTable()
         self.display_time()
-        self.display_balance()
+
 
 
     def __GUI(self, master):
@@ -599,6 +582,21 @@ class FinanceApp:
         self.progressbar.configure(orient='horizontal')
         self.progressbar.grid(column='2', padx='10', row='0', sticky='ew')
         self.progressbar.master.columnconfigure('2', weight=1)
+        ######amount in/ out - to replace
+        self.lbl_amountIn = ttk.Label(self.lbfr_account)
+        self.lbl_amountIn.configure(text='Amount in:')
+        self.lbl_amountIn.grid(column='0', padx='10', pady='5', row='1')
+        self.lbl_perAmountIn = ttk.Label(self.lbfr_account)
+        self.var_perAmountIn = tk.StringVar(value="...")
+        self.lbl_perAmountIn.configure(font='{Arial} 12 {bold}', textvariable=self.var_perAmountIn)
+        self.lbl_perAmountIn.grid(column='1', row='1')
+        self.lbl_amountOut = ttk.Label(self.lbfr_account)
+        self.lbl_amountOut.configure(text='Amount Out:')
+        self.lbl_amountOut.grid(column='2', padx='10', pady='5', row='1')
+        self.lbl_perAmountOut = ttk.Label(self.lbfr_account)
+        self.var_perAmountOut = tk.StringVar(value="...")
+        self.lbl_perAmountOut.configure(font='{Arial} 12 {bold}', textvariable=self.var_perAmountOut)
+        self.lbl_perAmountOut.grid(column='3', row='1')
         # logout button
         self.btn_Logout = ttk.Button(self.lbfr_account)
         self.btn_Logout.configure(text='Logout', width='15')
@@ -609,84 +607,85 @@ class FinanceApp:
         self.lbfr_account.master.rowconfigure('0', pad='10', weight=0)
         self.lbfr_account.master.columnconfigure('0', weight=1)
         self.lbfr_account.master.columnconfigure('1', weight=0)
-        self.lbfr_Acc_Chart = ttk.Labelframe(self.frm_account)
-        #self.lbfr_Acc_Chart.configure(height='200', width='200')
-        self.lbfr_Acc_Chart.grid(column='0', ipadx='10', ipady='10', row='1', sticky='nsew')
-        self.lbfr_Acc_Chart.master.rowconfigure('1', weight=1)
-        self.lbfr_Acc_Chart.columnconfigure('0', weight=1)
-        self.lbfr_Acc_Chart.columnconfigure('1', weight=1)
-        self.lbfr_Acc_Chart.rowconfigure('1', weight=1)
-        #self.frm_account.configure(height='200', width='200')
-        self.frm_account.grid(column='0', row='0', sticky='nsew')
-        self.frm_account.master.rowconfigure('0', weight=1)
-        self.frm_account.master.columnconfigure('0', weight=1)
-        self.ntb_app.add(self.frm_account, sticky='nsew', text='Account')
     
-        monthname=dt.datetime.now().strftime("%B")
-        self.account_spn_month = ttk.Spinbox(self.lbfr_Acc_Chart,
-                                     values =("January","February","March",
-                                              "April","May", "June",
-                                              "July","August","September",
-                                              "October","November","December"))
+        self.frm_Acc_period = ttk.Frame(self.frm_account)
+        self.lblfrm_period = PeriodChooser.PeriodChooserWidget(self.frm_Acc_period)
+        self.lblfrm_period.grid(column = '0', row = '0', sticky = 'nsew')
+        self.frm_Acc_period.grid(column='0', row='1', sticky = 'nsew')
+        self.frm_Acc_period.columnconfigure('0', weight=1)
+    
+        self.lbfr_Acc_Chart = ttk.Labelframe(self.frm_account)
+        self.lbfr_Acc_Chart.configure(text='Chart summary')
+        self.lbfr_Acc_Chart.grid(column='0', ipadx='5', ipady='5', 
+                                 row='2', sticky='nsew')
+        self.lbfr_Acc_Chart.rowconfigure('0', weight=1)
+        self.lbfr_Acc_Chart.columnconfigure('0', weight=1)
+    
+        self.frm_account.grid(column='0', row='0', sticky='nsew')
+        self.frm_account.rowconfigure('0', weight=0)
+        self.frm_account.rowconfigure('2', weight=1)
+        self.frm_account.columnconfigure('0', weight=1)
         
-        self.account_spn_month.delete('0','end')
-        self.account_spn_month.insert('0',monthname)
-        self.account_spn_month.grid(column='0',row='0', sticky='e', padx = 20)
-        
-        self.btn_Update = ttk.Button(self.lbfr_Acc_Chart)
-        self.btn_Update.configure(text='Update', width='15')
-        self.btn_Update.configure(command=self.chartOverallSpendings)
-        self.btn_Update.grid(column='1',row='0', sticky = 'w', padx = 20)
-        
+        self.ntb_app.add(self.frm_account, sticky='nsew', text='Account')
+
         ###
         ### TRANSACTIONS TAB
         ###
         self.frm_transactions = ttk.Frame(self.ntb_app)
-        self.lbfr_drTransactions = ttk.Labelframe(self.frm_transactions)
-        self.lbl_trFrom = ttk.Label(self.lbfr_drTransactions)
-        self.lbl_trFrom.configure(text='From:')
-        self.lbl_trFrom.grid(column='0', padx='10', row='0', sticky='e')
-        self.lbl_trFrom.master.rowconfigure('0', pad='10')
-        self.lbl_trFrom.master.columnconfigure('0', pad='10')
-        self.cal_tr_From = tkcal.DateEntry(self.lbfr_drTransactions, 
-                                           date_pattern=_cal_datefmt,
-                                           state="readonly")
-        #_text_ = dt.date.today().replace(day=1).strftime(_dt_datefmt)
-        firstDay = dt.date.today().replace(day=1)
-        date = firstDay.strftime(_dt_datefmt)
-        # self.cal_tr_From.delete('0', 'end')
-        # self.cal_tr_From.insert('0', date)
-        self.cal_tr_From.set_date(date)
+        self.frm_tr_data = ttk.Frame(self.frm_transactions)
+        self.frm_tr_data.grid(column = 0, row =0)
         
-        self.cal_tr_From.grid(column='1', padx='0', row='0', sticky='w')
-        self.cal_tr_From.master.rowconfigure('0', pad='10')
-        self.cal_tr_From.master.columnconfigure('1', pad='10', weight=1)
-        self.label2 = ttk.Label(self.lbfr_drTransactions)
-        self.label2.configure(text='To:')
-        self.label2.grid(column='0', padx='10', row='1', sticky='e')
-        self.label2.master.rowconfigure('1', pad='10')
-        self.label2.master.columnconfigure('0', pad='10')
-        self.cal_tr_To = tkcal.DateEntry(self.lbfr_drTransactions, 
-                                         date_pattern=_cal_datefmt,
-                                         state='readonly')
-        today =  dt.date.today().strftime(_dt_datefmt)
-        self.cal_tr_To.delete('0', 'end')
-        self.cal_tr_To.insert('0', today)
-        self.cal_tr_To.grid(column='1', row='1', sticky='w')
-        self.cal_tr_To.master.rowconfigure('1', pad='10')
-        self.cal_tr_To.master.columnconfigure('1', pad='10', weight=1)
-        self.label1 = ttk.Label(self.lbfr_drTransactions)
-        self.label1.configure(text='Category:')
-        self.label1.grid(column='0', padx='10', pady='10', row='2', sticky='e')
-        self.label1.master.rowconfigure('1', pad='10')
-        self.label1.master.rowconfigure('2', pad='5')
-        self.label1.master.columnconfigure('0', pad='10')
-        self.cmb_tr_Category = ttk.Combobox(self.lbfr_drTransactions)
-        self.cmb_tr_Category.grid(column='1', row='2', sticky='ew')
-        self.lbfr_drTransactions.configure(height='0', padding='0 0 20 0', text='Choose date range')  #
-        self.lbfr_drTransactions.grid(column='0', ipadx='0', ipady='0', padx='5', pady='0', row='0', sticky='nsew')
-        self.lbfr_drTransactions.master.rowconfigure('0', pad='10', weight=0)
-        self.lbfr_drTransactions.master.columnconfigure('0', pad='0', weight=1)
+        self.frm_tr_period = PeriodChooser.PeriodChooserWidget(self.frm_tr_data)
+        self.frm_tr_period.grid(column = 0, row = 0, sticky = 'nsew')
+        self.frm_tr_period.master.rowconfigure('0', weight=1)
+        self.frm_tr_period.master.columnconfigure('0', weight=1)
+        
+        # self.lbfr_drTransactions = ttk.Labelframe(self.frm_transactions)
+        # self.lbl_trFrom = ttk.Label(self.lbfr_drTransactions)
+        # self.lbl_trFrom.configure(text='From:')
+        # self.lbl_trFrom.grid(column='0', padx='10', row='0', sticky='e')
+        # self.lbl_trFrom.master.rowconfigure('0', pad='10')
+        # self.lbl_trFrom.master.columnconfigure('0', pad='10')
+        # self.cal_tr_From = tkcal.DateEntry(self.lbfr_drTransactions, 
+        #                                    date_pattern=_cal_datefmt,
+        #                                    state="readonly")
+        # #_text_ = dt.date.today().replace(day=1).strftime(_dt_datefmt)
+        # firstDay = dt.date.today().replace(day=1)
+        # date = firstDay.strftime(_dt_datefmt)
+        # # self.cal_tr_From.delete('0', 'end')
+        # # self.cal_tr_From.insert('0', date)
+        # self.cal_tr_From.set_date(date)
+        
+        # self.cal_tr_From.grid(column='1', padx='0', row='0', sticky='w')
+        # self.cal_tr_From.master.rowconfigure('0', pad='10')
+        # self.cal_tr_From.master.columnconfigure('1', pad='10', weight=1)
+        # self.label2 = ttk.Label(self.lbfr_drTransactions)
+        # self.label2.configure(text='To:')
+        # self.label2.grid(column='0', padx='10', row='1', sticky='e')
+        # self.label2.master.rowconfigure('1', pad='10')
+        # self.label2.master.columnconfigure('0', pad='10')
+        # self.cal_tr_To = tkcal.DateEntry(self.lbfr_drTransactions, 
+        #                                  date_pattern=_cal_datefmt,
+        #                                  state='readonly')
+        # today =  dt.date.today().strftime(_dt_datefmt)
+        # self.cal_tr_To.delete('0', 'end')
+        # self.cal_tr_To.insert('0', today)
+        # self.cal_tr_To.grid(column='1', row='1', sticky='w')
+        # self.cal_tr_To.master.rowconfigure('1', pad='10')
+        # self.cal_tr_To.master.columnconfigure('1', pad='10', weight=1)
+        # self.label1 = ttk.Label(self.lbfr_drTransactions)
+        # self.label1.configure(text='Category:')
+        # self.label1.grid(column='0', padx='10', pady='10', row='2', sticky='e')
+        # self.label1.master.rowconfigure('1', pad='10')
+        # self.label1.master.rowconfigure('2', pad='5')
+        # self.label1.master.columnconfigure('0', pad='10')
+        # self.cmb_tr_Category = ttk.Combobox(self.lbfr_drTransactions)
+        # self.cmb_tr_Category.grid(column='1', row='2', sticky='ew')
+        # self.lbfr_drTransactions.configure(height='0', padding='0 0 20 0', text='Choose date range')  #
+        # self.lbfr_drTransactions.grid(column='0', ipadx='0', ipady='0', padx='5', pady='0', row='0', sticky='nsew')
+        # self.lbfr_drTransactions.master.rowconfigure('0', pad='10', weight=0)
+        # self.lbfr_drTransactions.master.columnconfigure('0', pad='0', weight=1)
+        
         self.lbfr_Operations = ttk.Labelframe(self.frm_transactions)
         self.btn_trAdd = ttk.Button(self.lbfr_Operations)
         self.btn_trAdd.configure(text='Add', width='20')
@@ -863,26 +862,41 @@ class FinanceApp:
         self.frm_cat_Tables.master.rowconfigure('0', pad='0', weight='1')
         self.frm_cat_Tables.master.columnconfigure('0', minsize='200', pad='0', weight='1')
         self.frm_cat_Graphs = ttk.Frame(self.ntab_categories)
-        self.lbfr_cat_data = ttk.Labelframe(self.frm_cat_Graphs)
-        self.DDDDDDDDDDDDEEEEEEEEEEEEEEEELLLLLLLLLLLLLLLLLL = ttk.Button(self.lbfr_cat_data)
-        self.DDDDDDDDDDDDEEEEEEEEEEEEEEEELLLLLLLLLLLLLLLLLL.configure(text='button1')
-        self.DDDDDDDDDDDDEEEEEEEEEEEEEEEELLLLLLLLLLLLLLLLLL.grid(column='0', padx='20', pady='30', row='0', sticky='ew')
-        self.DDDDDDDDDDDDEEEEEEEEEEEEEEEELLLLLLLLLLLLLLLLLL.master.rowconfigure('0', weight='0')
-        self.DDDDDDDDDDDDEEEEEEEEEEEEEEEELLLLLLLLLLLLLLLLLL.master.columnconfigure('0', weight='1')
-        self.lbfr_cat_data.configure(height='100', text='Date selection')
-        self.lbfr_cat_data.grid(column='0', row='0', sticky='new')
-        self.lbfr_cat_data.master.rowconfigure('0', weight='0')
-        self.lbfr_cat_data.master.columnconfigure('0', weight='1')
+        
+        # self.lbfr_cat_data = ttk.Labelframe(self.frm_cat_Graphs)
+        
+        self.cat_choosePeriod = PeriodChooser.PeriodChooserWidget(self.frm_cat_Graphs)
+        self.cat_choosePeriod.grid(column='0', row='0', sticky='new')
+        self.cat_choosePeriod.master.rowconfigure('0', weight='0')
+        self.cat_choosePeriod.master.columnconfigure('0', weight='1')
+        
+        # self.DDLLLLL = ttk.Button(self.lbfr_cat_data)
+        # self.DDLLLLL.configure(text='button1')
+        # self.DDDLLLL.grid(column='0', padx='20', pady='30', row='0', sticky='ew')
+        # self.DDDLLL.master.rowconfigure('0', weight='0')
+        # self.DDDLLL.master.columnconfigure('0', weight='1')
+        
+        # self.lbfr_cat_data.configure(height='100', text='Date selection')
+        # self.lbfr_cat_data.grid(column='0', row='0', sticky='new')
+        # self.lbfr_cat_data.master.rowconfigure('0', weight='0')
+        # self.lbfr_cat_data.master.columnconfigure('0', weight='1')
+        
         self.lbfr_cat_Chart = ttk.Labelframe(self.frm_cat_Graphs)
-        self.DDDDDDDDDDDDEEEEEEEEEEEEEEEELLLLLLLLLLLLLLLLLL2 = ttk.Button(self.lbfr_cat_Chart)
-        self.DDDDDDDDDDDDEEEEEEEEEEEEEEEELLLLLLLLLLLLLLLLLL2.configure(text='button2')
-        self.DDDDDDDDDDDDEEEEEEEEEEEEEEEELLLLLLLLLLLLLLLLLL2.grid(column='0', row='0', sticky='nsew')
-        self.DDDDDDDDDDDDEEEEEEEEEEEEEEEELLLLLLLLLLLLLLLLLL2.master.rowconfigure('0', weight='1')
-        self.DDDDDDDDDDDDEEEEEEEEEEEEEEEELLLLLLLLLLLLLLLLLL2.master.columnconfigure('0', weight='1')
+        
+        # self.DDDDDDDDDDDDEEEEEEEEEEEEEEEELLLLLLLLLLLLLLLLLL2 = ttk.Button(self.lbfr_cat_Chart)
+        # self.DDDDDDDDDDDDEEEEEEEEEEEEEEEELLLLLLLLLLLLLLLLLL2.configure(text='button2')
+        # self.DDDDDDDDDDDDEEEEEEEEEEEEEEEELLLLLLLLLLLLLLLLLL2.grid(column='0', row='0', sticky='nsew')
+        # self.DDDDDDDDDDDDEEEEEEEEEEEEEEEELLLLLLLLLLLLLLLLLL2.master.rowconfigure('0', weight='1')
+        # self.DDDDDDDDDDDDEEEEEEEEEEEEEEEELLLLLLLLLLLLLLLLLL2.master.columnconfigure('0', weight='1')
+        
         self.lbfr_cat_Chart.configure(height='200', text='Chart', width='200')
         self.lbfr_cat_Chart.grid(column='0', row='1', sticky='nsew')
+        self.lbfr_cat_Chart.rowconfigure('0', weight ='1')
+        self.lbfr_cat_Chart.columnconfigure('0', weight ='1')
+        
         self.lbfr_cat_Chart.master.rowconfigure('1', weight='1')
         self.lbfr_cat_Chart.master.columnconfigure('0', weight='1')
+        
         self.frm_cat_Graphs.configure(height='200', padding='5 10 5 5', width='200')
         self.frm_cat_Graphs.grid(column='1', row='0', sticky='nsew')
         self.frm_cat_Graphs.master.rowconfigure('0', pad='0', weight='1')
@@ -945,12 +959,21 @@ class FinanceApp:
         self.lbl_wt_temperature.grid(column='1', padx='10', pady='5', row='1', sticky='sew')
         
         self.lbl_wt_icon = ttk.Label(self.frm_wt_values)
-        self.lbl_wt_icon.configure(text='Icon')
+        img = Image.open('pig1.ico')
+        img = img.resize((50, 50), Image.ANTIALIAS)
+        img = ImageTk.PhotoImage(img)
+        self.lbl_wt_icon.configure(image = img)
+        self.lbl_wt_icon.image = img
         self.lbl_wt_icon.grid(column='0', ipady = '10', padx='20', row='2', sticky='nsew')
-                
+              
         self.lbl_wt_tempNum = ttk.Label(self.frm_wt_values)
         
         self.var_wt_tempNum = tk.StringVar(value='???')
+        # img = Image.open('temp.ico')
+        # img = img.resize((50, 50), Image.ANTIALIAS)
+        # img = ImageTk.PhotoImage(img)
+        # self.lbl_wt_tempNum.configure(image = img)
+        # self.lbl_wt_tempNum.image = img
         self.lbl_wt_tempNum.configure(font='{Arial} 16 {}', textvariable=self.var_wt_tempNum)
         self.lbl_wt_tempNum.grid(column='1', row='2')
         
@@ -1083,6 +1106,7 @@ class FinanceApp:
         self.root_app.minsize(700, 400)
         self.root_app.resizable(True, True)
         self.root_app.title('Python cash')
+        self.root_app.iconbitmap('pig1.ico')
         
         # SHOW window, fully constructed
         self.root_app.deiconify()
