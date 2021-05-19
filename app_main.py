@@ -22,9 +22,6 @@ from weather import Weather
 import lotto
 import matplotlib.dates as mdates
 
-import base64
-import tkinter as tk
-from urllib.request import urlopen
 from PIL import ImageTk, Image
 
 ## both format should match
@@ -1041,8 +1038,6 @@ class FinanceApp:
         self.cal_wt.grid(column='0', columnspan='2', padx='50', row='2', sticky='nsew')
         
         # self.cal_wt = CalendarFrame(self.frm_wt_calendar)
-        # # TODO - self.cal_wt: code for custom option 'firstweekday' not implemented.
-        # # TODO - self.cal_wt: code for custom option 'month' not implemented.
         # self.cal_wt.grid(column='0', columnspan='2', padx='50', row='2', sticky='s')
         self.cal_wt.rowconfigure('2', pad='30')
         

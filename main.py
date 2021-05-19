@@ -65,6 +65,8 @@ def startup_checking():
         "zlib",
         "base64",
         "sys",
+        "PIL",
+        "urllib",
         "pandas",
         "tkinter",
 #        "newtestraiseerror",
@@ -105,10 +107,8 @@ class Main_App:
     def __init__(self):
         ## UsersHandler instance
         self.usersDataBase = UsersHandler()
-        
-        
+
         self.onStartup()
-        
         pass
     
     
