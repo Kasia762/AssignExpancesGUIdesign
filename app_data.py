@@ -329,7 +329,7 @@ class DataBaseHandler:
             LEFT OUTER JOIN contractors AS cr
                 ON tr.cont_id = cr.cont_id
         WHERE tr.trans_date BETWEEN ? AND ?
-        ORDER BY tr.trans_date DESC
+        ORDER BY tr.trans_date DESC , tr.trans_id DESC
         '''
         period = (startDate, endDate,)
         cur.execute(sql,period)
@@ -360,19 +360,46 @@ class DataBaseHandler:
         return data
 
 
-
-    def getBalance(self):
+    def getBalance(self, start,end):
         ## TODO: check database connection
         cur = self.database.cursor()
         sql = '''
             SELECT  SUM(tr.trans_amount)
-            FROM  transactions AS tr ;
+            FROM  transactions AS tr
+            WHERE tr.trans_date BETWEEN ? AND ?;
             '''
-        cur.execute(sql)
+        cur.execute(sql,(start, end,))
         data = cur.fetchone()[0]
         data = data if data else 0.0
         return data
 
+
+    def getAmountIn(self, start, end):
+        cur = self.database.cursor()
+        sql = '''
+            SELECT  SUM(tr.trans_amount)
+            FROM  transactions AS tr 
+            WHERE tr.trans_amount > 0
+            AND tr.trans_date BETWEEN ? AND ?;
+            '''
+        cur.execute(sql, (start,end,))
+        data = cur.fetchone()[0]
+        data = data if data else 0.0
+        return data
+    
+    
+    def getAmountOut(self, start, end):
+        cur = self.database.cursor()
+        sql = '''
+            SELECT  SUM(tr.trans_amount)
+            FROM  transactions AS tr 
+            WHERE tr.trans_amount < 0
+            AND tr.trans_date BETWEEN ? AND ?;
+            '''
+        cur.execute(sql, (start,end,))
+        data = cur.fetchone()[0]
+        data = data if data else 0.0
+        return data
 
 
     def getContractorList(self):
