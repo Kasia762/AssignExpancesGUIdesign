@@ -60,7 +60,10 @@ class FinanceApp:
         self.ntb_app.enable_traversal()
         self.tbl_contractors['show'] = 'headings'
         self.tbl_categories['show'] = 'headings'
-        self.cat_choosePeriod.bind('<<PeriodSelected>>', self.chartCategorySpendings())
+        
+        self.frm_tr_period.bind('<<PeriodSelected>>', self.updateTransactionTable )
+        self.lblfrm_period.bind('<<PeriodSelected>>', self.chartOverallSpendings)
+        self.cat_choosePeriod.bind('<<PeriodSelected>>', self.chartCategorySpendings)
         
         self.mainwindow.takefocus = True
         self.mainwindow.focus_set()
@@ -97,6 +100,7 @@ class FinanceApp:
             pass
         elif tabIndex == "1":
             ## Transaction tab
+            self.updateTransactionTable()
             pass
         elif tabIndex == "2":
             ## Ctegories & contractors tab
@@ -130,42 +134,11 @@ class FinanceApp:
                                       "This city name is incorrect.\n\nPlease, give correct city name.",
                                       parent=self.mainwindow)    
       
-        
-    def chartCategorySpendings(self):
-        dates = self.cat_choosePeriod.get_calEntryDates()
-        print("category:",str(dates))
-        
-        today = dt.date.today()
-        start = today.replace(day=1)
-        end=today.replace(day=28)+dt.timedelta(days=4)
-        end = end - dt.timedelta(days = end.day)
-        amount = 0
-        category = 1
-        data = self.badb.data_chartCategories(start, end)
-        am = [abs(i[amount]) for i in data]
-        cat=[i[category] for i in data]
 
-        try: 
-            cat[cat.index(None)] = "Undefined"
-        except: 
-            print("no none categories")
-            
-        start = start.strftime(_dt_datefmt)
-        end = end.strftime(_dt_datefmt)
-        self.ax2.clear()
-        self.ax2.bar(cat,height=am)
-        self.ax2.set_title("Spendings from: "+start+" to: "+ end)
-        self.ax2.set_xlabel("Categories")
-        self.ax2.set_ylabel("Spendings [Euros]")
-        self.chart2.draw()
-    
-    
-    def chartOverallSpendings(self):
-       
-        today = dt.date.today()
-        start = today.replace(day=1)
-        end=today.replace(day=28)+dt.timedelta(days=4)
-        end = end - dt.timedelta(days = end.day)
+    def chartOverallSpendings(self, event):
+        dates = self.lblfrm_period.get_datePeriod()
+        start = dates[0]
+        end = dates[1]
         
         self.display_balance(start, end)
         self.display_amountIn(start, end)
@@ -191,6 +164,7 @@ class FinanceApp:
         date_outcome = mdates.datestr2num(date_outcome)
         date_balance = mdates.datestr2num(date_balance)
     
+    
         self.ax1.clear()
         self.ax1.plot(date_income, am_income, 
                       color='green', label='income', marker = '*')
@@ -207,6 +181,7 @@ class FinanceApp:
         
         start = start.strftime(_dt_datefmt)
         end = end.strftime(_dt_datefmt)
+        
         self.ax1.set_title("Overall spendings for period: "+\
                   str(start)+" ---> "+str(end),
                   y=1.04, loc="center")
@@ -230,16 +205,44 @@ class FinanceApp:
         self.chart1.draw()
 
         
-    def updateTransactionTable(self):
+    def chartCategorySpendings(self, event):
+        dates = self.cat_choosePeriod.get_datePeriod()
+        start = dates[0]
+        end = dates[1]
+        
+        amount = 0
+        category = 1
+        data = self.badb.data_chartCategories(start, end)
+        am = [abs(i[amount]) for i in data]
+        cat=[i[category] for i in data]
+
+        try: 
+            cat[cat.index(None)] = "Undefined"
+        except: 
+            print("no none categories")
+            
+        start = start.strftime(_dt_datefmt)
+        end = end.strftime(_dt_datefmt)
+        self.ax2.clear()
+        self.ax2.bar(cat,height=am)
+        self.ax2.set_title("Spendings from: "+start+" to: "+ end)
+        self.ax2.set_xlabel("Categories")
+        self.ax2.set_ylabel("Spendings [Euros]")
+        self.chart2.draw()
+
+        
+    def updateTransactionTable(self,event):
         #first clear the treeview
         for i in self.tbl_transactions.get_children():
             self.tbl_transactions.delete(i)
              
         #then display data
-        datefr = self.cat_choosePeriod[0]
-        dateto = self.cat_choosePeriod[1]
         
-        data = self.badb.getAllTransactionsPeriod(datefr, dateto)
+        dates = self.frm_tr_period.get_datePeriod()
+        start = dates[0]
+        end = dates[1]
+        
+        data = self.badb.getAllTransactionsPeriod(start, end)
         for row in data:
             idvalue = row[0]
             date = row[1].strftime(_dt_datefmt)
