@@ -46,7 +46,7 @@ class PeriodChooserWidget(ttk.Frame):
         self.spr_inter.master.rowconfigure('0', weight='1')
         self.spr_inter.master.columnconfigure('4', weight='1')
         self.rbn_inter_week = ttk.Radiobutton(self)
-        self.var_date_type = tk.StringVar(value='week')
+        self.var_date_type = tk.StringVar(value='month')
         self.rbn_inter_week.configure(style='Toolbutton', text='week', value='week', variable=self.var_date_type)
         self.rbn_inter_week.grid(column='5', padx='10', row='0', sticky='ew')
         self.rbn_inter_week.master.rowconfigure('0', weight='1')

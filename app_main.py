@@ -85,7 +85,7 @@ class FinanceApp:
         self.ax1 = fig.add_subplot(111)
         self.ax1b = self.ax1.twinx()
         self.chart1 = FigureCanvasTkAgg(fig, self.lbfr_Acc_Chart)
-        self.chart1.get_tk_widget().grid(padx='0',pady='10',
+        self.chart1.get_tk_widget().grid(padx='0',pady='0',
                 column="0", row="0", sticky = 'nsew')
         self.lbfr_Acc_Chart.rowconfigure('0',weight='1')
         self.lbfr_Acc_Chart.columnconfigure('0',weight='1')
