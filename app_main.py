@@ -226,14 +226,35 @@ class FinanceApp:
             cat[cat.index(None)] = "Undefined"
         except: 
             print("no none categories")
+            cat=[i[category] for i in data]
             
         start = start.strftime(_dt_datefmt)
         end = end.strftime(_dt_datefmt)
         self.ax2.clear()
-        self.ax2.bar(cat,height=am, color = 'darkgreen')
+        
+        limit = self.badb.getCategoriesLimit(start, end)
+        cat_limit=[i[0] for i in limit]
+        try: 
+            cat_limit[cat_limit.index(None)] = "Undefined"
+        except: 
+            print("no none categories")
+            
+        val_limit = [(i[1]) for i in limit]
+        try: 
+            val_limit[val_limit.index(None)] = 0.0
+        except: 
+            print("no none categories")
+        print(limit)
+        print(data)
+        self.ax2.bar(cat_limit, val_limit, align = 'edge', width =0.4 ,
+                     color='PaleGreen', label = 'your limit')
+        self.ax2.bar(cat,am, align = 'edge',width =  -0.4 ,
+                     color = 'darkgreen', label = 'spendings')
+        
         self.ax2.set_title("Spendings from: "+start+" to: "+ end)
         self.ax2.set_xlabel("Categories")
         self.ax2.set_ylabel("Spendings [Euros]")
+        self.ax2.legend(loc=0)
         self.chart2.draw()
 
         

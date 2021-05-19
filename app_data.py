@@ -434,6 +434,22 @@ class DataBaseHandler:
         data = cur.fetchall()
         return data
 
+    
+    def getCategoriesLimit(self, start, end):
+        ## TODO: check database connection
+        sql = '''
+        SELECT  ct.cat_name , ct.cat_limit
+        FROM transactions AS tr
+        LEFT OUTER JOIN categories AS ct
+                ON tr.cat_id = ct.cat_id
+        WHERE (tr.trans_date BETWEEN ? AND ?)
+        AND ct.cat_limit > 0.0
+        GROUP BY ct.cat_name ;
+        '''
+        cur = self.database.cursor()
+        cur.execute(sql, (start, end))
+        data = cur.fetchall()
+        return data
 
 
     def addTransaction(self, date, amount, category, contractor):

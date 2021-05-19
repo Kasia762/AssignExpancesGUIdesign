@@ -134,14 +134,13 @@ class PeriodChooserWidget(ttk.Frame):
         end = self.cal_inter_to.get_date()
         #self.set_datePeriod(start, end)
         self.event_generate('<<PeriodSelected>>')
-        
+        print(start, end)
     
     
     def get_datePeriod(self):
         start = self.cal_inter_from.get_date()
         end = self.cal_inter_to.get_date()
         return (start, end)
-    
     
     ### TODO : add underscore   
     def _previousPeriod(self, start):
