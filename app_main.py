@@ -226,7 +226,7 @@ class FinanceApp:
         start = start.strftime(_dt_datefmt)
         end = end.strftime(_dt_datefmt)
         self.ax2.clear()
-        self.ax2.bar(cat,height=am)
+        self.ax2.bar(cat,height=am, color = 'darkgreen')
         self.ax2.set_title("Spendings from: "+start+" to: "+ end)
         self.ax2.set_xlabel("Categories")
         self.ax2.set_ylabel("Spendings [Euros]")
