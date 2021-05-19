@@ -329,7 +329,7 @@ class DataBaseHandler:
             LEFT OUTER JOIN contractors AS cr
                 ON tr.cont_id = cr.cont_id
         WHERE tr.trans_date BETWEEN ? AND ?
-        ORDER BY tr.trans_date DESC
+        ORDER BY tr.trans_date DESC , tr.trans_id DESC
         '''
         period = (startDate, endDate,)
         cur.execute(sql,period)

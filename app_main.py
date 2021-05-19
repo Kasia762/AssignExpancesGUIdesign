@@ -97,7 +97,7 @@ class FinanceApp:
         tabIndex = str(self.ntb_app.index(self.ntb_app.select()))
         if tabIndex == "0":
             ## Account overview
-            self.chartOverallSpendings()
+            self.chartOverallSpendings(event)
             pass
         elif tabIndex == "1":
             ## Transaction tab
@@ -105,7 +105,7 @@ class FinanceApp:
             pass
         elif tabIndex == "2":
             ## Ctegories & contractors tab
-            self.chartCategorySpendings()
+            self.chartCategorySpendings(event)
             pass
         elif tabIndex == "3":
             ## Bells tab
@@ -232,7 +232,7 @@ class FinanceApp:
         self.chart2.draw()
 
         
-    def updateTransactionTable(self,event):
+    def updateTransactionTable(self,event=None):
         #first clear the treeview
         for i in self.tbl_transactions.get_children():
             self.tbl_transactions.delete(i)
@@ -463,14 +463,13 @@ class FinanceApp:
         date = dt.date.today()
         amount = lotto.check()
         self.badb.addTransaction(date, amount, "Lotto", None)
-        self.updateTransactionTable()
         if amount < 0:
             tk.messagebox.showwarning("LOTTO RESULTS!!!!","You have bad luck",
                                       parent=self.mainwindow)
         else:
             tk.messagebox.showwarning("LOTTO RESULTS!!!!","You won "+str(amount)+", yeay",
                                       parent=self.mainwindow)
-
+        self.updateTransactionTable()
 
 
     def h_btnCatAdd(self):
@@ -575,52 +574,61 @@ class FinanceApp:
         ###
         self.frm_account = ttk.Frame(self.ntb_app)
         self.lbfr_account = ttk.Labelframe(self.frm_account)
-        self.lbl_balance = ttk.Label(self.lbfr_account)
-        self.lbl_balance.configure(text='Balance:')
-        self.lbl_balance.grid(column='0', padx='10', pady='5', row='0')
-        self.lbl_percentage = ttk.Label(self.lbfr_account)
-        self.var_CurrentBalance = tk.StringVar(value="...")
-        self.lbl_percentage.configure(font='{Arial} 12 {bold}', textvariable=self.var_CurrentBalance)
-        self.lbl_percentage.grid(column='1', row='0')
+        
         self.progressbar = ttk.Progressbar(self.lbfr_account)
         self.progressbar.configure(orient='horizontal')
         self.progressbar.grid(column='2', padx='10', row='0', sticky='ew')
         self.progressbar.master.columnconfigure('2', weight=1)
-        ######amount in/ out - to replace
-        self.lbl_amountIn = ttk.Label(self.lbfr_account)
-        self.lbl_amountIn.configure(text='Amount in:')
-        self.lbl_amountIn.grid(column='0', padx='10', pady='5', row='1')
-        self.lbl_perAmountIn = ttk.Label(self.lbfr_account)
-        self.var_perAmountIn = tk.StringVar(value="...")
-        self.lbl_perAmountIn.configure(font='{Arial} 12 {bold}', textvariable=self.var_perAmountIn)
-        self.lbl_perAmountIn.grid(column='1', row='1')
-        self.lbl_amountOut = ttk.Label(self.lbfr_account)
-        self.lbl_amountOut.configure(text='Amount Out:')
-        self.lbl_amountOut.grid(column='2', padx='10', pady='5', row='1')
-        self.lbl_perAmountOut = ttk.Label(self.lbfr_account)
-        self.var_perAmountOut = tk.StringVar(value="...")
-        self.lbl_perAmountOut.configure(font='{Arial} 12 {bold}', textvariable=self.var_perAmountOut)
-        self.lbl_perAmountOut.grid(column='3', row='1')
+       
         # logout button
         self.btn_Logout = ttk.Button(self.lbfr_account)
         self.btn_Logout.configure(text='Logout', width='15')
         self.btn_Logout.configure(command=self.h_btnLogout)
         self.btn_Logout.grid(padx=10, column='3', row='0')
         self.lbfr_account.configure( text='Your account in summary')
-        self.lbfr_account.grid(column='0', ipady='5', padx='10', pady='0', row='0', sticky='sew')
+        self.lbfr_account.grid(column='0', ipady='5', padx='10', pady='0', 
+                               row='0', sticky='sew', columnspan = '2')
         self.lbfr_account.master.rowconfigure('0', pad='10', weight=0)
         self.lbfr_account.master.columnconfigure('0', weight=1)
         self.lbfr_account.master.columnconfigure('1', weight=0)
     
+        self.frm_Acc_balance = ttk.Frame(self.frm_account)
+        self.frm_Acc_balance.grid(column = '1', row = '1', sticky = 'nsew', padx='20')
+        self.lbl_balance = ttk.Label(self.frm_Acc_balance)
+        self.var_CurrentBalance = tk.StringVar(value="...")
+        self.lbl_balance.configure(text='Balance:')
+        self.lbl_balance.grid(column='0', padx='15', pady='10', row='0', sticky='w')
+        self.lbl_percentage = ttk.Label(self.frm_Acc_balance)
+        self.lbl_percentage.configure(font='{Arial} 12 {bold}', 
+                                      textvariable=self.var_CurrentBalance)
+        self.lbl_percentage.grid(column='1', row='0', sticky ='e')
+         ######amount in/ out
+        self.lbl_amountIn = ttk.Label(self.frm_Acc_balance)
+        self.lbl_amountIn.configure(text='Amount in:')
+        self.lbl_amountIn.grid(column='0', padx='15', pady='10', row='2', sticky='w')
+        self.lbl_perAmountIn = ttk.Label(self.frm_Acc_balance)
+        self.var_perAmountIn = tk.StringVar(value="...")
+        self.lbl_perAmountIn.configure(font='{Arial} 12 {bold}', 
+                                       textvariable=self.var_perAmountIn)
+        self.lbl_perAmountIn.grid(column='1', row='2', sticky ='e')
+        self.lbl_amountOut = ttk.Label(self.frm_Acc_balance)
+        self.lbl_amountOut.configure(text='Amount Out:')
+        self.lbl_amountOut.grid(column='0', padx='15', pady='10', row='3', sticky='w')
+        self.lbl_perAmountOut = ttk.Label(self.frm_Acc_balance)
+        self.var_perAmountOut = tk.StringVar(value="...")
+        self.lbl_perAmountOut.configure(font='{Arial} 12 {bold}', 
+                                        textvariable=self.var_perAmountOut)
+        self.lbl_perAmountOut.grid(column='1', row='3', sticky ='e')
+        
         self.frm_Acc_period = ttk.Frame(self.frm_account)
         self.lblfrm_period = PeriodChooser.PeriodChooserWidget(self.frm_Acc_period)
         self.lblfrm_period.grid(column = '0', row = '0', sticky = 'nsew')
         self.frm_Acc_period.grid(column='0', row='1', sticky = 'nsew')
-        self.frm_Acc_period.columnconfigure('0', weight=1)
+        self.frm_Acc_period.columnconfigure('0', weight=0)
     
         self.lbfr_Acc_Chart = ttk.Labelframe(self.frm_account)
         self.lbfr_Acc_Chart.configure(text='Chart summary')
-        self.lbfr_Acc_Chart.grid(column='0', ipadx='5', ipady='5', 
+        self.lbfr_Acc_Chart.grid(columnspan='2',column='0', ipadx='5', ipady='5', 
                                  row='2', sticky='nsew')
         self.lbfr_Acc_Chart.rowconfigure('0', weight=1)
         self.lbfr_Acc_Chart.columnconfigure('0', weight=1)
@@ -628,7 +636,8 @@ class FinanceApp:
         self.frm_account.grid(column='0', row='0', sticky='nsew')
         self.frm_account.rowconfigure('0', weight=0)
         self.frm_account.rowconfigure('2', weight=1)
-        self.frm_account.columnconfigure('0', weight=1)
+        self.frm_account.columnconfigure('0', weight=0)
+        self.frm_account.columnconfigure('1', weight=1)
         
         self.ntb_app.add(self.frm_account, sticky='nsew', text='Account')
 
@@ -917,7 +926,7 @@ class FinanceApp:
         
         self.lbl_ch_city = ttk.Label(self.lbfr_bells_choose)
         self.lbl_ch_city.configure(text='Please, write the city name in the box')
-        self.lbl_ch_city.grid(column='0', padx='5', pady='10', row='0', sticky='e')
+        self.lbl_ch_city.grid(column='0', padx='25', pady='10', row='0', sticky='e')
         self.lbl_ch_city.rowconfigure('0', pad='0', weight='0')
         self.lbl_ch_city.columnconfigure('0', pad='0')
         
@@ -934,9 +943,11 @@ class FinanceApp:
         self.btn_ch_city.configure(command=self.getWeatherInfo)
         
         self.lbfr_bells_choose.configure(height='200', padding='30 0', text='Choose city for which you want to have information displayed', width='200')
-        self.lbfr_bells_choose.grid(column='0', padx='5', pady='0', row='0', sticky='n')
+        self.lbfr_bells_choose.grid(column='0', padx='5', pady='0', row='0', sticky='nwe')
         self.lbfr_bells_choose.rowconfigure('0', pad='0', weight='1')
         self.lbfr_bells_choose.columnconfigure('0', pad='0', weight='1')
+        self.lbfr_bells_choose.columnconfigure('1', pad='0', weight='1')
+        self.lbfr_bells_choose.columnconfigure('2', pad='0', weight='1')
         
         self.lblfr_bells_weather = ttk.Labelframe(self.frm_bells)
         
@@ -1036,7 +1047,7 @@ class FinanceApp:
         self.lbl_wt_humidityVal.grid(column='1', padx='10', pady='5', row='7', sticky='w')
         
         self.frm_wt_values.configure(height='200', width='200')
-        self.frm_wt_values.grid(column='0', row='1', sticky='nsw')
+        self.frm_wt_values.grid(column='0', row='1', sticky='nse')
         #self.frm_wt_values.columnconfigure('0', weight='1')
         
         self.frm_wt_calendar = ttk.Frame(self.lblfr_bells_weather)
@@ -1063,7 +1074,7 @@ class FinanceApp:
         self.cal_wt = tkcal.Calendar(self.frm_wt_calendar, 
                                        selectmode='day', date_pattern=_cal_datefmt,
                                        textvariable=self.var_Calendar)
-        self.cal_wt.grid(column='0', columnspan='2', padx='50', row='2', sticky='s')
+        self.cal_wt.grid(column='0', columnspan='2', padx='50', row='2', sticky='nsew')
         
         # self.cal_wt = CalendarFrame(self.frm_wt_calendar)
         # # TODO - self.cal_wt: code for custom option 'firstweekday' not implemented.
@@ -1083,18 +1094,21 @@ class FinanceApp:
         self.lbl_wt_selection.rowconfigure('3', pad='10')
         
         self.frm_wt_calendar.configure(height='200', width='200')
-        self.frm_wt_calendar.grid(column='1', row='1', sticky='n')
+        self.frm_wt_calendar.grid(column='1', row='1', sticky='nsw')
         self.frm_wt_calendar.columnconfigure('1', weight='1')
         
         self.lblfr_bells_weather.configure(height='200', padding='30 0', text='Weather', width='200')
-        self.lblfr_bells_weather.grid(column='0', ipadx='10', padx='5', pady='5', row='1', sticky='n')
-        self.lblfr_bells_weather.rowconfigure('1', weight='1')
+        self.lblfr_bells_weather.grid(column='0', ipadx='10', padx='5', pady='5', row='1', 
+                                      sticky='nwe')
+        self.lblfr_bells_weather.rowconfigure('1', weight='0')
         self.lblfr_bells_weather.columnconfigure('0', pad='0', weight='1')
+        self.lblfr_bells_weather.columnconfigure('1', pad='0', weight='1')
         
         self.frm_bells.configure(height='200', width='200')
         self.frm_bells.grid(column='0', row='0', sticky='nsew')
         # weight = 0, chose lblfr wont resize the row
-        self.frm_bells.rowconfigure('0', weight='0')
+        # self.frm_bells.rowconfigure('0', weight='1')
+        self.frm_bells.rowconfigure('1', weight='1')
         self.frm_bells.columnconfigure('0', weight='1')
         
         self.frm_bells.rowconfigure('1', weight='1')        
@@ -1107,8 +1121,8 @@ class FinanceApp:
         self.ntb_app.master.rowconfigure('0', weight=1)
         self.ntb_app.master.columnconfigure('0', weight=1)
         self.root_app.configure(relief='flat')
-        self.root_app.geometry('900x500')
-        self.root_app.minsize(700, 400)
+        self.root_app.geometry('1000x500')
+        self.root_app.minsize(800, 400)
         self.root_app.resizable(True, True)
         self.root_app.title('Python cash')
         self.root_app.iconbitmap('pig1.ico')
