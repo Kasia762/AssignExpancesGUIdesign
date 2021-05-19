@@ -81,6 +81,7 @@ class FinanceApp:
         print(f"Current dpi is set to {self.dpi}")
         fig = plt.figure(dpi=self.dpi)
         self.ax1 = fig.add_subplot(111)
+        self.ax1b = self.ax1.twinx()
         self.chart1 = FigureCanvasTkAgg(fig, self.lbfr_Acc_Chart)
         self.chart1.get_tk_widget().grid(padx='0',pady='10',
                 column="0", row="0", sticky = 'nsew')
@@ -164,14 +165,14 @@ class FinanceApp:
         date_outcome = mdates.datestr2num(date_outcome)
         date_balance = mdates.datestr2num(date_balance)
     
-    
+        
         self.ax1.clear()
         self.ax1.plot(date_income, am_income, 
                       color='green', label='income', marker = '*')
         self.ax1.plot(date_outcome, am_outcome, 
                       color = 'red',label='outcome', marker = '.')
         
-        self.ax1b = self.ax1.twinx()
+       
         self.ax1b.clear()
         self.ax1b.bar(date_balance, am_balance, 
                        color = 'PaleGreen', label="balance", alpha = 0.4)
