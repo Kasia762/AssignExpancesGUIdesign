@@ -106,15 +106,15 @@ class PeriodChooserWidget(ttk.Frame):
         # self.lbfrm_pr_inter.master.rowconfigure('0', weight='1')
 
         #bind calendar entries to function
-        self.cal_inter_from.bind('<<DateEntrySelected>>', lambda x: self.get_calEntryDates() )
-        self.cal_inter_to.bind('<<DateEntrySelected>>', lambda x: self.get_calEntryDates()  )
+        self.cal_inter_from.bind('<<DateEntrySelected>>', lambda x: self._get_calEntryDates() )
+        self.cal_inter_to.bind('<<DateEntrySelected>>', lambda x: self._get_calEntryDates()  )
         
         
         self.today = dt.date.today()
-        self.default_datePeriod()
+        self._default_datePeriod()
 
 
-    def default_datePeriod(self):
+    def _default_datePeriod(self):
         start = self.today.replace(day=1)
         end = self.today.replace(day=28) + \
                  dt.timedelta(days=4) 
@@ -122,14 +122,14 @@ class PeriodChooserWidget(ttk.Frame):
         self.cal_inter_from.set_date(start)
         self.cal_inter_to.set_date(end)
         #self.set_datePeriod(start, end)
-        self.get_calEntryDates()
+        self._get_calEntryDates()
                
         
     # def set_datePeriod(self, date_from, date_to):
     #     self.lbl_inter_selection.configure(text="Date period: " + str(date_from) + " - " + str(date_to))
         
         
-    def get_calEntryDates(self):
+    def _get_calEntryDates(self):
         start = self.cal_inter_from.get_date()
         end = self.cal_inter_to.get_date()
         #self.set_datePeriod(start, end)
@@ -144,17 +144,17 @@ class PeriodChooserWidget(ttk.Frame):
     
     
     ### TODO : add underscore   
-    def previousPeriod(self, start):
-        if self.get_chartDateType() == 'month':
+    def _previousPeriod(self, start):
+        if self._get_chartDateType() == 'month':
             end = start - \
                 dt.timedelta(days=start.day)
             start = end.replace(day=1)
-        elif self.get_chartDateType() == 'week':
+        elif self._get_chartDateType() == 'week':
             end = start - \
                 dt.timedelta(days=1)
             start = end - \
                 dt.timedelta(days=end.weekday())
-        elif self.get_chartDateType() == 'year':
+        elif self._get_chartDateType() == 'year':
             end = start.replace(day=1, month=1)
             end = end - \
                 dt.timedelta(days=1)
@@ -162,11 +162,11 @@ class PeriodChooserWidget(ttk.Frame):
         #self.set_datePeriod(start, end)
         self.cal_inter_from.set_date(start)
         self.cal_inter_to.set_date(end)
-        self.get_calEntryDates()
+        self._get_calEntryDates()
     
     
-    def nextPeriod(self, end):
-        if self.get_chartDateType() == 'month':
+    def _nextPeriod(self, end):
+        if self._get_chartDateType() == 'month':
             # date - convert to first day of month
              start = end.replace(day=28) + \
                  dt.timedelta(days=4) 
@@ -175,12 +175,12 @@ class PeriodChooserWidget(ttk.Frame):
                  dt.timedelta(days=4)
              end = end - \
                  dt.timedelta(days=end.day)
-        elif self.get_chartDateType() == 'week':
+        elif self._get_chartDateType() == 'week':
             start = end + \
                 dt.timedelta(days=1)
             end = start + \
                 dt.timedelta(days = 6)
-        elif self.get_chartDateType() == 'year':
+        elif self._get_chartDateType() == 'year':
             start = end.replace(day=31, month=12) + \
                 dt.timedelta(days=1)
             end = start.replace(day=31, month=12)
@@ -188,33 +188,33 @@ class PeriodChooserWidget(ttk.Frame):
         #self.set_datePeriod(start, end)
         self.cal_inter_from.set_date(start)
         self.cal_inter_to.set_date(end)
-        self.get_calEntryDates()
+        self._get_calEntryDates()
         
         
-    def currentPeriod(self):
-        if self.get_chartDateType() == 'month':
-            self.default_datePeriod()
-        elif self.get_chartDateType() == 'week':
+    def _currentPeriod(self):
+        if self._get_chartDateType() == 'month':
+            self._default_datePeriod()
+        elif self._get_chartDateType() == 'week':
             start = self.today - \
                 dt.timedelta(days=self.today.weekday())
             end = start + \
                 dt.timedelta(days=6)
             self.cal_inter_from.set_date(start)
             self.cal_inter_to.set_date(end)
-            self.get_calEntryDates()
+            self._get_calEntryDates()
             #self.set_datePeriod(start, end)
-        elif self.get_chartDateType() == 'year':
+        elif self._get_chartDateType() == 'year':
             start = self.today.replace(day=1, month=1)
             end = start.replace(day = 31, month=12)
             self.cal_inter_from.set_date(start)
             self.cal_inter_to.set_date(end)
             #self.set_datePeriod(start, end)
-            self.get_calEntryDates()
+            self._get_calEntryDates()
         else: print("error")
         
 
    
-    def get_chartDateType(self):  
+    def _get_chartDateType(self):  
         if self.var_date_type.get() == "week":
             return "week"
         elif self.var_date_type.get() == "month":
@@ -227,22 +227,22 @@ class PeriodChooserWidget(ttk.Frame):
     def h_btn_Prev(self):
         start = self.cal_inter_from.get_date()
         end = self.cal_inter_to.get_date()
-        self.previousPeriod(start)
+        self._previousPeriod(start)
         
     
     def h_btn_Next(self):
         start = self.cal_inter_from.get_date()
         end = self.cal_inter_to.get_date()
-        self.nextPeriod(end)
+        self._nextPeriod(end)
     
     
     def h_btn_Current(self):
         
-        self.currentPeriod()
+        self._currentPeriod()
     
              
     # def run(self):
-    #     #self.default_datePeriod()
+    #     #self._default_datePeriod()
     #     pass
         
 

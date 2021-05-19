@@ -144,6 +144,7 @@ class FinanceApp:
         self.display_balance(start, end)
         self.display_amountIn(start, end)
         self.display_amountOut(start, end)
+        self.display_progressbar(start, end)
         
         income = self.badb.data_chartIncome(start,end)
         outcome = self.badb.data_chartOutcome(start,end)
@@ -527,6 +528,17 @@ class FinanceApp:
     def display_time(self):
         self.var_wt_CurrentTime.set( value= time.strftime('%H:%M:%S') )
         self.mainwindow.after(1000, self.display_time)     
+
+    def display_progressbar(self, start, end):
+        self.progressbar['value'] = 0
+        outA = self.badb.getAmountOut(start, end)
+        inA = val = self.badb.getAmountIn(start, end)
+        if float(outA) == 0 or float(inA) == 0:
+            percentage = 0
+        else: percentage = float(abs(outA/inA))*100
+        self.progressbar['value'] = percentage
+        print(percentage)
+        
 
 
     def display_balance(self, start, end):
