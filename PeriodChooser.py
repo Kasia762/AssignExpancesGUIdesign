@@ -26,7 +26,7 @@ class PeriodChooserWidget(ttk.Frame):
         self.lbl_inter_from.columnconfigure('0', pad='0', weight='0')
         self.lbl_inter_to = ttk.Label(self)
         self.lbl_inter_to.configure(text='Date to:')
-        self.lbl_inter_to.grid(column='0', padx='10', row='2', sticky='w')
+        self.lbl_inter_to.grid(column='0', padx='10', row='1', sticky='w')
         self.lbl_inter_to.columnconfigure('0', pad='0', weight='0')
         
         self.cal_inter_from = tkcal.DateEntry(self, 
@@ -38,7 +38,7 @@ class PeriodChooserWidget(ttk.Frame):
         self.cal_inter_to = tkcal.DateEntry(self, 
                                       date_pattern=_cal_datefmt,
                                       state="readonly")
-        self.cal_inter_to.grid(column='1', pady='5', row='2')
+        self.cal_inter_to.grid(column='1', pady='5', row='1')
         
         self.spr_inter = ttk.Separator(self)
         self.spr_inter.configure(orient='vertical')
