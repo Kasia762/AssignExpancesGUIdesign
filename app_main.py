@@ -193,7 +193,7 @@ class FinanceApp:
         self.ax1.set_title("Overall spendings for period: "+\
                   str(start)+" ---> "+str(end),
                   y=1.04, loc="center")
-        self.ax1.set_xlabel("Dates")
+        # self.ax1.set_xlabel("Dates")
         self.ax1.set_ylabel("Balance [Euros]")
         self.ax1b.set_ylabel("Income/outcome [Euros]")
         self.ax1b.axhline(y=0, color ='PaleGreen' )
