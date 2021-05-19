@@ -155,7 +155,7 @@ class FinanceApp:
         balance = self.badb.data_chartBalance(start,end)
         #print(i[0] for i in amount)
         am_income = [i[0] for i in income] 
-        am_outcome = [abs(i[0]) for i in outcome ]
+        am_outcome = [(i[0]) for i in outcome ]
         am_balance = [i[0] for i in balance]
         
         date_income = [(i[1].strftime(_dt_datefmt)) for i in income]
@@ -176,7 +176,7 @@ class FinanceApp:
                       color='green', label='income', marker = '*')
         self.ax1.plot(date_outcome, am_outcome, 
                       color = 'red',label='outcome', marker = '.')
-        
+        self.ax1.axhline(y=0, color ='black',  )
        
         self.ax1b.clear()
         self.ax1b.bar(date_balance, am_balance, 
@@ -194,7 +194,7 @@ class FinanceApp:
         self.ax1.set_xlabel("Dates")
         self.ax1.set_ylabel("Balance [Euros]")
         self.ax1b.set_ylabel("Income/outcome [Euros]")
-        
+        self.ax1b.axhline(y=0, color ='PaleGreen' )
         self.ax1.legend( bbox_to_anchor=(0,1.08), 
                    loc="center")
         self.ax1b.legend( bbox_to_anchor=(1,1.05), 
