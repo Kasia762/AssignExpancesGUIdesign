@@ -13,7 +13,7 @@ import datetime as dt
 import pandas as pd
 from addTransaction import AddTransaction
 from addCategory import AddCategory
-from addContractors import AddContractor
+from addContractor import AddContractor
 import PeriodChooser
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 import matplotlib.pyplot as plt
