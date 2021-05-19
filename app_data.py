@@ -443,7 +443,7 @@ class DataBaseHandler:
         LEFT OUTER JOIN categories AS ct
                 ON tr.cat_id = ct.cat_id
         WHERE (tr.trans_date BETWEEN ? AND ?)
-        AND ct.cat_limit > 0.0
+        AND ct.cat_limit > 0
         GROUP BY ct.cat_name ;
         '''
         cur = self.database.cursor()

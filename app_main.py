@@ -221,7 +221,7 @@ class FinanceApp:
         data = self.badb.data_chartCategories(start, end)
         am = [abs(i[amount]) for i in data]
         cat=[i[category] for i in data]
-
+        
         try: 
             cat[cat.index(None)] = "Undefined"
         except: 
@@ -240,12 +240,13 @@ class FinanceApp:
             print("no none categories")
             
         val_limit = [(i[1]) for i in limit]
-        try: 
-            val_limit[val_limit.index(None)] = 0.0
-        except: 
-            print("no none categories")
+        # try: 
+        #     val_limit[val_limit.index(None)] = 0.0
+        # except: 
+        #     print("no none categories")
         print(limit)
         print(data)
+        
         self.ax2.bar(cat_limit, val_limit, align = 'edge', width =0.4 ,
                      color='PaleGreen', label = 'your limit')
         self.ax2.bar(cat,am, align = 'edge',width =  -0.4 ,
