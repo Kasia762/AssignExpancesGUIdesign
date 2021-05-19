@@ -263,7 +263,7 @@ class DataBaseHandler:
 
     def data_chartCategories(self,startDate,endDate):
         sql ='''
-        SELECT SUM(tr.trans_amount),ct.cat_name
+        SELECT SUM(tr.trans_amount),ct.cat_name, ct.cat_limit
         FROM  transactions AS tr
         LEFT OUTER JOIN categories AS ct
                 ON tr.cat_id = ct.cat_id
@@ -442,12 +442,12 @@ class DataBaseHandler:
         FROM transactions AS tr
         LEFT OUTER JOIN categories AS ct
                 ON tr.cat_id = ct.cat_id
-        WHERE (tr.trans_date BETWEEN ? AND ?)
+        WHERE tr.trans_date BETWEEN ? AND ?
         AND ct.cat_limit > 0
         GROUP BY ct.cat_name ;
         '''
         cur = self.database.cursor()
-        cur.execute(sql, (start, end))
+        cur.execute(sql, (start, end,))
         data = cur.fetchall()
         return data
 

@@ -215,39 +215,28 @@ class FinanceApp:
         dates = self.cat_choosePeriod.get_datePeriod()
         start = dates[0]
         end = dates[1]
-        
+        self.ax2.clear()
         amount = 0
         category = 1
-        data = self.badb.data_chartCategories(start, end)
+        limit =2
+       
+        data = self.badb.data_chartCategories(start, end) 
+        print(data)
         am = [abs(i[amount]) for i in data]
         cat=[i[category] for i in data]
+        cat_limit = [i[limit] for i in data]
         
         try: 
             cat[cat.index(None)] = "Undefined"
+            cat_limit[cat_limit(None)] = 0.0
         except: 
             print("no none categories")
             cat=[i[category] for i in data]
             
         start = start.strftime(_dt_datefmt)
         end = end.strftime(_dt_datefmt)
-        self.ax2.clear()
-        
-        limit = self.badb.getCategoriesLimit(start, end)
-        cat_limit=[i[0] for i in limit]
-        try: 
-            cat_limit[cat_limit.index(None)] = "Undefined"
-        except: 
-            print("no none categories")
-            
-        val_limit = [(i[1]) for i in limit]
-        # try: 
-        #     val_limit[val_limit.index(None)] = 0.0
-        # except: 
-        #     print("no none categories")
-        print(limit)
-        print(data)
-        
-        self.ax2.bar(cat_limit, val_limit, align = 'edge', width =0.4 ,
+    
+        self.ax2.bar(cat, cat_limit, align = 'edge', width =0.4 ,
                      color='PaleGreen', label = 'your limit')
         self.ax2.bar(cat,am, align = 'edge',width =  -0.4 ,
                      color = 'darkgreen', label = 'spendings')
