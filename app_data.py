@@ -26,7 +26,7 @@ class DataBaseHandler:
         ###     print("Only one instance is allowed.")
         ###     raise ValueError
         type(self)._class_counter += 1
-        print("OBJECT #", type(self)._class_counter)
+        print("DataBaseHandler OBJECT #", type(self)._class_counter)
 
         ### self.databaseFilename = "app.database.db"
          
@@ -79,8 +79,8 @@ class DataBaseHandler:
         name = self.__parse_name(name)
         if ( name == "" ):
             return None
-        cur = self.database.cursor()
         sql = 'SELECT COUNT(*) FROM categories WHERE  cat_name = ?'
+        cur = self.database.cursor()
         cur.execute(sql, (name,) )
         data = cur.fetchone()
         count = data[0]
@@ -109,13 +109,16 @@ class DataBaseHandler:
                         CREATE TABLE categories (
                             cat_id INTEGER NOT NULL  PRIMARY KEY,
                             cat_name TEXT NOT NULL COLLATE NOCASE,
-                            cat_limit FLOAT
+                            cat_limit FLOAT,
+                            cat_comment TEXT
                             );
                         ''')
             self.cur.execute('''
                         CREATE TABLE contractors (
                             cont_id INTEGER NOT NULL  PRIMARY KEY,
-                            cont_name TEXT NOT NULL COLLATE NOCASE
+                            cont_name TEXT NOT NULL COLLATE NOCASE,
+                            cont_limit FLOAT,
+                            cont_comment TEXT
                             );
                         ''')
             self.cur.execute('''
@@ -139,14 +142,12 @@ class DataBaseHandler:
             print(err)
         
         ### Load defaults into tables
-        ## contractors
-        sql = 'INSERT INTO contractors ( cont_name ) values (?)'
-        self.cur.executemany(sql, self.default_contractors)
-        self.database.commit()
-
         ## categories
-        sql = 'INSERT INTO categories ( cat_name ) values (?)'
-        self.cur.executemany(sql, self.default_categories)
+        for i in self.default_categories:
+            self.addCategory( i[0] )
+        ## contractors
+        for i in self.default_contractors:
+            self.addContractor( i[0] )
         self.database.commit()
 
 
@@ -198,7 +199,11 @@ class DataBaseHandler:
         if pd.isnull( name ):
             return ''
         # Remove all extra spaces
-        return " ".join(name.split())
+        name = " ".join(name.split())
+        if name == " ":
+            return ''
+        else:
+            return name
 
 
 
@@ -206,8 +211,8 @@ class DataBaseHandler:
         hello = "Debug: printing all tables in database:"
         print(hello)
         print("=" * len(hello) )
-        cur = self.database.cursor()
         sql = 'SELECT name FROM sqlite_master WHERE type = "table";'
+        cur = self.database.cursor()
         cur.execute(sql )
         data = cur.fetchall()
         print("Founded tables: ")
@@ -220,7 +225,6 @@ class DataBaseHandler:
 
     def getAllTransactions(self):
         ## TODO: check database connection
-        cur = self.database.cursor()
         sql = '''
             SELECT tr.trans_id, tr.trans_date, tr.trans_amount, ct.cat_name , cr.cont_name
             FROM transactions AS tr 
@@ -231,6 +235,7 @@ class DataBaseHandler:
             ORDER BY tr.trans_date DESC 
             ;
             '''
+        cur = self.database.cursor()
         cur.execute(sql)
         data = cur.fetchall()
         return data
@@ -239,7 +244,6 @@ class DataBaseHandler:
 
     def getTransaction_byid(self, id_value):
         ## TODO: check database connection
-        cur = self.database.cursor()
         sql = '''
             SELECT tr.trans_id, tr.trans_date, tr.trans_amount, ct.cat_name , cr.cont_name
             FROM transactions AS tr 
@@ -250,6 +254,7 @@ class DataBaseHandler:
             WHERE tr.trans_id = ?
             ;
             '''
+        cur = self.database.cursor()
         cur.execute(sql,(id_value,))
         data = cur.fetchone()
         return data
@@ -257,7 +262,6 @@ class DataBaseHandler:
 
 
     def data_chartCategories(self,startDate,endDate):
-        cur = self.database.cursor()
         sql ='''
         SELECT SUM(tr.trans_amount),ct.cat_name
         FROM  transactions AS tr
@@ -267,6 +271,7 @@ class DataBaseHandler:
         AND tr.trans_amount < 0 
         GROUP BY ct.cat_name;
         '''
+        cur = self.database.cursor()
         cur.execute(sql,(startDate,endDate,))
         data = cur.fetchall()
         return data
@@ -274,7 +279,6 @@ class DataBaseHandler:
 
 
     def data_chartIncome(self,startDate,endDate):
-        cur = self.database.cursor()
         sql = '''
         SELECT SUM(tr.trans_amount), tr.trans_date
         FROM transactions AS tr
@@ -282,6 +286,7 @@ class DataBaseHandler:
         AND tr.trans_amount > 0
         GROUP BY tr.trans_date
         '''
+        cur = self.database.cursor()
         cur.execute(sql,(startDate,endDate,))
         data = cur.fetchall()
         return data
@@ -289,7 +294,6 @@ class DataBaseHandler:
 
 
     def data_chartOutcome(self,startDate,endDate):
-        cur = self.database.cursor()
         sql = '''
         SELECT SUM(tr.trans_amount), tr.trans_date
         FROM transactions AS tr
@@ -297,6 +301,7 @@ class DataBaseHandler:
         AND tr.trans_amount < 0
         GROUP BY tr.trans_date
         '''
+        cur = self.database.cursor()
         cur.execute(sql,(startDate,endDate,))
         data = cur.fetchall()
         return data
@@ -304,13 +309,13 @@ class DataBaseHandler:
 
 
     def data_chartBalance(self,startDate,endDate):
-        cur = self.database.cursor()
         sql = '''
         SELECT SUM(tr.trans_amount), tr.trans_date
         FROM transactions AS tr
         WHERE tr.trans_date BETWEEN ? AND ?
         GROUP BY tr.trans_date
         '''
+        cur = self.database.cursor()
         cur.execute(sql,(startDate,endDate,))
         data = cur.fetchall()
         return data
@@ -320,7 +325,6 @@ class DataBaseHandler:
     def getAllTransactionsPeriod(self,startDate, endDate):
                 
         ## TODO: check database connection
-        cur = self.database.cursor()
         sql = '''
         SELECT tr.trans_id, tr.trans_date, tr.trans_amount, ct.cat_name , cr.cont_name
         FROM transactions AS tr
@@ -331,6 +335,7 @@ class DataBaseHandler:
         WHERE tr.trans_date BETWEEN ? AND ?
         ORDER BY tr.trans_date DESC , tr.trans_id DESC
         '''
+        cur = self.database.cursor()
         period = (startDate, endDate,)
         cur.execute(sql,period)
         data = cur.fetchall()
@@ -341,7 +346,6 @@ class DataBaseHandler:
     def getTransactionsPeriod(self, startDate, endDate, category, contractor):
     
         ## TODO: check database connection
-        cur = self.database.cursor()
         sql = '''
         SELECT tr.trans_id, tr.trans_date, tr.trans_amount, ct.cat_name , cr.cont_name
         FROM transactions AS tr
@@ -355,6 +359,7 @@ class DataBaseHandler:
         ORDER BY tr.trans_date DESC
         '''
         
+        cur = self.database.cursor()
         cur.execute(sql, (startDate, endDate, category, contractor))
         data = cur.fetchall()
         return data
@@ -362,12 +367,13 @@ class DataBaseHandler:
 
     def getBalance(self, start,end):
         ## TODO: check database connection
-        cur = self.database.cursor()
         sql = '''
             SELECT  SUM(tr.trans_amount)
             FROM  transactions AS tr
             WHERE tr.trans_date BETWEEN ? AND ?;
             '''
+
+        cur = self.database.cursor()
         cur.execute(sql,(start, end,))
         data = cur.fetchone()[0]
         data = data if data else 0.0
@@ -404,12 +410,12 @@ class DataBaseHandler:
 
     def getContractorList(self):
         ## TODO: check database connection
-        cur = self.database.cursor()
         sql = '''
-            SELECT  cr.cont_name , cr.cont_id
+            SELECT  cr.cont_name , cr.cont_id, cr.cont_limit, cr.cont_comment
             FROM  contractors AS cr
             ORDER BY cr.cont_name ASC ;
             '''
+        cur = self.database.cursor()
         cur.execute(sql)
         data = cur.fetchall()
         return data
@@ -418,12 +424,12 @@ class DataBaseHandler:
 
     def getCategoriesList(self):
         ## TODO: check database connection
-        cur = self.database.cursor()
         sql = '''
-            SELECT  ct.cat_name , ct.cat_id
+            SELECT  ct.cat_name , ct.cat_id, ct.cat_limit, cat_comment
             FROM categories AS ct
             ORDER BY  ct.cat_name  ASC ;
             '''
+        cur = self.database.cursor()
         cur.execute(sql)
         data = cur.fetchall()
         return data
@@ -438,7 +444,6 @@ class DataBaseHandler:
             return (False, "date is not datetime either date type parametr")
         if not ( isinstance(amount, float) or isinstance(amount, int) ):
             return (False, "Amount is not real either integer number")
-        cur = self.database.cursor()
         sql= '''
                 INSERT INTO transactions
                 ( trans_date, trans_amount,
@@ -450,6 +455,7 @@ class DataBaseHandler:
                 )
              '''   
         try:
+            cur = self.database.cursor()
             cur.executemany(sql, ( (date, amount, category, contractor,), ) )
             self.database.commit()
             ## print(type(date),  type(amount),  type(category),  type(contractor), sep='\t')
@@ -490,28 +496,31 @@ class DataBaseHandler:
 
 
 
-    def deleteTransaction(self,val):
-        cur = self.database.cursor()
+    def deleteTransaction(self, id_value):
         sql= '''
             DELETE FROM transactions AS tr
             WHERE tr.trans_id = ?
             '''   
-        cur.execute(sql,(val,))
+        cur = self.database.cursor()
+        cur.execute(sql, (id_value,))
         self.database.commit()
 
 
 
-    def addContractor(self,  contractor):
+    def addContractor(self,  contractor, limit=0.0, comment=''):
         ## TODO: 1. data types checking
         contractor = self.__parse_name(contractor)
-        cur = self.database.cursor()
+        if contractor == '':
+            return (False, 'Empty contractor name')
         sql= '''
                 INSERT INTO contractors
-                ( cont_name ) VALUES 
-                ( ? )
+                ( cont_name, cont_limit, cont_comment ) VALUES 
+                ( ? ,? , ? )
              '''   
+        val = ( contractor, limit, comment )
         try:
-            cur.execute(sql, ( contractor, ) )
+            cur = self.database.cursor()
+            cur.execute(sql, val )
             self.database.commit()
             return (True, "OK",)
         except sqlite3.Error:
@@ -521,28 +530,32 @@ class DataBaseHandler:
 
     def getContractor_byId(self, id_contractor):
         ## TODO: check database connection
-        cur = self.database.cursor()
         sql = '''
-            SELECT cn.cont_name, cn.cont_id
+            SELECT cn.cont_name, cn.cont_id, cn.cont_limit, cn.cont_comment
             FROM contractors AS cn
             WHERE cn.cont_id = ?;
             '''
+        cur = self.database.cursor()
         cur.execute(sql,(id_contractor,))
         data = cur.fetchone()
         return data 
 
 
 
-    def changeContractor(self, id_value, contractor):
+    def changeContractor(self, id_value, contractor, limit=0.0, comment=''):
         contractor = self.__parse_name(contractor)
-        cur = self.database.cursor()
+        if contractor == '':
+            return (False, 'Empty contractor name')
         sql='''
         UPDATE contractors
-        SET cont_name= ?
+        SET cont_name = ?,
+            cont_limit = ?,
+            cont_comment = ?
         WHERE cont_id = ?;
         '''
-        val = (contractor, id_value)
+        val = (contractor, limit, comment,    id_value)
         try:
+            cur = self.database.cursor()
             cur.execute(sql,val)
             self.database.commit()
             return (True, "OK",)
@@ -552,17 +565,20 @@ class DataBaseHandler:
 
 
 
-    def addCategory(self, category):
+    def addCategory(self, category, limit=0.0, comment=''):
         category = self.__parse_name(category)
+        if category == '':
+            return (False, 'Empty category name')
         ## TODO: 1. data types checking
-        cur = self.database.cursor()
         sql= '''
                 INSERT INTO categories
-                (  cat_name ) VALUES 
-                ( ? )
-             '''   
+                (  cat_name, cat_limit, cat_comment ) VALUES 
+                ( ? ,? , ? )
+             '''
+        val = ( category, limit, comment, )
         try:
-            cur.execute(sql, ( category,) )
+            cur = self.database.cursor()
+            cur.execute(sql, val )
             self.database.commit()
             return (True, "OK",)
         except sqlite3.Error:
@@ -573,28 +589,33 @@ class DataBaseHandler:
 
     def getCategory_byId(self, id_category):
         ## TODO: check database connection
-        cur = self.database.cursor()
         sql = '''
-            SELECT ct.cat_name, ct.cat_id
+            SELECT ct.cat_name, ct.cat_id, ct.cat_limit, ct.cat_comment
             FROM categories AS ct
             WHERE ct.cat_id = ?;
             '''
+        cur = self.database.cursor()
         cur.execute(sql,(id_category,))
         data = cur.fetchone()
         return data 
 
 
 
-    def changeCategory(self, id_value, category):
+    def changeCategory(self, id_value, category, limit=0.0, comment=''):
         category = self.__parse_name(category)
-        cur = self.database.cursor()
+        if category == '':
+            return (False, 'Empty category name')
+
         sql='''
         UPDATE categories
-        SET cat_name= ?
+        SET cat_name = ?,
+            cat_limit = ?,
+            cat_comment = ?
         WHERE cat_id = ?;
         '''
-        val = (category, id_value)
+        val = (category, limit, comment,   id_value)
         try:
+            cur = self.database.cursor()
             cur.execute(sql,val)
             self.database.commit()
             return (True, "OK",)

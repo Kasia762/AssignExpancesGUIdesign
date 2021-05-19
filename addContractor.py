@@ -9,7 +9,7 @@ import tkinter.ttk as ttk
 import tkinter as tk
 
 
-class AddCategory:
+class AddContractor:
     def __init__(self, master, controller, id_value=None ):
         
         ## 
@@ -32,15 +32,15 @@ class AddCategory:
 
     def __initLoad(self):
         if self.id_value == None:
-            self.mainwindow.title('Add cattegory')
+            self.mainwindow.title('Add contractor')
             self.btn_confirm.configure(text='Add')
             pass
         else:
-            self.mainwindow.title('Change cattegory')
+            self.mainwindow.title('Change contractor')
             self.btn_confirm.configure(text='Change')
             ### ***
             ### FIXME: Correct Attribute: Category / Contractor
-            data = self.controller.badb.getCategory_byId(self.id_value)
+            data = self.controller.badb.getContractor_byId(self.id_value)
             name = data[0]
             limit = data[2]
             comment = data[3]
@@ -96,7 +96,7 @@ class AddCategory:
         if self.id_value == None:
             ### ***
             ### FIXME: Correct Attribute: Category / Contractor
-            if self.controller.badb.isExistsCategory( name ) == True:
+            if self.controller.badb.isExistsContractor( name ) == True:
                 print("Name is already exists.")
                 tk.messagebox.showwarning("Enter valid data",
                                           "The Name is already exists.\n\nPlease, enter other name.",
@@ -105,12 +105,12 @@ class AddCategory:
                 
             ### ***
             ### FIXME: Correct Attribute: Category / Contractor
-            res = self.controller.badb.addCategory(name, limit, comment)
+            res = self.controller.badb.addContractor(name, limit, comment)
             print(res)
         else:
             ### ***
             ### FIXME: Correct Attribute: Category / Contractor
-            res = self.controller.badb.changeCategory(self.id_value, name, limit, comment)
+            res = self.controller.badb.changeContractor(self.id_value, name, limit, comment)
             print(res)
             self.id_value = None
         #if not destoyed - next option -add
@@ -127,7 +127,7 @@ class AddCategory:
             print("Cannot run independently. Pass master attribute")
             return
         self.win_AttributeProperties = tk.Toplevel(master)
-        self.win_AttributeProperties.title('Add cattegory')
+        self.win_AttributeProperties.title('Add attribute')
         ## Hide window 
         ## DO NOT forget to show at the end of init!!!
         self.win_AttributeProperties.withdraw()
