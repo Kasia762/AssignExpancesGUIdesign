@@ -1,11 +1,11 @@
 <?xml version='1.0' encoding='utf-8'?>
 <interface version="1.1">
-  <object class="tk.Toplevel" id="win_addcat">
+  <object class="tk.Toplevel" id="win_AttributeProperties">
     <property name="height">200</property>
     <property name="resizable">both</property>
     <property name="width">200</property>
     <child>
-      <object class="ttk.Frame" id="frm_addcat">
+      <object class="ttk.Frame" id="frm_AttributeProperties">
         <property name="height">200</property>
         <property name="width">200</property>
         <layout manager="grid">
@@ -17,7 +17,7 @@
           <property type="row" id="0" name="weight">1</property>
         </layout>
         <child>
-          <object class="ttk.Frame" id="lblfr_cat">
+          <object class="ttk.Frame" id="frm_fields">
             <property name="padding">20 20</property>
             <layout manager="grid">
               <property name="column">0</property>
@@ -31,7 +31,7 @@
               <property type="row" id="0" name="weight">1</property>
             </layout>
             <child>
-              <object class="ttk.Label" id="lbl_addcat">
+              <object class="ttk.Label" id="lbl_Name">
                 <property name="text" translatable="yes">Name</property>
                 <layout manager="grid">
                   <property name="column">0</property>
@@ -44,7 +44,7 @@
               </object>
             </child>
             <child>
-              <object class="ttk.Entry" id="ent_addcatName">
+              <object class="ttk.Entry" id="ent_Name">
                 <property name="textvariable">string:var_Name</property>
                 <layout manager="grid">
                   <property name="column">1</property>
@@ -58,7 +58,7 @@
               </object>
             </child>
             <child>
-              <object class="ttk.Label" id="lbl_addcatLimit">
+              <object class="ttk.Label" id="lbl_Limit">
                 <property name="text" translatable="yes">Month limit</property>
                 <layout manager="grid">
                   <property name="column">0</property>
@@ -71,7 +71,7 @@
               </object>
             </child>
             <child>
-              <object class="ttk.Entry" id="ent_addcatLimit">
+              <object class="ttk.Entry" id="ent_Limit">
                 <property name="textvariable">string:var_Limit</property>
                 <layout manager="grid">
                   <property name="column">1</property>
@@ -85,7 +85,7 @@
               </object>
             </child>
             <child>
-              <object class="ttk.Label" id="lbl_addcatComm">
+              <object class="ttk.Label" id="lbl_Comment">
                 <property name="text" translatable="yes">Comment</property>
                 <layout manager="grid">
                   <property name="column">0</property>
@@ -98,7 +98,7 @@
               </object>
             </child>
             <child>
-              <object class="ttk.Entry" id="ent_addcatComm">
+              <object class="ttk.Entry" id="ent_Comment">
                 <property name="textvariable">string:var_Comment</property>
                 <layout manager="grid">
                   <property name="column">1</property>
@@ -129,7 +129,7 @@
           </object>
         </child>
         <child>
-          <object class="ttk.Frame" id="lblfrm_btn">
+          <object class="ttk.Frame" id="frm_buttons">
             <property name="height">200</property>
             <property name="padding">5 5</property>
             <layout manager="grid">
@@ -157,8 +157,8 @@
             </child>
             <child>
               <object class="ttk.Button" id="btn_decline">
-                <property name="command" type="command" cbtype="simple">h_btn_decline</property>
-                <property name="text" translatable="yes">DECLINE</property>
+                <property name="command" type="command" cbtype="simple">h_btn_cancel</property>
+                <property name="text" translatable="yes">Cancel</property>
                 <property name="width">10</property>
                 <layout manager="grid">
                   <property name="column">1</property>
@@ -174,7 +174,7 @@
               <object class="ttk.Button" id="btn_confirm">
                 <property name="command" type="command" cbtype="simple">h_btn_confirm</property>
                 <property name="state">normal</property>
-                <property name="text" translatable="yes">CONFIRM</property>
+                <property name="text" translatable="yes">Add</property>
                 <layout manager="grid">
                   <property name="column">2</property>
                   <property name="propagate">True</property>

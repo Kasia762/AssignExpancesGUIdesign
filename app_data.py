@@ -142,14 +142,12 @@ class DataBaseHandler:
             print(err)
         
         ### Load defaults into tables
-        ## contractors
-        sql = 'INSERT INTO contractors ( cont_name ) values (?)'
-        self.cur.executemany(sql, self.default_contractors)
-        self.database.commit()
-
         ## categories
-        sql = 'INSERT INTO categories ( cat_name ) values (?)'
-        self.cur.executemany(sql, self.default_categories)
+        for i in self.default_categories:
+            self.addCategory( i[0] )
+        ## contractors
+        for i in self.default_contractors:
+            self.addContractor( i[0] )
         self.database.commit()
 
 
@@ -481,19 +479,20 @@ class DataBaseHandler:
 
 
 
-    def addContractor(self,  contractor, limit=0.0, comment):
+    def addContractor(self,  contractor, limit=0.0, comment=''):
         ## TODO: 1. data types checking
         contractor = self.__parse_name(contractor)
         if contractor == '':
             return (False, 'Empty contractor name')
         sql= '''
                 INSERT INTO contractors
-                ( cont_name ) VALUES 
-                ( ? )
+                ( cont_name, cont_limit, cont_comment ) VALUES 
+                ( ? ,? , ? )
              '''   
+        val = ( contractor, limit, comment )
         try:
             cur = self.database.cursor()
-            cur.execute(sql, ( contractor, ) )
+            cur.execute(sql, val )
             self.database.commit()
             return (True, "OK",)
         except sqlite3.Error:
@@ -504,7 +503,7 @@ class DataBaseHandler:
     def getContractor_byId(self, id_contractor):
         ## TODO: check database connection
         sql = '''
-            SELECT cn.cont_name, cn.cont_id
+            SELECT cn.cont_name, cn.cont_id, cn.cont_limit, cn.cont_comment
             FROM contractors AS cn
             WHERE cn.cont_id = ?;
             '''
@@ -515,16 +514,18 @@ class DataBaseHandler:
 
 
 
-    def changeContractor(self, id_value, contractor):
+    def changeContractor(self, id_value, contractor, limit=0.0, comment=''):
         contractor = self.__parse_name(contractor)
         if contractor == '':
             return (False, 'Empty contractor name')
         sql='''
         UPDATE contractors
-        SET cont_name= ?
+        SET cont_name = ?,
+            cont_limit = ?,
+            cont_comment = ?
         WHERE cont_id = ?;
         '''
-        val = (contractor, id_value)
+        val = (contractor, limit, comment,    id_value)
         try:
             cur = self.database.cursor()
             cur.execute(sql,val)
@@ -536,19 +537,20 @@ class DataBaseHandler:
 
 
 
-    def addCategory(self, category):
+    def addCategory(self, category, limit=0.0, comment=''):
         category = self.__parse_name(category)
         if category == '':
             return (False, 'Empty category name')
         ## TODO: 1. data types checking
         sql= '''
                 INSERT INTO categories
-                (  cat_name ) VALUES 
-                ( ? )
-             '''   
+                (  cat_name, cat_limit, cat_comment ) VALUES 
+                ( ? ,? , ? )
+             '''
+        val = ( category, limit, comment, )
         try:
             cur = self.database.cursor()
-            cur.execute(sql, ( category,) )
+            cur.execute(sql, val )
             self.database.commit()
             return (True, "OK",)
         except sqlite3.Error:
@@ -560,7 +562,7 @@ class DataBaseHandler:
     def getCategory_byId(self, id_category):
         ## TODO: check database connection
         sql = '''
-            SELECT ct.cat_name, ct.cat_id
+            SELECT ct.cat_name, ct.cat_id, ct.cat_limit, ct.cat_comment
             FROM categories AS ct
             WHERE ct.cat_id = ?;
             '''
@@ -571,17 +573,19 @@ class DataBaseHandler:
 
 
 
-    def changeCategory(self, id_value, category):
+    def changeCategory(self, id_value, category, limit=0.0, comment=''):
         category = self.__parse_name(category)
         if category == '':
             return (False, 'Empty category name')
 
         sql='''
         UPDATE categories
-        SET cat_name= ?
+        SET cat_name = ?,
+            cat_limit = ?,
+            cat_comment = ?
         WHERE cat_id = ?;
         '''
-        val = (category, id_value)
+        val = (category, limit, comment,   id_value)
         try:
             cur = self.database.cursor()
             cur.execute(sql,val)

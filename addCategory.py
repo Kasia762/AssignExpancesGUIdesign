@@ -15,125 +15,201 @@ class AddCategory:
         ## 
         self.controller = controller
         ## ID of transaction to change
-        self.id_category = id_value
+        self.id_value = id_value
 
-        # build ui
         # Main widget
-        self.mainwindow = self.GUI(master)
+        self.mainwindow = self._GUI(master)
         self.mainwindow.grab_set()
         
         ### Bindings
         self.btn_confirm.bind('<Return>', lambda x: self.h_btn_confirm() )
+        self.ent_Limit.bind('<Return>', lambda x: self.__evaluateLimitEntry() )
         self.mainwindow.bind('<Escape>', lambda x: self.h_btn_cancel() )
 
         ## Initialisation
-        self.__initLoadCategory()
+        self.__initLoad()
             
 
-    def __initLoadCategory(self):
-        if self.id_category == None:
+    def __initLoad(self):
+        if self.id_value == None:
+            self.mainwindow.title('Add cattegory')
+            self.btn_confirm.configure(text='Add')
             pass
         else:
-            self.win_addcat.title('Change cattegory')
+            self.mainwindow.title('Change cattegory')
             self.btn_confirm.configure(text='Change')
-            cat_data = self.controller.badb.getCategory_byId(self.id_category)
-            cat = cat_data[0]
-            self.ent_addcat.configure(text=cat)
-            if cat:
-                self.__setCategoryEntry(cat)
+            ### ***
+            ### FIXME: Correct Attribute: Category / Contractor
+            data = self.controller.badb.getCategory_byId(self.id_value)
+            name = data[0]
+            limit = data[2]
+            comment = data[3]
+            self.var_Limit.set( limit )
+            self.var_Comment.set( comment )
+            self.__setNameEntry( name )
         pass
-        
 
-    def __setCategoryEntry(self, value):
-        self.ent_addcat.delete(0, tk.END)
-        self.ent_addcat.insert(0,value)
-        self.ent_addcat.focus()
-        self.ent_addcat.select_range(0, tk.END)
+
+    def __evaluateLimitEntry(self):
+        # Try to evaluate string in Entry as python:
+        try:
+            s = self.var_Limit.get()
+            news = str( eval(s) )
+            self.var_Limit.set(news)
+            return True
+        except:
+            print("Limit cannot be calculated...")
+            self.ent_Limit.focus()
+            self.ent_Limit.select_range(0, tk.END)
+            return False
+
+
+    def __parse_name(self, name):
+        # Remove all extra spaces
+        name = " ".join(name.split())
+        if name == " ":
+            return ''
+        else:
+            return name
+
+
+    def __setNameEntry(self, value):
+        self.var_Name.set(value=value)
+        self.ent_Name.focus()
+        self.ent_Name.select_range(0, tk.END)
 
 
     def h_btn_confirm(self):
-        #update fields to selected row    
-        category = self.ent_addcat.get()
+        self.var_Name.set( self.__parse_name( self.var_Name.get() ) )
+        name = self.var_Name.get()
+        if name == '':
+            print("Name is empty")
+            tk.messagebox.showwarning("Enter valid data",
+                                      "Name cannot be empty.\n\nPlease, enter correct name.",
+                                      parent=self.mainwindow)
+            return
+        if not self.__evaluateLimitEntry() :
+            return
+        limit = abs( float( self.var_Limit.get() ) )
+        comment = self.var_Comment.get()
       
-        if self.id_category == None:
-            res = self.controller.badb.addCategory(category)
+        if self.id_value == None:
+            ### ***
+            ### FIXME: Correct Attribute: Category / Contractor
+            if self.controller.badb.isExistsCategory( name ) == True:
+                print("Name is already exists.")
+                tk.messagebox.showwarning("Enter valid data",
+                                          "The Name is already exists.\n\nPlease, enter other name.",
+                                          parent=self.mainwindow)
+                return
+                
+            ### ***
+            ### FIXME: Correct Attribute: Category / Contractor
+            res = self.controller.badb.addCategory(name, limit, comment)
             print(res)
-            self.__setCategoryEntry("    ")
-            self.controller.updateCategoriesTable()
         else:
-            res = self.controller.badb.changeCategory(self.id_category, category)
+            ### ***
+            ### FIXME: Correct Attribute: Category / Contractor
+            res = self.controller.badb.changeCategory(self.id_value, name, limit, comment)
             print(res)
-            self.controller.updateCategoriesTable()
-            self.id_category = None
-            #if not destoyed - next option -add
-            ## MUST BE LAST line in function
-            self.mainwindow.destroy()
+            self.id_value = None
+        #if not destoyed - next option -add
+        ## MUST BE LAST line in function
+        self.mainwindow.destroy()
 
 
     def h_btn_cancel(self):
         self.mainwindow.destroy()  
         
 
-    def GUI(self, master):
+    def _GUI(self, master):
         if master == None:
             print("Cannot run independently. Pass master attribute")
             return
-        self.win_addcat = tk.Toplevel(master)
-        self.win_addcat.title('Add cattegory')
+        self.win_AttributeProperties = tk.Toplevel(master)
+        self.win_AttributeProperties.title('Add cattegory')
         ## Hide window 
         ## DO NOT forget to show at the end of init!!!
-        self.frm_addcat = ttk.Frame(self.win_addcat)
+        self.win_AttributeProperties.withdraw()
         
-        self.lblfr_cat = ttk.Labelframe(self.frm_addcat)
-        
-        self.lbl_addcat = ttk.Label(self.lblfr_cat)
-        self.lbl_addcat.configure(text='New category')
-        self.lbl_addcat.grid(column='0', padx='10', row='0')
-        self.ent_addcat = ttk.Entry(self.lblfr_cat)
-        self.ent_addcat.grid(column='1', row='0', sticky='w')
-        
-        self.lblfr_cat.configure(height='200', text='Add new category', width='200')
-        self.lblfr_cat.grid(column='0', row='0', sticky='nsew')
-        self.lblfr_cat.rowconfigure('0', pad='20', weight='1')
-        self.lblfr_cat.columnconfigure('0', pad='10', weight='1')
-        self.lblfr_cat.columnconfigure('1', pad='10', weight='1')
-        
-        self.lblfrm_btn = ttk.Labelframe(self.frm_addcat)
-        
-        self.btn_cancel = ttk.Button(self.lblfrm_btn)
-        self.btn_cancel.configure(text='Cancel')
-        self.btn_cancel.grid(column='0', ipady ='3', padx='25', row='0', sticky='e')
-        self.btn_cancel.configure(command=self.h_btn_cancel)
-        self.btn_confirm = ttk.Button(self.lblfrm_btn)
-        self.btn_confirm.configure(state='normal', text='Confirm')
-        self.btn_confirm.grid(column='1', padx='25', ipady ='3', row='0', sticky='e')
+        self.frm_AttributeProperties = ttk.Frame(self.win_AttributeProperties)
+        self.frm_fields = ttk.Frame(self.frm_AttributeProperties)
+        self.lbl_Name = ttk.Label(self.frm_fields)
+        self.lbl_Name.configure(text='Name')
+        self.lbl_Name.grid(column='0', padx='10', row='0', sticky='e')
+        self.lbl_Name.master.rowconfigure('0', pad='30')
+        self.ent_Name = ttk.Entry(self.frm_fields)
+        self.var_Name = tk.StringVar(value='')
+        self.ent_Name.configure(textvariable=self.var_Name)
+        self.ent_Name.grid(column='1', row='0', sticky='ew')
+        self.ent_Name.master.rowconfigure('0', pad='30')
+        self.ent_Name.master.columnconfigure('1', minsize='300', weight='1')
+        self.lbl_Limit = ttk.Label(self.frm_fields)
+        self.lbl_Limit.configure(text='Month limit')
+        self.lbl_Limit.grid(column='0', padx='10', row='1', sticky='e')
+        self.lbl_Limit.master.rowconfigure('1', pad='10')
+        self.ent_Limit = ttk.Entry(self.frm_fields)
+        self.var_Limit = tk.StringVar(value='')
+        self.ent_Limit.configure(textvariable=self.var_Limit)
+        self.ent_Limit.grid(column='1', row='1', sticky='w')
+        self.ent_Limit.master.rowconfigure('1', pad='10')
+        self.ent_Limit.master.columnconfigure('1', minsize='300', weight='1')
+        self.lbl_Comment = ttk.Label(self.frm_fields)
+        self.lbl_Comment.configure(text='Comment')
+        self.lbl_Comment.grid(column='0', padx='10', row='2', sticky='e')
+        self.lbl_Comment.master.rowconfigure('2', pad='10')
+        self.ent_Comment = ttk.Entry(self.frm_fields)
+        self.var_Comment = tk.StringVar(value='')
+        self.ent_Comment.configure(textvariable=self.var_Comment)
+        self.ent_Comment.grid(column='1', row='2', sticky='ew')
+        self.ent_Comment.master.rowconfigure('2', pad='10')
+        self.ent_Comment.master.columnconfigure('1', minsize='300', weight='1')
+        self.frm_fields.configure(padding='20 20')
+        self.frm_fields.grid(column='0', ipady='10', row='0', sticky='nsew')
+        self.frm_fields.master.rowconfigure('0', pad='0', weight='1')
+        self.frm_fields.master.columnconfigure('0', pad='0', weight='1')
+        self.separator1 = ttk.Separator(self.frm_AttributeProperties)
+        self.separator1.configure(orient='horizontal')
+        self.separator1.grid(column='0', padx='10', row='1', sticky='sew')
+        self.separator1.master.rowconfigure('1', pad='0')
+        self.separator1.master.columnconfigure('0', pad='0', weight='1')
+        self.frm_buttons = ttk.Frame(self.frm_AttributeProperties)
+        self.frm_buttons.rowconfigure('0', minsize='30', pad='20')
+        self.frm_buttons.columnconfigure('0', weight='100')
+        self.btn_decline = ttk.Button(self.frm_buttons)
+        self.btn_decline.configure(text='Cancel', width='10')
+        self.btn_decline.grid(column='1', row='0')
+        self.btn_decline.master.rowconfigure('0', minsize='30', pad='20')
+        self.btn_decline.master.columnconfigure('1', pad='10')
+        self.btn_decline.configure(command=self.h_btn_cancel)
+        self.btn_confirm = ttk.Button(self.frm_buttons)
+        self.btn_confirm.configure(state='normal', text='Add')
+        self.btn_confirm.grid(column='2', row='0')
+        self.btn_confirm.master.rowconfigure('0', minsize='30', pad='20')
+        self.btn_confirm.master.columnconfigure('1', weight='1')
+        self.btn_confirm.master.columnconfigure('2', minsize='0', pad='20')
         self.btn_confirm.configure(command=self.h_btn_confirm)
-        
-        self.lblfrm_btn.configure(height='200', text='Confirm or cancel', width='200')
-        self.lblfrm_btn.grid(column='0', row='1', sticky='nsew')
-        self.lblfrm_btn.rowconfigure('0', pad='10', weight='1')
-        self.lblfrm_btn.columnconfigure('0', pad='10', weight='1')
-        self.lblfrm_btn.columnconfigure('1', pad='10', weight='1')
-        
-        #self.frm_addcat.configure(height='200', width='200')
-        self.frm_addcat.grid(column='0', padx='10', pady='10', row='0', sticky='nsew')
-        self.frm_addcat.rowconfigure('0', pad ='10', weight='1')
-        self.frm_addcat.rowconfigure('1', pad ='10', weight='1')
-        self.frm_addcat.columnconfigure('0', pad ='10', weight='1')
-        #self.win_addcat.configure(height='200', width='200')
-        self.win_addcat.resizable(False, False)
+        self.frm_buttons.configure( padding='5 5')
+        self.frm_buttons.grid(column='0', row='2', sticky='sew')
+        self.frm_buttons.master.rowconfigure('1', pad='10', weight='1')
+        self.frm_buttons.master.columnconfigure('0', pad='0', weight='1')
+        self.frm_AttributeProperties.grid(column='0', row='0', sticky='nsew')
+        self.frm_AttributeProperties.master.rowconfigure('0', weight='1')
+        self.frm_AttributeProperties.master.columnconfigure('0', weight='1')
+        self.win_AttributeProperties.resizable(False, False)
         
         ## Center window
-        x_modal = 300
-        y_modal = 170
+        self.win_AttributeProperties.update()
+        x_modal = self.win_AttributeProperties.winfo_width()
+        y_modal = self.win_AttributeProperties.winfo_height()
         x_parent = master.winfo_width()
         y_parent = master.winfo_height()
         x = master.winfo_rootx() + (x_parent - x_modal) // 2
         y = master.winfo_rooty() + (y_parent - y_modal) // 2
-        self.win_addcat.geometry('{}x{}+{}+{}'.format(x_modal, y_modal, x, y))
+        self.win_AttributeProperties.geometry('{}x{}+{}+{}'.format(x_modal, y_modal, x, y))
         
         # SHOW window, fully constructed
-        self.win_addcat.deiconify()
+        self.win_AttributeProperties.deiconify()
         
-        return self.win_addcat     
+        return self.win_AttributeProperties     
     
