@@ -21,8 +21,11 @@ import app_import
 from weather import Weather
 import lotto
 import matplotlib.dates as mdates
-
 from PIL import ImageTk, Image
+
+# fit matplotlib charts normally
+from matplotlib import rcParams
+rcParams.update({'figure.autolayout': True})
 
 ## both format should match
 _dt_datefmt = "%d.%m.%Y"
