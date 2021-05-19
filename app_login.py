@@ -84,6 +84,7 @@ class LoginDialog:
         print("...Finance app closed.")
         self.userDataBase.saveTransactionDB()
         print("Transaction database saved")
+        self.userDataBase.logoutCurrentUser()
         self.showWindow()
 
 
