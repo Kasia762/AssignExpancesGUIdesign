@@ -263,7 +263,9 @@ class DataBaseHandler:
 
     def data_chartCategories(self,startDate,endDate):
         sql ='''
-        SELECT SUM(tr.trans_amount),ct.cat_name, ct.cat_limit
+        SELECT COALESCE(SUM(tr.trans_amount),0) , 
+                COALESCE(ct.cat_name,"Undefined") , 
+                COALESCE(ct.cat_limit,0)
         FROM  transactions AS tr
         LEFT OUTER JOIN categories AS ct
                 ON tr.cat_id = ct.cat_id
@@ -280,7 +282,7 @@ class DataBaseHandler:
 
     def data_chartIncome(self,startDate,endDate):
         sql = '''
-        SELECT SUM(tr.trans_amount), tr.trans_date
+        SELECT COALESCE(SUM(tr.trans_amount),0) , tr.trans_date
         FROM transactions AS tr
         WHERE tr.trans_date BETWEEN ? AND ? 
         AND tr.trans_amount > 0
@@ -295,7 +297,7 @@ class DataBaseHandler:
 
     def data_chartOutcome(self,startDate,endDate):
         sql = '''
-        SELECT SUM(tr.trans_amount), tr.trans_date
+        SELECT COALESCE(SUM(tr.trans_amount),0) , tr.trans_date
         FROM transactions AS tr
         WHERE tr.trans_date BETWEEN ? AND ? 
         AND tr.trans_amount < 0
@@ -310,7 +312,7 @@ class DataBaseHandler:
 
     def data_chartBalance(self,startDate,endDate):
         sql = '''
-        SELECT SUM(tr.trans_amount), tr.trans_date
+        SELECT COALESCE(SUM(tr.trans_amount),0) , tr.trans_date
         FROM transactions AS tr
         WHERE tr.trans_date BETWEEN ? AND ?
         GROUP BY tr.trans_date
@@ -368,7 +370,7 @@ class DataBaseHandler:
     def getBalance(self, start,end):
         ## TODO: check database connection
         sql = '''
-            SELECT  SUM(tr.trans_amount)
+            SELECT  COALESCE(SUM(tr.trans_amount),0)
             FROM  transactions AS tr
             WHERE tr.trans_date BETWEEN ? AND ?;
             '''
@@ -383,7 +385,7 @@ class DataBaseHandler:
     def getAmountIn(self, start, end):
         cur = self.database.cursor()
         sql = '''
-            SELECT  SUM(tr.trans_amount)
+            SELECT  COALESCE(SUM(tr.trans_amount),0)
             FROM  transactions AS tr 
             WHERE tr.trans_amount > 0
             AND tr.trans_date BETWEEN ? AND ?;
@@ -397,7 +399,7 @@ class DataBaseHandler:
     def getAmountOut(self, start, end):
         cur = self.database.cursor()
         sql = '''
-            SELECT  SUM(tr.trans_amount)
+            SELECT  COALESCE(SUM(tr.trans_amount),0)
             FROM  transactions AS tr 
             WHERE tr.trans_amount < 0
             AND tr.trans_date BETWEEN ? AND ?;
