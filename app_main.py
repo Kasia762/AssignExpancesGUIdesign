@@ -13,7 +13,7 @@ import datetime as dt
 import pandas as pd
 from addTransaction import AddTransaction
 from addCategory import AddCategory
-from addContractors import AddContractor
+from addContractor import AddContractor
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 import matplotlib.pyplot as plt
 import app_import
@@ -24,7 +24,7 @@ import lotto
 import base64
 import tkinter as tk
 from urllib.request import urlopen
-from PIL import ImageTk,Image
+from PIL import ImageTk, Image
 
 ## both format should match
 _dt_datefmt = "%d.%m.%Y"
