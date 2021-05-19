@@ -158,14 +158,14 @@ class FinanceApp:
         am_outcome = [(i[0]) for i in outcome ]
         am_balance = [i[0] for i in balance]
         
-        date_income = [(i[1].strftime(_dt_datefmt)) for i in income]
-        date_outcome = [(i[1].strftime(_dt_datefmt)) for i in outcome]
-        date_balance = [(i[1].strftime(_dt_datefmt)) for i in balance]
+        # date_income = [(i[1].strftime(_dt_datefmt)) for i in income]
+        # date_outcome = [(i[1].strftime(_dt_datefmt)) for i in outcome]
+        # date_balance = [(i[1].strftime(_dt_datefmt)) for i in balance]
         
         date_income = [str(i[1]) for i in income]
         date_outcome = [str(i[1]) for i in outcome]
         date_balance = [str(i[1]) for i in balance]
-    
+        
         date_income = mdates.datestr2num(date_income)
         date_outcome = mdates.datestr2num(date_outcome)
         date_balance = mdates.datestr2num(date_balance)
@@ -176,14 +176,16 @@ class FinanceApp:
                       color='green', label='income', marker = '*')
         self.ax1.plot(date_outcome, am_outcome, 
                       color = 'red',label='outcome', marker = '.')
-        self.ax1.axhline(y=0, color ='black',  )
-       
+        self.ax1.axhline(y=0, color ='grey' )
+        
         self.ax1b.clear()
         self.ax1b.bar(date_balance, am_balance, 
                        color = 'PaleGreen', label="balance", alpha = 0.4)
     
         self.ax1.xaxis.set_major_formatter(mdates.DateFormatter(_dt_datefmt))
         self.ax1b.xaxis.set_major_formatter(mdates.DateFormatter(_dt_datefmt))
+        self.ax1.set_xlim(start,end)
+        self.ax1b.set_xlim(start,end)
         
         start = start.strftime(_dt_datefmt)
         end = end.strftime(_dt_datefmt)
@@ -207,7 +209,6 @@ class FinanceApp:
         
         self.ax1.tick_params(axis='x', labelrotation=10)
         plt.tight_layout(pad=5, w_pad=5 , h_pad=5)
-        
         self.chart1.draw()
 
         
