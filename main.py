@@ -12,7 +12,7 @@ except:
     ## NO GUI. EXIT
     print('Required library "tkinter" is not found. Please install it running:')
     print('python -m pip install tkinter')
-    
+    sys.exit()    
     
     
 def check_libs(libs, install=False):
