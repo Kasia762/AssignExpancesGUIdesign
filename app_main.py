@@ -666,7 +666,7 @@ class FinanceApp:
         self.ntab_account.grid(column='0', row='0', sticky='nsew')
         self.ntab_account.master.rowconfigure('0', weight='1')
         self.ntab_account.master.columnconfigure('0', weight='1')
-        self.ntb_app.add(self.ntab_account, sticky='nsew', text='Account')
+        self.ntb_app.add(self.ntab_account, sticky='nsew', text='Account', underline='0')
 
         ###
         ### TRANSACTIONS TAB
@@ -759,7 +759,7 @@ class FinanceApp:
         self.frm_transactions.grid(column='0', padx='3', pady='10', row='0', sticky='nsew')
         self.frm_transactions.master.rowconfigure('0', weight=1)
         self.frm_transactions.master.columnconfigure('0', weight=1)
-        self.ntb_app.add(self.frm_transactions, text='Trancations')
+        self.ntb_app.add(self.frm_transactions, text='Trancations', underline='0')
         
         ###
         ### CATEGORIES TAB
@@ -1087,7 +1087,7 @@ class FinanceApp:
         
         self.frm_bells.rowconfigure('1', weight='1')        
 
-        self.ntb_app.add(self.frm_bells, text='Bells and whistlers')
+        self.ntb_app.add(self.frm_bells, text='Weather and calendar', underline='0')
         
         ### NOTEBOOK GRID ...
         self.ntb_app.configure(style='Toolbutton', takefocus=True)
