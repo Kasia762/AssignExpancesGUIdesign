@@ -7,6 +7,7 @@ Created on Sun May 16 12:45:39 2021
 
 import tkinter.ttk as ttk
 import tkcalendar as tkcal
+from dateutil.relativedelta import relativedelta
 import time
 import datetime as dt
 import tkinter as tk
@@ -88,144 +89,119 @@ class PeriodChooserWidget(ttk.Frame):
         self.columnconfigure('8', weight='10')
 
         ### BINDs
-        self.cal_inter_from.bind('<<DateEntrySelected>>', lambda x: self._get_calEntryDates() )
-        self.cal_inter_to.bind('<<DateEntrySelected>>', lambda x: self._get_calEntryDates()  )
+        self.cal_inter_from.bind('<<DateEntrySelected>>', lambda x: self._h_dateFrom_selected() )
+        self.cal_inter_to.bind('<<DateEntrySelected>>', lambda x: self._h_dateTo_selected()  )
+        self.rbn_inter_month.configure(command=self._h_periodTypeSelected)
+        self.rbn_inter_week.configure(command=self._h_periodTypeSelected)
+        self.rbn_inter_year.configure(command=self._h_periodTypeSelected)
         
         
-        self.today = dt.date.today()
-        self._default_datePeriod()
+        self.datefocus = dt.date.today()
+        self.freedelta = relativedelta(self.datefocus, self.datefocus)
+        print("Period: ", self.freedelta)
+        self._setCurrentPeriod()
 
 
-    def _default_datePeriod(self):
-        start = self.today.replace(day=1)
-        end = self.today.replace(day=28) + \
-                 dt.timedelta(days=4) 
-        end = end - dt.timedelta(days=end.day)
-        self.cal_inter_from.set_date(start)
-        self.cal_inter_to.set_date(end)
-        #self.set_datePeriod(start, end)
-        self._get_calEntryDates()
-               
-        
-    # def set_datePeriod(self, date_from, date_to):
-    #     self.lbl_inter_selection.configure(text="Date period: " + str(date_from) + " - " + str(date_to))
-        
-        
-    def _get_calEntryDates(self):
+    def _h_periodTypeSelected(self):
+        self._setCurrentPeriod()
+        self.event_generate('<<PeriodSelected>>')
+
+
+    def _h_dateFrom_selected(self):
         start = self.cal_inter_from.get_date()
         end = self.cal_inter_to.get_date()
-        #self.set_datePeriod(start, end)
+        self.var_date_type.set( value= 'free' )
+        if start > end:
+            self.cal_inter_to.set_date(start)
+        self.datefocus = start
+        self.freedelta = relativedelta(end, start)
         self.event_generate('<<PeriodSelected>>')
-        print(start, end)
-    
-    
+
+
+    def _h_dateTo_selected(self):
+        start = self.cal_inter_from.get_date()
+        end = self.cal_inter_to.get_date()
+        self.var_date_type.set( value= 'free' )
+        if end < start:
+            self.cal_inter_from.set_date(end)
+        self.datefocus = start
+        self.freedelta = relativedelta(end, start)
+        self.event_generate('<<PeriodSelected>>')
+
+
     def get_datePeriod(self):
         start = self.cal_inter_from.get_date()
         end = self.cal_inter_to.get_date()
         return (start, end)
-    
-    ### TODO : add underscore   
-    def _previousPeriod(self, start):
-        if self._get_chartDateType() == 'month':
-            end = start - \
-                dt.timedelta(days=start.day)
-            start = end.replace(day=1)
-        elif self._get_chartDateType() == 'week':
-            end = start - \
-                dt.timedelta(days=1)
-            start = end - \
-                dt.timedelta(days=end.weekday())
-        elif self._get_chartDateType() == 'year':
-            end = start.replace(day=1, month=1)
-            end = end - \
-                dt.timedelta(days=1)
-            start = end.replace(day=1, month =1)
-        #self.set_datePeriod(start, end)
-        self.cal_inter_from.set_date(start)
-        self.cal_inter_to.set_date(end)
-        self._get_calEntryDates()
-    
-    
-    def _nextPeriod(self, end):
-        if self._get_chartDateType() == 'month':
-            # date - convert to first day of month
-             start = end.replace(day=28) + \
-                 dt.timedelta(days=4) 
-             start = start.replace(day=1)
-             end = start.replace(day=28) + \
-                 dt.timedelta(days=4)
-             end = end - \
-                 dt.timedelta(days=end.day)
-        elif self._get_chartDateType() == 'week':
-            start = end + \
-                dt.timedelta(days=1)
-            end = start + \
-                dt.timedelta(days = 6)
-        elif self._get_chartDateType() == 'year':
-            start = end.replace(day=31, month=12) + \
-                dt.timedelta(days=1)
-            end = start.replace(day=31, month=12)
-        else: print("error")
-        #self.set_datePeriod(start, end)
-        self.cal_inter_from.set_date(start)
-        self.cal_inter_to.set_date(end)
-        self._get_calEntryDates()
+
+
+    def _setPreviousPeriod(self):
+        if self.var_date_type.get() == 'month':
+            self.datefocus = self.datefocus + relativedelta(months=-1)
+        elif self.var_date_type.get() == 'week':
+            self.datefocus = self.datefocus + relativedelta(weeks=-1)
+        elif self.var_date_type.get() == 'year':
+            self.datefocus = self.datefocus + relativedelta(years=-1)
+        else:
+            ### No radiobuttons
+            self.datefocus = self.datefocus - self.freedelta + relativedelta(days=-1)
+            pass
+        self._setCurrentPeriod()
+
+
+    def _setNextPeriod(self):
+        if self.var_date_type.get() == 'month':
+            self.datefocus = self.datefocus + relativedelta(months=+1)
+        elif self.var_date_type.get() == 'week':
+            self.datefocus = self.datefocus + relativedelta(weeks=+1)
+        elif self.var_date_type.get() == 'year':
+            self.datefocus = self.datefocus + relativedelta(years=+1)
+        else:
+            ### No radiobuttons
+            self.datefocus = self.datefocus + self.freedelta + relativedelta(days=+1)
+            pass
+        self._setCurrentPeriod()
         
         
-    def _currentPeriod(self):
-        if self._get_chartDateType() == 'month':
-            self._default_datePeriod()
-        elif self._get_chartDateType() == 'week':
-            start = self.today - \
-                dt.timedelta(days=self.today.weekday())
+    def _setCurrentPeriod(self):
+        if self.var_date_type.get() == 'month':
+            start = self.datefocus.replace(day=1)
+            end = self.datefocus.replace(day=28) + \
+                      dt.timedelta(days=4) 
+            end = end - dt.timedelta(days=end.day)
+        elif self.var_date_type.get() == 'week':
+            start = self.datefocus - \
+                dt.timedelta(days=self.datefocus.weekday())
             end = start + \
                 dt.timedelta(days=6)
-            self.cal_inter_from.set_date(start)
-            self.cal_inter_to.set_date(end)
-            self._get_calEntryDates()
-            #self.set_datePeriod(start, end)
-        elif self._get_chartDateType() == 'year':
-            start = self.today.replace(day=1, month=1)
+        elif self.var_date_type.get() == 'year':
+            start = self.datefocus.replace(day=1, month=1)
             end = start.replace(day = 31, month=12)
-            self.cal_inter_from.set_date(start)
-            self.cal_inter_to.set_date(end)
-            #self.set_datePeriod(start, end)
-            self._get_calEntryDates()
-        else: print("error")
-        
+        else: 
+            ### No changes to current period
+            start = self.datefocus
+            end = start + self.freedelta
+        self.cal_inter_from.set_date(start)
+        self.cal_inter_to.set_date(end)
+ 
 
-   
-    def _get_chartDateType(self):  
-        if self.var_date_type.get() == "week":
-            return "week"
-        elif self.var_date_type.get() == "month":
-            return "month"
-        elif self.var_date_type.get() == "year":
-            return "year"
-        else: print("no period type selection")
-            
-    
+
     def h_btn_Prev(self):
-        start = self.cal_inter_from.get_date()
-        end = self.cal_inter_to.get_date()
-        self._previousPeriod(start)
+        self._setPreviousPeriod()
+        self.event_generate('<<PeriodSelected>>')
         
     
     def h_btn_Next(self):
-        start = self.cal_inter_from.get_date()
-        end = self.cal_inter_to.get_date()
-        self._nextPeriod(end)
+        self._setNextPeriod()
+        self.event_generate('<<PeriodSelected>>')
     
     
     def h_btn_Current(self):
-        
-        self._currentPeriod()
+        self.datefocus = dt.date.today()
+        self._setCurrentPeriod()
+        self.event_generate('<<PeriodSelected>>')
     
              
-    # def run(self):
-    #     #self._default_datePeriod()
-    #     pass
-        
 
 if __name__ == '__main__':
     root = tk.Tk()

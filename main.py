@@ -5,14 +5,14 @@ MAIN APP class
 @author: ilia
 """
 try:
+    import sys
     import tkinter as tk
     import tkinter.ttk as ttk
-    import sys
 except:
     ## NO GUI. EXIT
     print('Required library "tkinter" is not found. Please install it running:')
     print('python -m pip install tkinter')
-    
+    sys.exit()    
     
     
 def check_libs(libs, install=False):
