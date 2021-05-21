@@ -423,10 +423,13 @@ class FinanceApp:
             ('CSV files', '*.csv'),
             #('Excel files', '*.xlsx'),
             ('All files', '*.*'))
+        dates = self.frm_tr_period.get_datePeriod()
+        start = dates[0]
+        end = dates[1]
         exportFileName = "_".join(
                         ("Export",
-                        self.cal_tr_From.get_date().strftime(_dt_datefmt),
-                        self.cal_tr_To.get_date().strftime(_dt_datefmt) ))
+                        start.strftime(_dt_datefmt),
+                        end.strftime(_dt_datefmt) ))
         try:
             exportFileName = tk.filedialog.asksaveasfile(
                             title="Export current table view as...",
